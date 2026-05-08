@@ -5,10 +5,12 @@ import { CATEGORIES } from "@/lib/ubepsa-store";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
-const ADMIN_PASSWORD = "ubepsa2024";
+const ADMIN_EMAIL = "Ubepsaadmin@gmail.com";
+const ADMIN_PASSWORD = "Ubepsa_2026";
 
 function AdminPage() {
   const [authed, setAuthed] = useState(false);
+  const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [err, setErr] = useState("");
 
@@ -20,28 +22,48 @@ function AdminPage() {
           <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60 mt-1">Restricted · UBEPSA Staff Only</p>
         </div>
         <form
-          onSubmit={(e) => { e.preventDefault(); if (pwd === ADMIN_PASSWORD) setAuthed(true); else setErr("Incorrect password."); }}
-          className="bg-card p-6 border border-ink/20"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase() && pwd === ADMIN_PASSWORD) {
+              setAuthed(true);
+              setErr("");
+            } else {
+              setErr("Incorrect email or password.");
+            }
+          }}
+          className="bg-card p-6 border border-ink/20 space-y-4"
         >
-          <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1">Password</label>
-          <input
-            type="password"
-            value={pwd}
-            onChange={(e) => { setPwd(e.target.value); setErr(""); }}
-            className="w-full bg-cream border border-ink/30 px-3 py-2 font-mono focus:outline-none focus:border-press-red"
-            autoFocus
-          />
-          {err && <p className="text-press-red font-mono text-xs mt-2">{err}</p>}
-          <button className="mt-4 w-full font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-4 py-3 hover:bg-press-red transition-colors">
+          <div>
+            <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setErr(""); }}
+              className="w-full bg-cream border border-ink/30 px-3 py-2 font-mono focus:outline-none focus:border-press-red"
+              autoFocus
+              required
+            />
+          </div>
+          <div>
+            <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1">Password</label>
+            <input
+              type="password"
+              value={pwd}
+              onChange={(e) => { setPwd(e.target.value); setErr(""); }}
+              className="w-full bg-cream border border-ink/30 px-3 py-2 font-mono focus:outline-none focus:border-press-red"
+              required
+            />
+          </div>
+          {err && <p className="text-press-red font-mono text-xs">{err}</p>}
+          <button className="w-full font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-4 py-3 hover:bg-press-red transition-colors">
             Sign In →
           </button>
-          <p className="mt-4 font-mono text-[0.6rem] tracking-[0.18em] uppercase text-ink/40 text-center">Hint for demo: ubepsa2024</p>
         </form>
       </div>
     );
   }
 
-  return <Dashboard onLogout={() => { setAuthed(false); setPwd(""); }} />;
+  return <Dashboard onLogout={() => { setAuthed(false); setPwd(""); setEmail(""); }} />;
 }
 
 type Tab = "articles" | "gallery" | "press" | "stats";
