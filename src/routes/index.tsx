@@ -14,6 +14,14 @@ function Index() {
   const latest = rest.slice(0, 6);
   const trendingTags = Array.from(new Set(articles.flatMap(a => a.tags))).slice(0, 8);
 
+  if (!hero) {
+    return (
+      <div className="page-fade max-w-7xl mx-auto px-4 py-20 text-center font-mono text-sm tracking-[0.2em] uppercase text-ink/60">
+        Loading dispatches…
+      </div>
+    );
+  }
+
   return (
     <div className="page-fade">
       {/* Hero */}
