@@ -1,69 +1,98 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useUbepsa } from "@/components/ubepsa/UbepsaProvider";
 import { CATEGORIES } from "@/lib/ubepsa-store";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
-const ADMIN_EMAIL = "Ubepsaadmin@gmail.com";
-const ADMIN_PASSWORD = "Ubepsa_2026";
+const ADMIN_EMAIL = "ubepsaadmin@gmail.com";
 
 function AdminPage() {
-  const [authed, setAuthed] = useState(false);
+  const [checking, setChecking] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  if (!authed) {
+  const verifyAdmin = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setIsAdmin(false); setChecking(false); return; }
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+    setIsAdmin(!!roles?.some((r) => r.role === "admin"));
+    setChecking(false);
+  };
+
+  useEffect(() => {
+    verifyAdmin();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => { verifyAdmin(); });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr(""); setBusy(true);
+    try {
+      if (mode === "signup") {
+        if (email.trim().toLowerCase() !== ADMIN_EMAIL) {
+          setErr("Only the official UBEPSA admin email can register here.");
+          setBusy(false); return;
+        }
+        const { error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password: pwd,
+          options: { emailRedirectTo: `${window.location.origin}/admin` },
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: pwd });
+        if (error) throw error;
+      }
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally { setBusy(false); }
+  };
+
+  const logout = async () => { await supabase.auth.signOut(); setIsAdmin(false); setEmail(""); setPwd(""); };
+
+  if (checking) {
+    return <div className="page-fade max-w-md mx-auto px-4 py-20 text-center font-mono text-xs tracking-[0.2em] uppercase text-ink/60">Verifying credentials…</div>;
+  }
+
+  if (!isAdmin) {
     return (
       <div className="page-fade max-w-md mx-auto px-4 py-20">
         <div className="rule-double py-3 mb-6 text-center">
           <h1 className="font-display font-black text-3xl">Editorial CMS</h1>
           <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60 mt-1">Restricted · UBEPSA Staff Only</p>
         </div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase() && pwd === ADMIN_PASSWORD) {
-              setAuthed(true);
-              setErr("");
-            } else {
-              setErr("Incorrect email or password.");
-            }
-          }}
-          className="bg-card p-6 border border-ink/20 space-y-4"
-        >
+        <form onSubmit={handleSubmit} className="bg-card p-6 border border-ink/20 space-y-4">
           <div>
             <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); setErr(""); }}
-              className="w-full bg-cream border border-ink/30 px-3 py-2 font-mono focus:outline-none focus:border-press-red"
-              autoFocus
-              required
-            />
+            <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr(""); }}
+              className="w-full bg-cream border border-ink/30 px-3 py-2 font-mono focus:outline-none focus:border-press-red" autoFocus required />
           </div>
           <div>
             <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1">Password</label>
-            <input
-              type="password"
-              value={pwd}
-              onChange={(e) => { setPwd(e.target.value); setErr(""); }}
-              className="w-full bg-cream border border-ink/30 px-3 py-2 font-mono focus:outline-none focus:border-press-red"
-              required
-            />
+            <input type="password" value={pwd} onChange={(e) => { setPwd(e.target.value); setErr(""); }}
+              className="w-full bg-cream border border-ink/30 px-3 py-2 font-mono focus:outline-none focus:border-press-red" required minLength={6} />
           </div>
           {err && <p className="text-press-red font-mono text-xs">{err}</p>}
-          <button className="w-full font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-4 py-3 hover:bg-press-red transition-colors">
-            Sign In →
+          <button disabled={busy} className="w-full font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-4 py-3 hover:bg-press-red transition-colors disabled:opacity-50">
+            {busy ? "Working…" : mode === "signin" ? "Sign In →" : "Create Admin Account →"}
+          </button>
+          <button type="button" onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setErr(""); }}
+            className="w-full font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60 hover:text-press-red">
+            {mode === "signin" ? "First-time setup? Register admin" : "Have an account? Sign in"}
           </button>
         </form>
       </div>
     );
   }
 
-  return <Dashboard onLogout={() => { setAuthed(false); setPwd(""); setEmail(""); }} />;
+  return <Dashboard onLogout={logout} />;
 }
 
 type Tab = "articles" | "gallery" | "press" | "stats";
