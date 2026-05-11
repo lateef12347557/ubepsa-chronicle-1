@@ -204,7 +204,7 @@ function ArticlesManager() {
             <div><label className={labelCls}>Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} /></div>
             <div><label className={labelCls}>Tags (comma-separated)</label><input className={inputCls} value={form.tags} onChange={e => update("tags", e.target.value)} /></div>
           </div>
-          <div><label className={labelCls}>Cover Image URL</label><input className={inputCls} value={form.cover} onChange={e => update("cover", e.target.value)} /></div>
+          <div><label className={labelCls}>Cover Image</label><ImageUploader value={form.cover} onChange={(v) => update("cover", v)} /></div>
           <div>
             <label className={labelCls}>Body (use blank lines between paragraphs)</label>
             <textarea rows={8} className={inputCls} value={form.body} onChange={e => update("body", e.target.value)} required />
