@@ -4,13 +4,11 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
-  HeadContent,
-  Scripts,
 } from "@tanstack/react-router";
 
-import appCss from "../styles.css?url";
 import { UbepsaProvider } from "@/components/ubepsa/UbepsaProvider";
 import { Masthead, Footer } from "@/components/ubepsa/Masthead";
+
 
 function NotFoundComponent() {
   return (
