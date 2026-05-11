@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useUbepsa } from "@/components/ubepsa/UbepsaProvider";
 
 const NAV: { label: string; to: string }[] = [
   { label: "Front Page", to: "/" },
@@ -9,7 +10,7 @@ const NAV: { label: string; to: string }[] = [
   { label: "Admin", to: "/admin" },
 ];
 
-const TICKER = [
+const FALLBACK_TICKER = [
   "BREAKING — Senate ratifies 2026 curriculum overhaul",
   "PIRATES win EUI Cup for third consecutive year",
   "UBEPSA calls for open audit of hostel allocations",
@@ -19,7 +20,9 @@ const TICKER = [
 ];
 
 export function Masthead() {
+  const { breaking } = useUbepsa();
   const today = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const ticker = breaking.length ? breaking.map((b) => b.text) : FALLBACK_TICKER;
   return (
     <header className="border-b-2 border-ink">
       {/* Ticker */}
@@ -28,7 +31,7 @@ export function Masthead() {
           <span className="font-mono text-[0.65rem] tracking-[0.2em] font-bold bg-press-red px-3 py-1.5 shrink-0">BREAKING</span>
           <div className="overflow-hidden flex-1">
             <div className="ticker-track py-1.5 text-sm font-serif">
-              {[...TICKER, ...TICKER].map((t, i) => (
+              {[...ticker, ...ticker].map((t, i) => (
                 <span key={i} className="px-8 inline-flex items-center gap-3">
                   <span className="text-gold">◆</span>{t}
                 </span>

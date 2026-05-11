@@ -33,6 +33,8 @@ export type PressRelease = {
   summary: string;
 };
 
+export type BreakingItem = { id: string; text: string; position: number };
+
 export const CATEGORIES = ["News", "Opinion", "Campus Life", "Features", "Press Release", "Photography"];
 
 const estimateReadTime = (body: string) => Math.max(2, Math.ceil(body.split(/\s+/).length / 220));
@@ -50,17 +52,20 @@ export function useUbepsaStore() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [releases, setReleases] = useState<PressRelease[]>([]);
+  const [breaking, setBreaking] = useState<BreakingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
-    const [a, g, p] = await Promise.all([
+    const [a, g, p, b] = await Promise.all([
       supabase.from("articles").select("*").order("created_at", { ascending: false }),
       supabase.from("gallery_items").select("*").order("created_at", { ascending: false }),
       supabase.from("press_releases").select("*").order("created_at", { ascending: false }),
+      supabase.from("breaking_news").select("*").order("position", { ascending: true }),
     ]);
     if (a.data) setArticles(a.data.map((r) => mapArticle(r as ArticleRow)));
     if (g.data) setGallery(g.data as GalleryItem[]);
     if (p.data) setReleases(p.data as PressRelease[]);
+    if (b.data) setBreaking(b.data as BreakingItem[]);
     setLoading(false);
   }, []);
 
@@ -106,5 +111,19 @@ export function useUbepsaStore() {
     setReleases((p) => p.filter((r) => r.id !== id));
   }, []);
 
-  return { articles, gallery, releases, loading, refresh, addArticle, deleteArticle, addGallery, deleteGallery, addRelease, deleteRelease };
+  const addBreaking = useCallback(async (text: string) => {
+    const position = Date.now();
+    const { data, error } = await supabase.from("breaking_news").insert({ text, position }).select().single();
+    if (error) throw error;
+    setBreaking((p) => [...p, data as BreakingItem]);
+  }, []);
+
+  const deleteBreaking = useCallback(async (id: string) => {
+    const { error } = await supabase.from("breaking_news").delete().eq("id", id);
+    if (error) throw error;
+    setBreaking((p) => p.filter((b) => b.id !== id));
+  }, []);
+
+  return { articles, gallery, releases, breaking, loading, refresh, addArticle, deleteArticle, addGallery, deleteGallery, addRelease, deleteRelease, addBreaking, deleteBreaking };
 }
+
