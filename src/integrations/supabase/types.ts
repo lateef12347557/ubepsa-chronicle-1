@@ -56,6 +56,27 @@ export type Database = {
         }
         Relationships: []
       }
+      breaking_news: {
+        Row: {
+          created_at: string
+          id: string
+          position: number
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          position?: number
+          text: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          position?: number
+          text?: string
+        }
+        Relationships: []
+      }
       gallery_items: {
         Row: {
           album: string
