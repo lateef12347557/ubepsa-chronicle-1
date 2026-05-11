@@ -258,7 +258,7 @@ function GalleryManager() {
   return (
     <div className="space-y-8">
       <form onSubmit={submit} className="bg-card p-5 border border-ink/15 grid sm:grid-cols-2 gap-3">
-        <div className="sm:col-span-2"><label className={labelCls}>Image URL</label><input className={inputCls} value={form.url} onChange={e => update("url", e.target.value)} required /></div>
+        <div className="sm:col-span-2"><label className={labelCls}>Image</label><ImageUploader value={form.url} onChange={(v) => update("url", v)} /></div>
         <div><label className={labelCls}>Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
         <div><label className={labelCls}>Photographer</label><input className={inputCls} value={form.photographer} onChange={e => update("photographer", e.target.value)} /></div>
         <div><label className={labelCls}>Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} /></div>
