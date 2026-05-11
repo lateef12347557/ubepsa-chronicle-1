@@ -25,12 +25,19 @@ function AboutPage() {
         <div>
           <h2 className="font-display font-black text-3xl text-ink">Our Mission</h2>
           <p className="mt-4 font-serif text-ink/85 leading-[1.8] dropcap">
-            UBEPSA exists to chronicle the life of the University of Benin with rigour, fairness, and uncompromising independence. We have been the student press at UNIBEN since 1979 — through reform and protest, through silence and song, through every Vice-Chancellor since the year of our founding.
+            UBEPSA Editorial and Press is the official media and communications arm of the University of Benin Physiotherapy Students' Association [UBEPSA]. As a non-profit organization, we are dedicated to informing, inspiring, and amplifying the voice of physiotherapy students.
+          </p>
+          <h3 className="font-display font-bold text-xl mt-6 text-ink">Mission</h3>
+          <p className="mt-2 font-serif text-ink/85 leading-[1.8]">
+            Keep the voice of physiotherapy students alive. We do this through storytelling, media coverage, and creative expression that inform, educate, and unite our community.
+          </p>
+          <h3 className="font-display font-bold text-xl mt-6 text-ink">What We Do</h3>
+          <p className="mt-2 font-serif text-ink/85 leading-[1.8]">
+            PhysioVibes Magazine is one of our flagship achievements, alongside other initiatives that spotlight student growth, achievements, and experiences.
           </p>
           <p className="mt-4 font-serif text-ink/85 leading-[1.8]">
-            We publish reportage, opinion, photography and official press releases. We train the next generation of Nigerian journalists. We hold our institution to the standards it sets for us.
+            We're powered by a dedicated, passionate, and resilient team of physiotherapy students, supported by experienced physiotherapists and mentors. Together, we grow, explore, and thrive.
           </p>
-          <blockquote className="pull-quote">A free press is a free people.</blockquote>
         </div>
         <div className="bg-ink text-cream p-8">
           <h3 className="font-mono text-xs tracking-[0.2em] uppercase text-gold font-bold">Visit the Newsroom</h3>
