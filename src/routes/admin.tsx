@@ -95,10 +95,11 @@ function AdminPage() {
   return <Dashboard onLogout={logout} />;
 }
 
-type Tab = "articles" | "gallery" | "press" | "stats";
+type Tab = "articles" | "gallery" | "press" | "breaking" | "stats";
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("articles");
+  const labels: Record<Tab, string> = { articles: "Articles", gallery: "Gallery", press: "Press Releases", breaking: "Breaking News", stats: "Stats" };
   return (
     <div className="page-fade max-w-7xl mx-auto px-4 py-10">
       <div className="rule-double py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -110,13 +111,13 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       </div>
 
       <div className="flex flex-wrap gap-1.5 mb-6 border-b border-ink/20">
-        {(["articles", "gallery", "press", "stats"] as Tab[]).map(t => (
+        {(["articles", "gallery", "press", "breaking", "stats"] as Tab[]).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`font-mono text-[0.7rem] tracking-[0.18em] uppercase px-4 py-2.5 border-b-2 -mb-px ${tab === t ? "border-press-red text-press-red bg-card" : "border-transparent text-ink/60 hover:text-ink"}`}
           >
-            {t === "articles" ? "Articles" : t === "gallery" ? "Gallery" : t === "press" ? "Press Releases" : "Stats"}
+            {labels[t]}
           </button>
         ))}
       </div>
@@ -124,10 +125,55 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       {tab === "articles" && <ArticlesManager />}
       {tab === "gallery" && <GalleryManager />}
       {tab === "press" && <PressManager />}
+      {tab === "breaking" && <BreakingManager />}
       {tab === "stats" && <Stats />}
     </div>
   );
 }
+
+function BreakingManager() {
+  const { breaking, addBreaking, deleteBreaking } = useUbepsa();
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!text.trim()) return;
+    setBusy(true);
+    try { await addBreaking(text.trim()); setText(""); } finally { setBusy(false); }
+  };
+  return (
+    <div className="max-w-2xl space-y-6">
+      <div>
+        <h2 className="font-display font-bold text-xl mb-1">Breaking News Ticker</h2>
+        <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60">Headlines scroll across every page</p>
+      </div>
+      <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
+        <label className={labelCls}>New Headline</label>
+        <input className={inputCls} value={text} onChange={(e) => setText(e.target.value)} placeholder="BREAKING — …" required />
+        <button disabled={busy} className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors disabled:opacity-50">
+          {busy ? "Adding…" : "Add to Ticker →"}
+        </button>
+      </form>
+      <div>
+        <h3 className="font-display font-bold text-lg mb-3">Active Headlines ({breaking.length})</h3>
+        {breaking.length === 0 ? (
+          <p className="font-serif italic text-ink/60 text-sm">No custom headlines — defaults are showing. Add one above to override.</p>
+        ) : (
+          <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
+            {breaking.map((b) => (
+              <li key={b.id} className="p-3 flex items-start gap-3">
+                <span className="text-press-red font-mono text-xs mt-0.5">◆</span>
+                <p className="flex-1 font-serif text-sm">{b.text}</p>
+                <button onClick={() => deleteBreaking(b.id)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline shrink-0">Delete</button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
 
 const inputCls = "w-full bg-cream border border-ink/30 px-3 py-2 font-serif text-sm focus:outline-none focus:border-press-red";
 const labelCls = "font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1";
