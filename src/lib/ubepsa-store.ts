@@ -33,7 +33,7 @@ export type PressRelease = {
   summary: string;
 };
 
-export const CATEGORIES = ["News", "Opinion", "Campus Life", "Features", "Press Release", "Photography"];
+export type BreakingItem = { id: string; text: string; position: number };
 
 const estimateReadTime = (body: string) => Math.max(2, Math.ceil(body.split(/\s+/).length / 220));
 
