@@ -132,6 +132,43 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 const inputCls = "w-full bg-cream border border-ink/30 px-3 py-2 font-serif text-sm focus:outline-none focus:border-press-red";
 const labelCls = "font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1";
 
+function ImageUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  const handleFile = async (file: File) => {
+    setErr(""); setBusy(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from("ubepsa-media").upload(path, file, {
+        contentType: file.type, upsert: false,
+      });
+      if (error) throw error;
+      const { data } = supabase.storage.from("ubepsa-media").getPublicUrl(path);
+      onChange(data.publicUrl);
+    } catch (e) { setErr((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+        <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase bg-ink text-cream px-3 py-2 cursor-pointer hover:bg-press-red transition-colors">
+          {busy ? "Uploading…" : "Choose file"}
+          <input type="file" accept="image/*" className="hidden" disabled={busy}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
+        </label>
+        <span className="font-mono text-[0.65rem] text-ink/50">or paste URL below</span>
+      </div>
+      <input className={inputCls} value={value} onChange={(e) => onChange(e.target.value)} placeholder="https://…" />
+      {err && <p className="text-press-red font-mono text-xs">{err}</p>}
+      {value && <img src={value} alt="" className="w-32 h-20 object-cover border border-ink/15" />}
+    </div>
+  );
+}
+
+
 function ArticlesManager() {
   const { articles, addArticle, deleteArticle } = useUbepsa();
   const [form, setForm] = useState({
