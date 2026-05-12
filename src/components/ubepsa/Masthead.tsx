@@ -10,36 +10,29 @@ const NAV: { label: string; to: string }[] = [
   { label: "Admin", to: "/admin" },
 ];
 
-const FALLBACK_TICKER = [
-  "BREAKING — Senate ratifies 2026 curriculum overhaul",
-  "PIRATES win EUI Cup for third consecutive year",
-  "UBEPSA Editorial & Press calls for open audit of hostel allocations",
-  "Submissions OPEN for the 2026 UBEPSA Editorial & Press Annual Magazine — deadline 30 June",
-  "John Harris Library opening hours under review",
-  "Convocation 2026 photo essay now LIVE in Gallery",
-];
-
 export function Masthead() {
   const { breaking } = useUbepsa();
   const today = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-  const ticker = breaking.length ? breaking.map((b) => b.text) : FALLBACK_TICKER;
+  const ticker = breaking.map((b) => b.text);
   return (
     <header className="border-b-2 border-ink">
       {/* Ticker */}
-      <div className="bg-ink text-cream overflow-hidden">
-        <div className="flex items-center">
-          <span className="font-mono text-[0.65rem] tracking-[0.2em] font-bold bg-press-red px-3 py-1.5 shrink-0">BREAKING</span>
-          <div className="overflow-hidden flex-1">
-            <div className="ticker-track py-1.5 text-sm font-serif">
-              {[...ticker, ...ticker].map((t, i) => (
-                <span key={i} className="px-8 inline-flex items-center gap-3">
-                  <span className="text-gold">◆</span>{t}
-                </span>
-              ))}
+      {ticker.length > 0 && (
+        <div className="bg-ink text-cream overflow-hidden">
+          <div className="flex items-center">
+            <span className="font-mono text-[0.65rem] tracking-[0.2em] font-bold bg-press-red px-3 py-1.5 shrink-0">BREAKING</span>
+            <div className="overflow-hidden flex-1">
+              <div className="ticker-track py-1.5 text-sm font-serif">
+                {[...ticker, ...ticker].map((t, i) => (
+                  <span key={i} className="px-8 inline-flex items-center gap-3">
+                    <span className="text-gold">◆</span>{t}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Date / edition strip */}
       <div className="border-b border-ink/30 newsprint">
