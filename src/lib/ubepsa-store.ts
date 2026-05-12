@@ -124,6 +124,12 @@ export function useUbepsaStore() {
     setBreaking((p) => p.filter((b) => b.id !== id));
   }, []);
 
-  return { articles, gallery, releases, breaking, loading, refresh, addArticle, deleteArticle, addGallery, deleteGallery, addRelease, deleteRelease, addBreaking, deleteBreaking };
+  const updateBreaking = useCallback(async (id: string, text: string) => {
+    const { data, error } = await supabase.from("breaking_news").update({ text }).eq("id", id).select().single();
+    if (error) throw error;
+    setBreaking((p) => p.map((b) => (b.id === id ? (data as BreakingItem) : b)));
+  }, []);
+
+  return { articles, gallery, releases, breaking, loading, refresh, addArticle, deleteArticle, addGallery, deleteGallery, addRelease, deleteRelease, addBreaking, deleteBreaking, updateBreaking };
 }
 

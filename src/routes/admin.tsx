@@ -132,39 +132,66 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 }
 
 function BreakingManager() {
-  const { breaking, addBreaking, deleteBreaking } = useUbepsa();
+  const { breaking, addBreaking, deleteBreaking, updateBreaking } = useUbepsa();
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
     setBusy(true);
     try { await addBreaking(text.trim()); setText(""); } finally { setBusy(false); }
   };
+
+  const startEdit = (id: string, current: string) => { setEditingId(id); setEditText(current); };
+  const cancelEdit = () => { setEditingId(null); setEditText(""); };
+  const saveEdit = async (id: string) => {
+    if (!editText.trim()) return;
+    setBusy(true);
+    try { await updateBreaking(id, editText.trim()); cancelEdit(); } finally { setBusy(false); }
+  };
+
   return (
     <div className="max-w-2xl space-y-6">
       <div>
         <h2 className="font-display font-bold text-xl mb-1">Breaking News Ticker</h2>
-        <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60">Headlines scroll across every page</p>
+        <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60">Headlines scroll across every page. The ticker is hidden when empty.</p>
       </div>
       <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
         <label className={labelCls}>New Headline</label>
         <input className={inputCls} value={text} onChange={(e) => setText(e.target.value)} placeholder="BREAKING — …" required />
         <button disabled={busy} className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors disabled:opacity-50">
-          {busy ? "Adding…" : "Add to Ticker →"}
+          {busy ? "Saving…" : "Add to Ticker →"}
         </button>
       </form>
       <div>
         <h3 className="font-display font-bold text-lg mb-3">Active Headlines ({breaking.length})</h3>
         {breaking.length === 0 ? (
-          <p className="font-serif italic text-ink/60 text-sm">No custom headlines — defaults are showing. Add one above to override.</p>
+          <p className="font-serif italic text-ink/60 text-sm">No headlines yet. Add one above — the ticker stays hidden until you do.</p>
         ) : (
           <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
             {breaking.map((b) => (
               <li key={b.id} className="p-3 flex items-start gap-3">
-                <span className="text-press-red font-mono text-xs mt-0.5">◆</span>
-                <p className="flex-1 font-serif text-sm">{b.text}</p>
-                <button onClick={() => deleteBreaking(b.id)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline shrink-0">Delete</button>
+                <span className="text-press-red font-mono text-xs mt-2">◆</span>
+                {editingId === b.id ? (
+                  <div className="flex-1 space-y-2">
+                    <input className={inputCls} value={editText} onChange={(e) => setEditText(e.target.value)} autoFocus />
+                    <div className="flex gap-2">
+                      <button onClick={() => saveEdit(b.id)} disabled={busy} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase bg-ink text-cream px-3 py-1.5 hover:bg-press-red transition-colors disabled:opacity-50">Save</button>
+                      <button onClick={cancelEdit} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase border border-ink/30 px-3 py-1.5 hover:bg-ink/5">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="flex-1 font-serif text-sm">{b.text}</p>
+                    <div className="flex gap-3 shrink-0">
+                      <button onClick={() => startEdit(b.id, b.text)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-ink hover:underline">Edit</button>
+                      <button onClick={() => deleteBreaking(b.id)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline">Delete</button>
+                    </div>
+                  </>
+                )}
               </li>
             ))}
           </ul>
