@@ -13,7 +13,7 @@ function PressPage() {
     <div className="page-fade max-w-5xl mx-auto px-4 py-12">
       <div className="rule-double py-3 mb-8">
         <h1 className="font-display font-black text-4xl sm:text-5xl">Press Releases</h1>
-        <p className="font-serif italic text-ink/70 mt-1">Official statements from the UBEPSA editorial board.</p>
+        <p className="font-serif italic text-ink/70 mt-1">Official statements from the UBEPSA Editorial & Press board.</p>
       </div>
 
       <ul className="divide-y divide-ink/15 border-y-2 border-ink">

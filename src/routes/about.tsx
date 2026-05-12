@@ -23,11 +23,11 @@ function AboutPage() {
 
       <section className="grid lg:grid-cols-2 gap-10 mb-16">
         <div>
-          <h2 className="font-display font-black text-3xl text-ink">Our Mission</h2>
+          <h2 className="font-display font-black text-3xl text-ink">Who We Are</h2>
           <p className="mt-4 font-serif text-ink/85 leading-[1.8] dropcap">
             UBEPSA Editorial and Press is the official media and communications arm of the University of Benin Physiotherapy Students' Association [UBEPSA]. As a non-profit organization, we are dedicated to informing, inspiring, and amplifying the voice of physiotherapy students.
           </p>
-          <h3 className="font-display font-bold text-xl mt-6 text-ink">Mission</h3>
+          <h3 className="font-display font-bold text-xl mt-6 text-ink">Our Mission</h3>
           <p className="mt-2 font-serif text-ink/85 leading-[1.8]">
             Keep the voice of physiotherapy students alive. We do this through storytelling, media coverage, and creative expression that inform, educate, and unite our community.
           </p>
@@ -42,16 +42,14 @@ function AboutPage() {
         <div className="bg-ink text-cream p-8">
           <h3 className="font-mono text-xs tracking-[0.2em] uppercase text-gold font-bold">Visit the Newsroom</h3>
           <div className="mt-4 font-serif space-y-2">
-            <p>UBEPSA Editorial Office</p>
-            <p>Room 14, Student Union Building</p>
-            <p>University of Benin, Ugbowo Campus</p>
+            <p>Department of Physiotherapy</p>
+            <p>University of Benin</p>
             <p>Benin City, Edo State, Nigeria</p>
           </div>
-          <h3 className="font-mono text-xs tracking-[0.2em] uppercase text-gold font-bold mt-8">Hours</h3>
-          <p className="mt-2 font-serif">Mon – Fri · 10:00 – 18:00</p>
           <h3 className="font-mono text-xs tracking-[0.2em] uppercase text-gold font-bold mt-8">Contact</h3>
-          <p className="mt-2 font-serif">press@ubepsa.uniben.edu</p>
-          <p className="font-serif">@ubepsa_uniben</p>
+          <p className="mt-2 font-serif">ubepsaeditorial@gmail.com</p>
+          <h3 className="font-mono text-xs tracking-[0.2em] uppercase text-gold font-bold mt-8">Instagram</h3>
+          <p className="mt-2 font-serif">@official_editorialpress</p>
         </div>
       </section>
 
