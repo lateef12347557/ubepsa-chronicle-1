@@ -69,9 +69,9 @@ function Index() {
             </div>
 
             <div className="bg-card p-6 border border-ink/15">
-              <h3 className="font-mono text-xs tracking-[0.2em] uppercase text-ink/70 font-bold">About UBEPSA</h3>
+              <h3 className="font-mono text-xs tracking-[0.2em] uppercase text-ink/70 font-bold">About UBEPSA Editorial &amp; Press</h3>
               <p className="mt-3 font-serif text-sm text-ink/80 leading-relaxed">
-                Since 1979, UBEPSA has been the independent voice of the University of Benin — the first draft of UNIBEN's history, written by its students.
+                The official media arm of the UNIBEN Physiotherapy Students' Association — storytelling, coverage, and creative expression that inform, educate, and unite our community.
               </p>
               <Link to="/about" className="mt-3 inline-block font-mono text-xs tracking-[0.18em] uppercase text-press-red ink-link">Read more →</Link>
             </div>

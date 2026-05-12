@@ -26,7 +26,7 @@ function ArticlesPage() {
     <div className="page-fade max-w-7xl mx-auto px-4 py-12">
       <div className="rule-double py-3 mb-8">
         <h1 className="font-display font-black text-4xl sm:text-5xl">Articles</h1>
-        <p className="font-serif italic text-ink/70 mt-1">Reportage, opinion, features & photo essays from the UBEPSA desk.</p>
+        <p className="font-serif italic text-ink/70 mt-1">Reportage, opinion, features & photo essays from the UBEPSA Editorial & Press desk.</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-3 md:items-center justify-between mb-6">

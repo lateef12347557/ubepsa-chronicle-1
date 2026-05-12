@@ -13,8 +13,8 @@ const NAV: { label: string; to: string }[] = [
 const FALLBACK_TICKER = [
   "BREAKING — Senate ratifies 2026 curriculum overhaul",
   "PIRATES win EUI Cup for third consecutive year",
-  "UBEPSA calls for open audit of hostel allocations",
-  "Submissions OPEN for the 2026 UBEPSA Annual Magazine — deadline 30 June",
+  "UBEPSA Editorial & Press calls for open audit of hostel allocations",
+  "Submissions OPEN for the 2026 UBEPSA Editorial & Press Annual Magazine — deadline 30 June",
   "John Harris Library opening hours under review",
   "Convocation 2026 photo essay now LIVE in Gallery",
 ];
@@ -55,11 +55,11 @@ export function Masthead() {
         <div className="max-w-7xl mx-auto px-4 pt-8 pb-4 text-center">
           <div className="rule-double py-4">
             <Link to="/" className="block">
-              <h1 className="font-display font-black text-5xl sm:text-7xl lg:text-8xl leading-none text-ink tracking-tight">
-                UBEPSA
+              <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl leading-none text-ink tracking-tight">
+                UBEPSA Editorial &amp; Press
               </h1>
               <p className="mt-3 font-serif italic text-ink/80 text-base sm:text-lg">
-                The Voice of UNIBEN Press · University of Benin Press & Students' Association
+                The voice of the Department of Physiotherapy, University of Benin
               </p>
             </Link>
           </div>
@@ -94,10 +94,9 @@ export function Footer() {
     <footer className="mt-20 bg-ink text-cream">
       <div className="max-w-7xl mx-auto px-4 py-12 grid gap-10 md:grid-cols-4">
         <div className="md:col-span-2">
-          <div className="font-display text-3xl font-black">UBEPSA</div>
+          <div className="font-display text-3xl font-black">UBEPSA Editorial &amp; Press</div>
           <p className="mt-2 font-serif text-cream/80 max-w-md">
-            The University of Benin Press & Students' Association — chronicling life at UNIBEN since 1979.
-            Independent, student-led, and accountable to the truth.
+            The official media and communications arm of the University of Benin Physiotherapy Students' Association — informing, inspiring, and amplifying the voice of physiotherapy students.
           </p>
           <p className="mt-4 font-mono text-xs tracking-[0.18em] uppercase text-gold">A free press is a free people</p>
         </div>
@@ -113,16 +112,16 @@ export function Footer() {
         <div>
           <h4 className="font-mono text-xs tracking-[0.2em] uppercase text-gold mb-3">Connect</h4>
           <ul className="space-y-1.5 text-sm">
-            <li>@ubepsa_uniben</li>
-            <li>press@ubepsa.uniben.edu</li>
-            <li>UNIBEN, Ugbowo Campus</li>
-            <li>Benin City, Edo State</li>
+            <li>@official_editorialpress</li>
+            <li>ubepsaeditorial@gmail.com</li>
+            <li>Department of Physiotherapy</li>
+            <li>University of Benin, Benin City</li>
           </ul>
         </div>
       </div>
       <div className="border-t border-cream/20">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-2 font-mono text-[0.65rem] tracking-[0.18em] uppercase text-cream/60">
-          <span>© {new Date().getFullYear()} UBEPSA. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} UBEPSA Editorial &amp; Press. All rights reserved.</span>
           <span>Set in Playfair Display, Source Serif 4 & IBM Plex Mono</span>
         </div>
       </div>
