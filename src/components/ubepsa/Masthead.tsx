@@ -35,24 +35,29 @@ export function Masthead() {
       )}
 
       {/* Date / edition strip */}
-      <div className="border-b border-ink/30 newsprint">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-2 font-mono text-[0.7rem] tracking-[0.15em] uppercase text-ink/70">
-          <span>{today} · Benin City, Nigeria</span>
-          <span>Vol. XLI · No. 18 · Established 1979</span>
-          <span>Price: Complimentary</span>
+      <div className="border-b border-cream/15 surface-ink">
+        <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 kicker text-cream/70">
+          <span>{today} · Benin City</span>
+          <span className="hidden sm:inline text-gold">Department of Physiotherapy · UNIBEN</span>
+          <span>Issue · Vol. I</span>
         </div>
       </div>
 
       {/* Nameplate */}
-      <div className="newsprint">
-        <div className="max-w-7xl mx-auto px-4 pt-8 pb-4 text-center">
-          <div className="rule-double py-4">
-            <Link to="/" className="block">
-              <h1 className="font-display font-black text-4xl sm:text-6xl lg:text-7xl leading-none text-ink tracking-tight">
-                UBEPSA Editorial &amp; Press
+      <div className="newsprint relative overflow-hidden">
+        <div className="absolute -top-10 -right-10 w-64 h-64 halftone hidden md:block opacity-40 rotate-12" aria-hidden />
+        <div className="max-w-7xl mx-auto px-4 pt-10 pb-6">
+          <div className="rule-double py-6">
+            <Link to="/" className="block group">
+              <div className="flex items-baseline gap-3 kicker text-press-red mb-3">
+                <span className="inline-block w-8 h-px bg-press-red" />
+                <span>UBEPSA · Editorial &amp; Press</span>
+              </div>
+              <h1 className="mega-display text-[2.6rem] sm:text-7xl lg:text-[7.5rem] text-ink">
+                Physio<span className="text-press-red">Vibes</span>
               </h1>
-              <p className="mt-3 font-serif italic text-ink/80 text-base sm:text-lg">
-                The voice of the Department of Physiotherapy, University of Benin
+              <p className="mt-4 font-serif italic text-ink/75 text-base sm:text-xl max-w-2xl">
+                The bold voice of physiotherapy students at the University of Benin — stories, photography, and dispatches from the department.
               </p>
             </Link>
           </div>
@@ -60,16 +65,16 @@ export function Masthead() {
       </div>
 
       {/* Nav */}
-      <nav className="bg-ink text-cream">
-        <div className="max-w-7xl mx-auto px-4">
-          <ul className="flex flex-wrap items-center justify-center gap-x-1 gap-y-0">
+      <nav className="surface-ink border-y border-cream/10">
+        <div className="max-w-7xl mx-auto px-2">
+          <ul className="flex flex-wrap items-center justify-center">
             {NAV.map(n => (
               <li key={n.to}>
                 <Link
                   to={n.to}
                   activeOptions={{ exact: n.to === "/" }}
-                  activeProps={{ className: "text-gold border-gold" }}
-                  className="block font-mono text-[0.7rem] tracking-[0.2em] uppercase font-semibold px-4 py-3 border-b-2 border-transparent hover:text-gold hover:border-gold/60 transition-colors"
+                  activeProps={{ "data-active": "true", className: "text-gold" } as never}
+                  className="nav-link block kicker text-cream/85 px-4 py-3.5 hover:text-gold transition-colors"
                 >
                   {n.label}
                 </Link>
