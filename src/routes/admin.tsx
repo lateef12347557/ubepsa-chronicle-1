@@ -97,11 +97,17 @@ function AdminPage() {
   return <Dashboard onLogout={logout} />;
 }
 
-type Tab = "articles" | "gallery" | "press" | "breaking" | "stats";
+type Tab = "articles" | "gallery" | "press" | "breaking" | "admins" | "stats";
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("articles");
-  const labels: Record<Tab, string> = { articles: "Articles", gallery: "Gallery", press: "Press Releases", breaking: "Breaking News", stats: "Stats" };
+  const [email, setEmail] = useState<string>("");
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email?.toLowerCase() ?? ""));
+  }, []);
+  const isSuperAdmin = email === ADMIN_EMAIL;
+  const labels: Record<Tab, string> = { articles: "Articles", gallery: "Gallery", press: "Press Releases", breaking: "Breaking News", admins: "Admins", stats: "Stats" };
+  const tabs: Tab[] = ["articles", "gallery", "press", "breaking", ...(isSuperAdmin ? ["admins" as Tab] : []), "stats"];
   return (
     <div className="page-fade max-w-7xl mx-auto px-4 py-10">
       <div className="rule-double py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -113,7 +119,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       </div>
 
       <div className="flex flex-wrap gap-1.5 mb-6 border-b border-ink/20">
-        {(["articles", "gallery", "press", "breaking", "stats"] as Tab[]).map(t => (
+        {tabs.map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -128,7 +134,88 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       {tab === "gallery" && <GalleryManager />}
       {tab === "press" && <PressManager />}
       {tab === "breaking" && <BreakingManager />}
+      {tab === "admins" && isSuperAdmin && <AdminsManager />}
       {tab === "stats" && <Stats />}
+    </div>
+  );
+}
+
+function AdminsManager() {
+  const list = useServerFn(listAdmins);
+  const grant = useServerFn(grantAdmin);
+  const revoke = useServerFn(revokeAdmin);
+  const [admins, setAdmins] = useState<{ userId: string; email: string; createdAt: string }[]>([]);
+  const [superEmail, setSuperEmail] = useState<string>(ADMIN_EMAIL);
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [msg, setMsg] = useState("");
+
+  const refresh = async () => {
+    try {
+      const r = await list();
+      setAdmins(r.admins);
+      setSuperEmail(r.superAdminEmail);
+    } catch (e) { setErr((e as Error).message); }
+  };
+  useEffect(() => { refresh(); }, []);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErr(""); setMsg(""); setBusy(true);
+    try {
+      const r = await grant({ data: { email: email.trim() } });
+      setMsg(`Granted admin to ${r.email}.`);
+      setEmail("");
+      await refresh();
+    } catch (e) { setErr((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
+  const onRevoke = async (userId: string, em: string) => {
+    if (!confirm(`Revoke admin from ${em}?`)) return;
+    setErr(""); setMsg(""); setBusy(true);
+    try { await revoke({ data: { userId } }); setMsg(`Revoked admin from ${em}.`); await refresh(); }
+    catch (e) { setErr((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div className="max-w-2xl space-y-6">
+      <div>
+        <h2 className="font-display font-bold text-xl mb-1">Admin Access</h2>
+        <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60">Only the primary admin ({superEmail}) can grant or revoke admin access. Users must already have an account.</p>
+      </div>
+      <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
+        <label className={labelCls}>Grant Admin by Email</label>
+        <input className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="person@example.com" required />
+        <button disabled={busy} className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors disabled:opacity-50">
+          {busy ? "Working…" : "Grant Admin →"}
+        </button>
+        {err && <p className="text-press-red font-mono text-xs">{err}</p>}
+        {msg && <p className="text-ink/80 font-mono text-xs">{msg}</p>}
+      </form>
+      <div>
+        <h3 className="font-display font-bold text-lg mb-3">Current Admins ({admins.length})</h3>
+        <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
+          {admins.map((a) => {
+            const isSuper = a.email.toLowerCase() === superEmail.toLowerCase();
+            return (
+              <li key={a.userId} className="p-3 flex items-center gap-3">
+                <span className="text-press-red font-mono text-xs">◆</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-serif text-sm truncate">{a.email}</p>
+                  {isSuper && <p className="font-mono text-[0.6rem] tracking-[0.18em] uppercase text-ink/50">Primary admin</p>}
+                </div>
+                {!isSuper && (
+                  <button onClick={() => onRevoke(a.userId, a.email)} disabled={busy}
+                    className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline shrink-0 disabled:opacity-50">Revoke</button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 }
