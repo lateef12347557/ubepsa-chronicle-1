@@ -1,0 +1,1 @@
+ALTER TABLE public.breaking_news ALTER COLUMN position TYPE bigint;
