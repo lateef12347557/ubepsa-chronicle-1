@@ -141,9 +141,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 }
 
 function AdminsManager() {
-  const list = useServerFn(listAdmins);
-  const grant = useServerFn(grantAdmin);
-  const revoke = useServerFn(revokeAdmin);
+const list = listAdmins;
+const grant = grantAdmin;
+const revoke = revokeAdmin;
   const [admins, setAdmins] = useState<{ userId: string; email: string; createdAt: string }[]>([]);
   const [superEmail, setSuperEmail] = useState<string>(ADMIN_EMAIL);
   const [email, setEmail] = useState("");
