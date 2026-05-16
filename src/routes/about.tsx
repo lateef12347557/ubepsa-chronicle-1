@@ -4,12 +4,12 @@ import { useState } from "react";
 export const Route = createFileRoute("/about")({ component: AboutPage });
 
 const TEAM = [
-  { name: "Abians phebe chiamaka ", role: "Editor-in-Chief", seed: "ed1" },
-  { name: "Ismail adebayo mutholib", role: "EDITORIAL SECRETARY", seed: "ed2" },
-  { name: "Odiahi Marietta ", role: "SENIOR EDITOR", seed: "ed3" },
-  { name: "Zara Mohammed", role: "Lead Photographer", seed: "ed4" },
-  { name: "Kelechi Umeh", role: "Sports Editor", seed: "ed5" },
-  { name: "Emeka Igwe", role: "News Desk Lead", seed: "ed6" },
+  { name: "Abians Phebe Chiamaka", role: "Editor-in-Chief", img: "/team-ed1.jpg" },
+  { name: "Ismail Adebayo Mutholib", role: "Editorial Secretary", img: "/team-ed2.jpg" },
+  { name: "Odiahi Marietta", role: "Senior Editor", img: "/team-ed3.jpg" },
+  { name: "Zara Mohammed", role: "Lead Photographer", img: "/team-ed4.jpg" },
+  { name: "Kelechi Umeh", role: "Sports Editor", img: "/team-ed5.jpg" },
+  { name: "Emeka Igwe", role: "News Desk Lead", img: "/team-ed6.jpg" },
 ];
 
 function AboutPage() {
@@ -57,8 +57,17 @@ function AboutPage() {
         <h2 className="font-display font-black text-3xl mb-6">Editorial Board</h2>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
           {TEAM.map(m => (
-            <div key={m.seed} className="bg-card p-5 lift">
-              <img src={`https://picsum.photos/seed/${m.seed}/600/600`} alt={m.name} className="w-full aspect-square object-cover grayscale" />
+            <div key={m.img} className="bg-card p-5 lift">
+              <div className="w-full aspect-square overflow-hidden bg-ink/10">
+                <img
+                  src={m.img}
+                  alt={m.name}
+                  className="w-full h-full object-cover grayscale"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://picsum.photos/seed/${m.name}/600/600`;
+                  }}
+                />
+              </div>
               <h4 className="font-display font-bold text-lg mt-3 text-ink">{m.name}</h4>
               <p className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red mt-1">{m.role}</p>
             </div>
@@ -99,4 +108,3 @@ function Input({ label, className = "", ...rest }: React.InputHTMLAttributes<HTM
       <input {...rest} className="w-full bg-cream border border-ink/30 px-3 py-2 font-serif focus:outline-none focus:border-press-red" />
     </div>
   );
-}
