@@ -104,7 +104,14 @@ function AboutPage() {
 function Input({ label, className = "", ...rest }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
   return (
     <div className={className}>
-      <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1">{label}</label>
-      <input {...rest} className="w-full bg-cream border border-ink/30 px-3 py-2 font-serif focus:outline-none focus:border-press-red" />
+      <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1">
+        {label}
+      </label>
+
+      <input
+        {...rest}
+        className="w-full bg-cream border border-ink/30 px-3 py-2 font-serif focus:outline-none focus:border-press-red"
+      />
     </div>
   );
+}
