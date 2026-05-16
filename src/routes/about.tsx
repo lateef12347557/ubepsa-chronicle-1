@@ -4,9 +4,9 @@ import { useState } from "react";
 export const Route = createFileRoute("/about")({ component: AboutPage });
 
 const TEAM = [
-  { name: "Adaeze Okonkwo", role: "Editor-in-Chief", seed: "ed1" },
-  { name: "Tunde Adebayo", role: "Features Editor", seed: "ed2" },
-  { name: "Ifeoma Bello", role: "Opinion Editor", seed: "ed3" },
+  { name: "Abians phebe chiamaka ", role: "Editor-in-Chief", seed: "ed1" },
+  { name: "Ismail adebayo mutholib", role: "EDITORIAL SECRETARY", seed: "ed2" },
+  { name: "Odiahi Marietta ", role: "SENIOR EDITOR", seed: "ed3" },
   { name: "Zara Mohammed", role: "Lead Photographer", seed: "ed4" },
   { name: "Kelechi Umeh", role: "Sports Editor", seed: "ed5" },
   { name: "Emeka Igwe", role: "News Desk Lead", seed: "ed6" },
