@@ -8,6 +8,7 @@ import {
 
 import { UbepsaProvider } from "@/components/ubepsa/UbepsaProvider";
 import { Masthead, Footer } from "@/components/ubepsa/Masthead";
+import { Chrome } from "@/components/ubepsa/Chrome";
 
 
 function NotFoundComponent() {
@@ -79,6 +80,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <UbepsaProvider>
+        <Chrome />
         <div className="min-h-screen flex flex-col newsprint">
           <Masthead />
           <main className="flex-1">
