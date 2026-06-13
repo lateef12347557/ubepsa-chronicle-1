@@ -238,11 +238,11 @@ function Index() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
-              className="flex-1 bg-transparent text-ink text-2xl sm:text-3xl font-display py-5 px-2 focus:outline-none placeholder:text-ink/30"
+              className="flex-1 min-w-0 bg-transparent text-ink text-lg sm:text-2xl md:text-3xl font-display py-4 sm:py-5 px-2 focus:outline-none placeholder:text-ink/30"
             />
             <button
               type="submit"
-              className="btn-morph kicker text-ink bg-press-red px-8 hover:px-12 transition-all"
+              className="btn-morph kicker text-ink bg-press-red px-4 sm:px-8 hover:px-6 sm:hover:px-12 transition-all shrink-0 text-[0.6rem] sm:text-[0.68rem]"
             >
               <span>{submitted ? "Subscribed ✓" : "Subscribe →"}</span>
             </button>
