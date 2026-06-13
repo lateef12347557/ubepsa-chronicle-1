@@ -139,11 +139,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 }
 
 function AdminsManager() {
-  const list = useServerFn(listAdmins);
-  const grant = useServerFn(grantAdmin);
-  const revoke = useServerFn(revokeAdmin);
   const [admins, setAdmins] = useState<{ userId: string; email: string; createdAt: string }[]>([]);
-  const [superEmail, setSuperEmail] = useState<string>(ADMIN_EMAIL);
+  const [superEmail] = useState<string>(ADMIN_EMAIL);
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -151,9 +148,11 @@ function AdminsManager() {
 
   const refresh = async () => {
     try {
-      const r = await list();
-      setAdmins(r.admins);
-      setSuperEmail(r.superAdminEmail);
+      const { data, error } = await supabase.rpc("list_admins");
+      if (error) throw error;
+      setAdmins((data ?? []).map((r: { user_id: string; email: string; created_at: string }) => ({
+        userId: r.user_id, email: r.email, createdAt: r.created_at,
+      })));
     } catch (e) { setErr((e as Error).message); }
   };
   useEffect(() => { refresh(); }, []);
@@ -162,8 +161,9 @@ function AdminsManager() {
     e.preventDefault();
     setErr(""); setMsg(""); setBusy(true);
     try {
-      const r = await grant({ data: { email: email.trim() } });
-      setMsg(`Granted admin to ${r.email}.`);
+      const { error } = await supabase.rpc("grant_admin_by_email", { _email: email.trim() });
+      if (error) throw error;
+      setMsg(`Granted admin to ${email.trim()}.`);
       setEmail("");
       await refresh();
     } catch (e) { setErr((e as Error).message); }
@@ -173,10 +173,15 @@ function AdminsManager() {
   const onRevoke = async (userId: string, em: string) => {
     if (!confirm(`Revoke admin from ${em}?`)) return;
     setErr(""); setMsg(""); setBusy(true);
-    try { await revoke({ data: { userId } }); setMsg(`Revoked admin from ${em}.`); await refresh(); }
-    catch (e) { setErr((e as Error).message); }
+    try {
+      const { error } = await supabase.rpc("revoke_admin", { _user_id: userId });
+      if (error) throw error;
+      setMsg(`Revoked admin from ${em}.`);
+      await refresh();
+    } catch (e) { setErr((e as Error).message); }
     finally { setBusy(false); }
   };
+
 
   return (
     <div className="max-w-2xl space-y-6">
