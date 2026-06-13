@@ -46,16 +46,16 @@ function Index() {
           <div className="absolute inset-0 bg-[linear-gradient(rgba(240,237,230,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(240,237,230,0.04)_1px,transparent_1px)] bg-[size:80px_80px]" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 w-full py-24 sm:py-32">
-          <div className="flex items-center gap-4 mb-10">
-            <span className="h-px w-12 bg-press-red" />
-            <span className="kicker text-press-red">Issue 001 · The Voice Issue</span>
+        <div className="max-w-7xl mx-auto px-4 w-full py-20 sm:py-32">
+          <div className="flex items-center gap-3 sm:gap-4 mb-8 sm:mb-10">
+            <span className="h-px w-8 sm:w-12 bg-press-red" />
+            <span className="kicker text-press-red text-[0.6rem] sm:text-[0.68rem]">Issue 001 · The Voice Issue</span>
           </div>
-          <h1 className="mega-display text-[3rem] sm:text-[6rem] lg:text-[9rem] max-w-6xl text-ink">
+          <h1 className="mega-display text-[2.25rem] xs:text-[2.75rem] sm:text-[5rem] md:text-[6rem] lg:text-[9rem] max-w-6xl text-ink break-words">
             <Typewriter text="A new language for a new generation." />
           </h1>
-          <div className="mt-12 grid md:grid-cols-[1fr_auto] gap-8 items-end">
-            <p className="font-sans text-lg sm:text-xl text-ink/65 max-w-2xl leading-relaxed">
+          <div className="mt-10 sm:mt-12 grid md:grid-cols-[1fr_auto] gap-6 sm:gap-8 items-end">
+            <p className="font-sans text-base sm:text-xl text-ink/65 max-w-2xl leading-relaxed">
               Dark, cinematic, unflinching — PhysioVibes is the editorial press for young creatives, tastemakers, and the storytellers shaping what comes next.
             </p>
             <div className="flex items-center gap-4">
@@ -238,11 +238,11 @@ function Index() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
-              className="flex-1 bg-transparent text-ink text-2xl sm:text-3xl font-display py-5 px-2 focus:outline-none placeholder:text-ink/30"
+              className="flex-1 min-w-0 bg-transparent text-ink text-lg sm:text-2xl md:text-3xl font-display py-4 sm:py-5 px-2 focus:outline-none placeholder:text-ink/30"
             />
             <button
               type="submit"
-              className="btn-morph kicker text-ink bg-press-red px-8 hover:px-12 transition-all"
+              className="btn-morph kicker text-ink bg-press-red px-4 sm:px-8 hover:px-6 sm:hover:px-12 transition-all shrink-0 text-[0.6rem] sm:text-[0.68rem]"
             >
               <span>{submitted ? "Subscribed ✓" : "Subscribe →"}</span>
             </button>
