@@ -3,212 +3,208 @@ import { useState } from "react";
 import { useUbepsa } from "@/components/ubepsa/UbepsaProvider";
 import { ArticleCard } from "@/components/ubepsa/ArticleCard";
 import { ArticleModal } from "@/components/ubepsa/ArticleModal";
-import { Typewriter } from "@/components/ubepsa/Typewriter";
 import type { Article } from "@/lib/ubepsa-store";
 
 export const Route = createFileRoute("/")({ component: Index });
 
-const TICKER_TAGS = [
-  "Culture", "Campus", "Voices", "Photography", "Opinion", "Features",
-  "Long-reads", "Press", "Dispatch", "New School", "Issue 001",
-];
-
 function Index() {
-  const { articles, releases } = useUbepsa();
+  const { articles, releases, breaking } = useUbepsa();
   const [open, setOpen] = useState<Article | null>(null);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const [hero, second, third, ...rest] = articles;
-  const latest = rest.slice(0, 6);
-  const picks = [second, third, rest[0]].filter(Boolean).slice(0, 3) as Article[];
+  const bentoSide = [second, third].filter(Boolean) as Article[];
+  const feed = rest.slice(0, 6);
 
   if (!hero) {
     return (
-      <div className="page-fade max-w-7xl mx-auto px-4 py-32 text-center">
-        <p className="kicker text-ink/40">Loading dispatches…</p>
+      <div className="page-fade max-w-7xl mx-auto px-4 py-40 text-center">
+        <span className="kicker">Loading…</span>
       </div>
     );
   }
 
   return (
     <div className="page-fade">
-      {/* HERO ===================================== */}
-      <section className="relative min-h-[92vh] flex items-center overflow-hidden grain">
-        <div
-          className="absolute inset-0 -z-10 opacity-30"
-          style={{
-            backgroundImage: `radial-gradient(circle at 20% 20%, rgba(26,107,255,0.35), transparent 50%), radial-gradient(circle at 80% 70%, rgba(255,179,71,0.18), transparent 55%)`,
-          }}
-          aria-hidden
-        />
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(240,237,230,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(240,237,230,0.04)_1px,transparent_1px)] bg-[size:80px_80px]" />
+      {/* ============ HERO ============ */}
+      <section className="relative overflow-hidden">
+        {/* ambient orbs */}
+        <div className="absolute inset-0 -z-10 pointer-events-none">
+          <div className="orb orb-a float-slow" style={{ width: 520, height: 520, top: -120, left: -120 }} />
+          <div className="orb orb-b float-slow" style={{ width: 420, height: 420, top: 80, right: -100, animationDelay: "-6s" }} />
+          <div className="orb orb-c" style={{ width: 600, height: 600, bottom: -260, left: "30%" }} />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 w-full py-20 sm:py-32">
-          <div className="flex items-center gap-3 sm:gap-4 mb-8 sm:mb-10">
-            <span className="h-px w-8 sm:w-12 bg-press-red" />
-            <span className="kicker text-press-red text-[0.6rem] sm:text-[0.68rem]">Issue 001 · The Voice Issue</span>
+        <div className="max-w-7xl mx-auto px-4 pt-16 sm:pt-24 pb-12 sm:pb-20">
+          <div className="flex items-center gap-3 mb-8 reveal">
+            <span className="stamp stamp-dot">Issue 001 · Live</span>
+            <span className="hidden sm:inline kicker">A premium publication</span>
           </div>
-          <h1 className="mega-display text-[2.25rem] xs:text-[2.75rem] sm:text-[5rem] md:text-[6rem] lg:text-[9rem] max-w-6xl text-ink break-words">
-            <Typewriter text="A new language for a new generation." />
+
+          <h1 className="mega-display text-[2.5rem] xs:text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] max-w-5xl text-ink reveal">
+            A new standard <br className="hidden sm:block" />
+            in <span className="italic text-gradient">editorial</span>.
           </h1>
-          <div className="mt-10 sm:mt-12 grid md:grid-cols-[1fr_auto] gap-6 sm:gap-8 items-end">
-            <p className="font-sans text-base sm:text-xl text-ink/65 max-w-2xl leading-relaxed">
-              Dark, cinematic, unflinching — PhysioVibes is the editorial press for young creatives, tastemakers, and the storytellers shaping what comes next.
+
+          <div className="mt-10 sm:mt-14 grid md:grid-cols-[1fr_auto] gap-6 sm:gap-10 items-end reveal">
+            <p className="text-base sm:text-lg text-ink/65 max-w-xl leading-relaxed">
+              PhysioVibes is the independent voice of a new generation —
+              long-form stories, photography, and dispatches engineered for taste, depth, and lasting design.
             </p>
-            <div className="flex items-center gap-4">
-              <Link to="/articles" className="kicker text-ink ink-link">Read the issue →</Link>
-              <Link to="/about" className="kicker text-ink/40 ink-link">Manifesto</Link>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link to="/articles" className="btn-primary">Read the issue →</Link>
+              <Link to="/about" className="btn-ghost">Our manifesto</Link>
             </div>
           </div>
         </div>
 
-        {/* scroll cue */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 kicker text-ink/40">
-          <span>Scroll</span>
-          <span className="block w-px h-10 bg-ink/30" />
-        </div>
+        {/* breaking ticker — minimal */}
+        {breaking.length > 0 && (
+          <div className="border-y border-white/5 bg-white/[0.015] overflow-hidden">
+            <div className="flex items-center">
+              <span className="font-mono text-[0.6rem] tracking-[0.25em] font-medium bg-gradient-to-r from-indigo-500 to-violet-500 text-white px-3 py-2 shrink-0">LIVE</span>
+              <div className="overflow-hidden flex-1">
+                <div className="ticker-track py-2 text-[0.72rem] font-mono tracking-wider">
+                  {[...breaking, ...breaking].map((b, i) => (
+                    <span key={i} className="px-6 inline-flex items-center gap-3 text-ink/70">
+                      <span className="text-indigo-400">◆</span>{b.text}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
-      {/* FEATURED STORY ===================================== */}
-      <section className="max-w-[100rem] mx-auto px-4 mt-10 reveal">
-        <div className="flex items-end justify-between mb-8 px-2">
+      {/* ============ FEATURED BENTO ============ */}
+      <section className="max-w-7xl mx-auto px-4 mt-16 sm:mt-24 reveal">
+        <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
           <div>
-            <span className="kicker text-press-red">Featured Story</span>
-            <h2 className="font-display text-3xl sm:text-4xl mt-2 text-ink/80">The cover.</h2>
+            <span className="kicker">Featured</span>
+            <h2 className="font-display text-3xl sm:text-4xl mt-2 text-ink">This week's cover.</h2>
           </div>
-          <span className="kicker text-ink/40 hidden sm:inline">{hero.readTime} min read</span>
+          <Link to="/articles" className="kicker text-ink/70 ink-link shrink-0">All stories →</Link>
         </div>
-        <article
-          onClick={() => setOpen(hero)}
-          className="group relative cursor-pointer overflow-hidden"
-        >
-          <div className="img-frame aspect-[16/10] sm:aspect-[21/10]">
-            <img
-              src={hero.cover}
-              alt={hero.title}
-              className="hero-zoom w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 sm:p-16">
-              <div className="overflow-hidden">
-                <h2 className="mega-display text-3xl sm:text-6xl lg:text-8xl text-ink max-w-5xl translate-y-2 group-hover:-translate-y-2 transition-transform duration-[700ms] ease-out">
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:[grid-template-rows:repeat(2,minmax(0,1fr))] lg:h-[42rem]">
+          {/* Big hero tile */}
+          <article
+            onClick={() => setOpen(hero)}
+            className="bento lg:col-span-2 lg:row-span-2 group cursor-pointer relative overflow-hidden min-h-[24rem]"
+          >
+            <img src={hero.cover} alt={hero.title} className="absolute inset-0 w-full h-full object-cover hero-zoom opacity-80 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#050510] via-[#050510]/60 to-transparent" />
+            <div className="absolute inset-0 p-6 sm:p-10 flex flex-col justify-between">
+              <span className="stamp stamp-dot self-start">{hero.category}</span>
+              <div>
+                <h3 className="mega-display text-3xl sm:text-5xl lg:text-6xl text-ink max-w-2xl">
                   {hero.title}
-                </h2>
-              </div>
-              <div className="mt-6 flex flex-wrap items-center gap-5 kicker text-ink/70">
-                <span className="stamp stamp-solid">{hero.category}</span>
-                <span>By {hero.author}</span>
-                <span>·</span>
-                <span>{hero.date}</span>
+                </h3>
+                <div className="mt-5 flex flex-wrap items-center gap-4 kicker">
+                  <span className="text-ink/80">By {hero.author}</span>
+                  <span className="text-ink/40">·</span>
+                  <span className="text-ink/60">{hero.date}</span>
+                  <span className="text-ink/40">·</span>
+                  <span className="text-ink/60">{hero.readTime} min</span>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
+          </article>
+
+          {/* Side tiles */}
+          {bentoSide.map((a) => (
+            <ArticleCard key={a.id} article={a} onOpen={setOpen} size="sm" />
+          ))}
+
+          {/* Fallback if not enough — stat tile */}
+          {bentoSide.length < 2 && (
+            <div className="bento p-6 sm:p-8 flex flex-col justify-between min-h-[14rem]">
+              <span className="kicker">By the numbers</span>
+              <div>
+                <p className="font-display text-5xl sm:text-6xl text-gradient">001</p>
+                <p className="mt-2 text-sm text-ink/55">The Voice Issue · Now live</p>
+              </div>
+            </div>
+          )}
+        </div>
       </section>
 
-      {/* TICKER ===================================== */}
-      <section className="mt-24 border-y border-white/10 py-8 overflow-hidden">
-        <div className="ticker-track text-[clamp(2rem,6vw,5rem)] font-display leading-none">
-          {[...TICKER_TAGS, ...TICKER_TAGS].map((t, i) => (
-            <span key={i} className="px-8 inline-flex items-center gap-8">
-              <span className="text-ink/85">{t}</span>
-              <span className="text-press-red text-3xl">✦</span>
-            </span>
+      {/* ============ STATS STRIP ============ */}
+      <section className="max-w-7xl mx-auto px-4 mt-16 sm:mt-24 reveal">
+        <div className="glass p-6 sm:p-10 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10">
+          {[
+            { k: "Stories published", v: articles.length || "—" },
+            { k: "Contributors", v: new Set(articles.map(a => a.author)).size || "—" },
+            { k: "Press releases", v: releases.length || "—" },
+            { k: "Issue", v: "001" },
+          ].map((s) => (
+            <div key={s.k}>
+              <p className="font-display text-3xl sm:text-5xl text-ink">{s.v}</p>
+              <p className="mt-2 kicker">{s.k}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* LATEST ASYMMETRIC GRID ===================================== */}
-      <section className="max-w-7xl mx-auto px-4 mt-24 reveal">
-        <div className="flex items-end justify-between mb-10 border-b border-white/10 pb-6">
-          <div>
-            <span className="kicker text-press-red">The Feed</span>
-            <h2 className="mega-display text-4xl sm:text-6xl mt-3 text-ink">Latest dispatches.</h2>
-          </div>
-          <Link to="/articles" className="kicker text-ink/80 ink-link shrink-0">All stories →</Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-6 auto-rows-[minmax(0,auto)]">
-          {latest.map((a, i) => {
-            // Asymmetric masonry: vary span and offset
-            const spans = [
-              "md:col-span-4",
-              "md:col-span-2 md:mt-12",
-              "md:col-span-2",
-              "md:col-span-4 md:-mt-8",
-              "md:col-span-3",
-              "md:col-span-3 md:mt-10",
-            ];
-            return (
-              <div key={a.id} className={`${spans[i] ?? "md:col-span-3"} reveal`} style={{ transitionDelay: `${i * 60}ms` }}>
-                <ArticleCard article={a} onOpen={setOpen} />
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* EDITORS' PICKS — flip cards ===================================== */}
-      {picks.length === 3 && (
-        <section className="max-w-7xl mx-auto px-4 mt-32 reveal">
-          <div className="flex items-end justify-between mb-10">
+      {/* ============ THE FEED — BENTO GRID ============ */}
+      {feed.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 mt-20 sm:mt-28 reveal">
+          <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
             <div>
-              <span className="kicker text-gold">Editors' Picks</span>
-              <h2 className="mega-display text-4xl sm:text-6xl mt-3 text-ink">Hand-picked, on the record.</h2>
+              <span className="kicker">The Feed</span>
+              <h2 className="mega-display text-4xl sm:text-6xl mt-3 text-ink">
+                Latest <span className="text-gradient italic">dispatches</span>.
+              </h2>
             </div>
+            <Link to="/articles" className="btn-ghost shrink-0">All stories →</Link>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {picks.map((a, i) => (
-              <div key={a.id} className="flip-card h-[28rem] cursor-pointer" onClick={() => setOpen(a)}>
-                <div className="flip-card-inner">
-                  <div className="flip-face border border-white/10 overflow-hidden">
-                    <img src={a.cover} alt={a.title} className="absolute inset-0 w-full h-full object-cover opacity-80" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                    <div className="absolute inset-0 p-6 flex flex-col justify-between">
-                      <span className="numeral text-press-red">{String(i + 1).padStart(2, "0")}</span>
-                      <div>
-                        <span className="stamp stamp-solid">{a.category}</span>
-                        <h3 className="font-display text-3xl mt-3 text-ink leading-tight">{a.title}</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flip-face flip-back surface-ink p-8 flex flex-col justify-between border border-press-red/40">
-                    <div>
-                      <span className="kicker text-press-red">Excerpt</span>
-                      <p className="mt-5 font-display italic text-2xl leading-snug text-ink">
-                        "{a.excerpt}"
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between kicker text-ink/60">
-                      <span>{a.author}</span>
-                      <span className="text-gold">Read →</span>
-                    </div>
-                  </div>
+
+          {/* Bento grid: 6 cards w/ varying spans */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 auto-rows-auto gap-4 sm:gap-5">
+            {feed.map((a, i) => {
+              const spans = [
+                "lg:col-span-3",
+                "lg:col-span-3",
+                "lg:col-span-2",
+                "lg:col-span-2",
+                "lg:col-span-2",
+                "lg:col-span-6",
+              ];
+              const sizes: ("sm" | "md" | "lg")[] = ["md", "md", "sm", "sm", "sm", "lg"];
+              return (
+                <div key={a.id} className={`${spans[i] ?? "lg:col-span-2"} reveal`} style={{ transitionDelay: `${i * 50}ms` }}>
+                  <ArticleCard article={a} onOpen={setOpen} size={sizes[i] ?? "md"} />
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
 
-      {/* PRESS RELEASES strip ===================================== */}
+      {/* ============ PRESS RELEASES ============ */}
       {releases.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 mt-32 reveal">
-          <div className="surface-ink relative overflow-hidden grain p-8 sm:p-14 border border-white/10">
-            <div className="absolute -bottom-12 -right-12 w-64 h-64 halftone opacity-50" aria-hidden />
-            <div className="grid lg:grid-cols-[1fr_2fr] gap-10">
+        <section className="max-w-7xl mx-auto px-4 mt-20 sm:mt-28 reveal">
+          <div className="glass relative overflow-hidden p-6 sm:p-12">
+            <div className="absolute -top-20 -right-20 w-80 h-80 orb orb-a opacity-40" />
+            <div className="relative grid lg:grid-cols-[1fr_2fr] gap-10">
               <div>
-                <span className="kicker text-gold">From the desk</span>
-                <h2 className="mega-display text-4xl sm:text-5xl mt-3 text-ink">Press releases.</h2>
-                <Link to="/press" className="mt-6 inline-block kicker text-gold ink-link">All releases →</Link>
+                <span className="kicker">From the desk</span>
+                <h2 className="mega-display text-3xl sm:text-5xl mt-3 text-ink">
+                  Press <span className="text-gradient italic">releases</span>.
+                </h2>
+                <p className="mt-4 text-sm text-ink/55 max-w-sm leading-relaxed">
+                  Official announcements from the editorial board, straight to you.
+                </p>
+                <Link to="/press" className="mt-6 inline-block kicker text-ink ink-link">All releases →</Link>
               </div>
-              <ul className="divide-y divide-white/10">
-                {releases.slice(0, 4).map(r => (
-                  <li key={r.id} className="py-5 grid sm:grid-cols-[1fr_auto] gap-3">
-                    <p className="font-display text-xl text-ink leading-tight">{r.title}</p>
-                    <p className="kicker text-ink/40 sm:text-right">{r.date}</p>
+              <ul className="divide-y divide-white/5">
+                {releases.slice(0, 5).map(r => (
+                  <li key={r.id} className="py-4 sm:py-5 grid sm:grid-cols-[1fr_auto] gap-2 sm:gap-6">
+                    <p className="font-display text-lg sm:text-xl text-ink leading-tight">{r.title}</p>
+                    <p className="kicker sm:text-right shrink-0">{r.date}</p>
                   </li>
                 ))}
               </ul>
@@ -217,20 +213,21 @@ function Index() {
         </section>
       )}
 
-      {/* NEWSLETTER ===================================== */}
-      <section className="mt-32 reveal">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <span className="kicker text-press-red">The dispatch</span>
-          <h2 className="mega-display text-5xl sm:text-7xl lg:text-8xl mt-6 text-ink">
-            Get the issue<br />before it prints.
+      {/* ============ NEWSLETTER ============ */}
+      <section className="mt-20 sm:mt-28 reveal">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <span className="stamp stamp-dot">The dispatch</span>
+          <h2 className="mega-display text-4xl sm:text-6xl lg:text-7xl mt-6 text-ink">
+            Get the issue<br />
+            <span className="text-gradient italic">before it prints.</span>
           </h2>
-          <p className="mt-6 font-sans text-ink/55 max-w-xl mx-auto">
-            One letter, every other Sunday. Stories, photography, and dispatches — straight from the editor's desk.
+          <p className="mt-5 text-ink/55 max-w-lg mx-auto">
+            One curated letter, every other Sunday. Stories, photography, and dispatches from the editor's desk.
           </p>
 
           <form
             onSubmit={(e) => { e.preventDefault(); if (email) setSubmitted(true); }}
-            className="mt-12 max-w-2xl mx-auto flex items-stretch border-b border-ink/30 focus-within:border-press-red transition-colors"
+            className="mt-10 max-w-xl mx-auto glass p-1.5 flex items-stretch gap-1.5 rounded-full"
           >
             <input
               type="email"
@@ -238,15 +235,13 @@ function Index() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
-              className="flex-1 min-w-0 bg-transparent text-ink text-lg sm:text-2xl md:text-3xl font-display py-4 sm:py-5 px-2 focus:outline-none placeholder:text-ink/30"
+              className="flex-1 min-w-0 bg-transparent text-ink text-sm sm:text-base font-sans py-3 px-5 focus:outline-none placeholder:text-ink/30"
             />
-            <button
-              type="submit"
-              className="btn-morph kicker text-ink bg-press-red px-4 sm:px-8 hover:px-6 sm:hover:px-12 transition-all shrink-0 text-[0.6rem] sm:text-[0.68rem]"
-            >
-              <span>{submitted ? "Subscribed ✓" : "Subscribe →"}</span>
+            <button type="submit" className="btn-primary !rounded-full shrink-0 !py-3 !px-5">
+              {submitted ? "Subscribed ✓" : "Subscribe"}
             </button>
           </form>
+          <p className="mt-4 kicker text-ink/40">No spam · Unsubscribe anytime</p>
         </div>
       </section>
 
