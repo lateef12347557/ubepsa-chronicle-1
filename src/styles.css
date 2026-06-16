@@ -44,20 +44,20 @@
 :root {
   --radius: 0.75rem;
 
-  /* ============ MIDNIGHT INDIGO — premium dark ============ */
-  --paper: #050510;          /* page background, near-black with blue undertone */
-  --ink: #EDEEF7;            /* off-white text (slight blue tint) */
-  --ink-soft: #9094B0;
-  --cream: #0A0A1A;          /* alt surface */
-  --surface-1: #0E0F22;
-  --surface-2: #16182E;
-  --surface-3: #1E2140;
+  /* ============ SKY BLUE — open, editorial, human ============ */
+  --paper: #06121F;          /* deep night-sky background */
+  --ink: #ECF3FA;            /* soft off-white with a hint of sky */
+  --ink-soft: #8DA3B8;
+  --cream: #0A1828;
+  --surface-1: #0E1B2C;
+  --surface-2: #142639;
+  --surface-3: #1B3350;
 
-  --indigo-deep: #1E1E5A;
-  --indigo: #4F46E5;          /* brand */
-  --indigo-glow: #6D63FF;
+  --indigo-deep: #0B3D66;
+  --indigo: #38BDF8;          /* sky blue — brand */
+  --indigo-glow: #7DD3FC;     /* lighter sky highlight */
 
-  /* Backward-compat alias tokens (keep class names working across pages) */
+  /* Backward-compat alias tokens */
   --press-red: var(--indigo);
   --gold: var(--indigo-glow);
   --electric: var(--indigo);
@@ -69,17 +69,17 @@
   --popover: var(--surface-1);
   --popover-foreground: var(--ink);
   --primary: var(--indigo);
-  --primary-foreground: #ffffff;
+  --primary-foreground: #04121E;
   --secondary: var(--surface-2);
   --secondary-foreground: var(--ink);
   --muted: var(--surface-2);
-  --muted-foreground: #7A7F9C;
+  --muted-foreground: #6E8497;
   --accent: var(--indigo);
-  --accent-foreground: #ffffff;
+  --accent-foreground: #04121E;
   --destructive: #ff5470;
   --destructive-foreground: var(--ink);
-  --border: rgba(237, 238, 247, 0.08);
-  --input: rgba(237, 238, 247, 0.10);
+  --border: rgba(236, 243, 250, 0.08);
+  --input: rgba(236, 243, 250, 0.10);
   --ring: var(--indigo);
 
   --font-display: 'DM Serif Display', Georgia, serif;
@@ -88,13 +88,13 @@
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   --shadow-elev-1: 0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 24px -12px rgba(0,0,0,0.6);
-  --shadow-elev-2: 0 1px 0 rgba(255,255,255,0.06) inset, 0 30px 80px -30px rgba(79,70,229,0.45);
-  --gradient-ink: linear-gradient(180deg, #0A0A1A 0%, #050510 100%);
-  --gradient-brand: linear-gradient(135deg, #4F46E5 0%, #6D63FF 50%, #8C7CFF 100%);
+  --shadow-elev-2: 0 1px 0 rgba(255,255,255,0.06) inset, 0 30px 80px -30px rgba(56,189,248,0.45);
+  --gradient-ink: linear-gradient(180deg, #0A1828 0%, #06121F 100%);
+  --gradient-brand: linear-gradient(135deg, #38BDF8 0%, #7DD3FC 55%, #BAE6FD 100%);
   --gradient-mesh:
-    radial-gradient(60% 50% at 20% 10%, rgba(79,70,229,0.35), transparent 70%),
-    radial-gradient(50% 40% at 90% 30%, rgba(109,99,255,0.22), transparent 70%),
-    radial-gradient(40% 40% at 50% 110%, rgba(30,30,90,0.6), transparent 70%);
+    radial-gradient(60% 50% at 20% 10%, rgba(56,189,248,0.28), transparent 70%),
+    radial-gradient(50% 40% at 90% 30%, rgba(125,211,252,0.18), transparent 70%),
+    radial-gradient(40% 40% at 50% 110%, rgba(11,61,102,0.55), transparent 70%);
 }
 
 @layer base {
