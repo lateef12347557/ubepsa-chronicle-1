@@ -83,8 +83,8 @@ function Index() {
       <section className="max-w-7xl mx-auto px-4 mt-16 sm:mt-24 reveal">
         <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
           <div>
-            <span className="kicker">Featured</span>
-            <h2 className="font-display text-3xl sm:text-4xl mt-2 text-ink">This week's cover.</h2>
+            <span className="kicker">This week's lead</span>
+            <h2 className="font-display text-3xl sm:text-4xl mt-2 text-ink">The one we kept arguing about in the group chat.</h2>
           </div>
           <Link to="/articles" className="kicker text-ink/70 ink-link shrink-0">All stories →</Link>
         </div>
