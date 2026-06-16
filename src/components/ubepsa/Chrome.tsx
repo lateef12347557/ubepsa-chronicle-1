@@ -75,7 +75,7 @@ export function Chrome() {
   return (
     <div className="loader-shell">
       <div className="loader-mark">
-        Physio<span>V</span>ibes
+        UBEPSA <span>Press</span>
       </div>
     </div>
   );
