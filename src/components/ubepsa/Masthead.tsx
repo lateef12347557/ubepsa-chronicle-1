@@ -45,12 +45,12 @@ export function Masthead() {
             }`}
           >
             <Link to="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 min-w-0">
-              <span className="relative inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-violet-500 shadow-[0_8px_24px_-8px_rgba(79,70,229,0.8)]">
-                <span className="font-display text-white text-lg leading-none">P</span>
+              <span className="relative inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md bg-gradient-to-br from-sky-400 to-sky-200 shadow-[0_8px_24px_-8px_rgba(56,189,248,0.8)]">
+                <span className="font-display text-[#04121E] text-lg leading-none">U</span>
                 <span className="absolute inset-0 rounded-md ring-1 ring-white/20" />
               </span>
               <span className="font-display text-lg sm:text-xl leading-none text-ink truncate">
-                Physio<span className="text-gradient">Vibes</span>
+                UBEPSA <span className="text-gradient">Press</span>
               </span>
             </Link>
 
@@ -129,46 +129,46 @@ export function Footer() {
   return (
     <footer className="relative mt-24 sm:mt-32 surface-ink overflow-hidden grain border-t border-white/5">
       <div className="absolute inset-x-0 -bottom-6 flex justify-center pointer-events-none select-none">
-        <span className="giant-wordmark">PhysioVibes</span>
+        <span className="giant-wordmark">UBEPSA</span>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 py-16 sm:py-20 grid gap-10 sm:grid-cols-2 md:grid-cols-4">
         <div className="sm:col-span-2">
-          <span className="kicker text-gradient">The publication</span>
+          <span className="kicker text-gradient">From the desk</span>
           <h3 className="font-display text-3xl sm:text-4xl mt-3 text-ink max-w-md leading-tight">
-            A new standard in editorial — engineered for taste.
+            Written by students. For students. About the work we love.
           </h3>
           <p className="mt-4 text-ink/55 max-w-md text-sm leading-relaxed">
-            PhysioVibes is the independent voice of UBEPSA — long-form stories, photography, and dispatches on culture, campus, and the future.
+            UBEPSA Press is the editorial arm of the University of Benin Physiotherapy Students Association — a small team putting out features, interviews, and the occasional rant about life in the department.
           </p>
           <div className="mt-6 flex gap-3">
-            <Link to="/articles" className="btn-primary">Subscribe →</Link>
+            <Link to="/articles" className="btn-primary">Read latest →</Link>
           </div>
         </div>
         <div>
-          <h4 className="kicker text-ink/50 mb-4">Sections</h4>
+          <h4 className="kicker text-ink/50 mb-4">Read</h4>
           <ul className="space-y-2.5 text-sm text-ink/70">
             <li><Link to="/articles" className="ink-link">Stories</Link></li>
             <li><Link to="/gallery" className="ink-link">Gallery</Link></li>
-            <li><Link to="/press" className="ink-link">Press</Link></li>
-            <li><Link to="/about" className="ink-link">About</Link></li>
+            <li><Link to="/press" className="ink-link">Press releases</Link></li>
+            <li><Link to="/about" className="ink-link">About the desk</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="kicker text-ink/50 mb-4">Contact</h4>
+          <h4 className="kicker text-ink/50 mb-4">Reach us</h4>
           <ul className="space-y-2.5 text-sm text-ink/70 break-words">
-            <li>@official_editorialpress</li>
+            <li>IG · @official_editorialpress</li>
             <li>ubepsaeditorial@gmail.com</li>
             <li>Dept. of Physiotherapy</li>
-            <li>University of Benin</li>
+            <li>University of Benin, Edo State</li>
           </ul>
         </div>
       </div>
 
       <div className="relative border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 py-5 flex flex-wrap items-center justify-between gap-2 font-mono text-[0.6rem] sm:text-[0.65rem] tracking-[0.2em] uppercase text-ink/40">
-          <span>© {new Date().getFullYear()} PhysioVibes / UBEPSA</span>
-          <span>Crafted with care — Midnight Indigo Edition</span>
+          <span>© {new Date().getFullYear()} UBEPSA Press · UNIBEN</span>
+          <span>Made by the editorial board, on campus</span>
         </div>
       </div>
     </footer>

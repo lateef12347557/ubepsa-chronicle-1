@@ -38,24 +38,24 @@ function Index() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 pt-16 sm:pt-24 pb-12 sm:pb-20">
-          <div className="flex items-center gap-3 mb-8 reveal">
-            <span className="stamp stamp-dot">Issue 001 · Live</span>
-            <span className="hidden sm:inline kicker">A premium publication</span>
+          <div className="flex items-center gap-3 mb-8 reveal flex-wrap">
+            <span className="stamp stamp-dot">Issue 001 · Out now</span>
+            <span className="hidden sm:inline kicker">UBEPSA Editorial & Press · UNIBEN</span>
           </div>
 
           <h1 className="mega-display text-[2.5rem] xs:text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] max-w-5xl text-ink reveal">
-            A new standard <br className="hidden sm:block" />
-            in <span className="italic text-gradient">editorial</span>.
+            Stories from the <br className="hidden sm:block" />
+            <span className="italic text-gradient underline-sketch">physio</span> desk.
           </h1>
 
           <div className="mt-10 sm:mt-14 grid md:grid-cols-[1fr_auto] gap-6 sm:gap-10 items-end reveal">
-            <p className="text-base sm:text-lg text-ink/65 max-w-xl leading-relaxed">
-              PhysioVibes is the independent voice of a new generation —
-              long-form stories, photography, and dispatches engineered for taste, depth, and lasting design.
+            <p className="text-base sm:text-lg text-ink/70 max-w-xl leading-relaxed">
+              We're the editorial board of UBEPSA — physiotherapy students at the University of Benin who'd rather write than scroll.
+              Features, interviews, opinion pieces, and the occasional dispatch from clinical postings. All of it made on campus, by hand.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <Link to="/articles" className="btn-primary">Read the issue →</Link>
-              <Link to="/about" className="btn-ghost">Our manifesto</Link>
+              <Link to="/about" className="btn-ghost">Who we are</Link>
             </div>
           </div>
         </div>
@@ -83,8 +83,8 @@ function Index() {
       <section className="max-w-7xl mx-auto px-4 mt-16 sm:mt-24 reveal">
         <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
           <div>
-            <span className="kicker">Featured</span>
-            <h2 className="font-display text-3xl sm:text-4xl mt-2 text-ink">This week's cover.</h2>
+            <span className="kicker">This week's lead</span>
+            <h2 className="font-display text-3xl sm:text-4xl mt-2 text-ink">The one we kept arguing about in the group chat.</h2>
           </div>
           <Link to="/articles" className="kicker text-ink/70 ink-link shrink-0">All stories →</Link>
         </div>
@@ -154,9 +154,9 @@ function Index() {
         <section className="max-w-7xl mx-auto px-4 mt-20 sm:mt-28 reveal">
           <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
             <div>
-              <span className="kicker">The Feed</span>
+              <span className="kicker">From the feed</span>
               <h2 className="mega-display text-4xl sm:text-6xl mt-3 text-ink">
-                Latest <span className="text-gradient italic">dispatches</span>.
+                What we've been <span className="text-gradient italic underline-sketch">writing</span>.
               </h2>
             </div>
             <Link to="/articles" className="btn-ghost shrink-0">All stories →</Link>
@@ -195,8 +195,8 @@ function Index() {
                 <h2 className="mega-display text-3xl sm:text-5xl mt-3 text-ink">
                   Press <span className="text-gradient italic">releases</span>.
                 </h2>
-                <p className="mt-4 text-sm text-ink/55 max-w-sm leading-relaxed">
-                  Official announcements from the editorial board, straight to you.
+                <p className="mt-4 text-sm text-ink/60 max-w-sm leading-relaxed">
+                  Announcements, statements, and notices straight from the UBEPSA editorial board — no spin.
                 </p>
                 <Link to="/press" className="mt-6 inline-block kicker text-ink ink-link">All releases →</Link>
               </div>
@@ -216,13 +216,13 @@ function Index() {
       {/* ============ NEWSLETTER ============ */}
       <section className="mt-20 sm:mt-28 reveal">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <span className="stamp stamp-dot">The dispatch</span>
+          <span className="stamp stamp-dot">The mailing list</span>
           <h2 className="mega-display text-4xl sm:text-6xl lg:text-7xl mt-6 text-ink">
-            Get the issue<br />
-            <span className="text-gradient italic">before it prints.</span>
+            Catch new pieces<br />
+            <span className="text-gradient italic underline-sketch">in your inbox.</span>
           </h2>
-          <p className="mt-5 text-ink/55 max-w-lg mx-auto">
-            One curated letter, every other Sunday. Stories, photography, and dispatches from the editor's desk.
+          <p className="mt-5 text-ink/60 max-w-lg mx-auto">
+            One short email when we publish — usually a Friday, sometimes a Sunday if a deadline slips. Drop your address, we'll do the rest.
           </p>
 
           <form
@@ -234,14 +234,14 @@ function Index() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              placeholder="you@uniben.edu"
               className="flex-1 min-w-0 bg-transparent text-ink text-sm sm:text-base font-sans py-3 px-5 focus:outline-none placeholder:text-ink/30"
             />
             <button type="submit" className="btn-primary !rounded-full shrink-0 !py-3 !px-5">
-              {submitted ? "Subscribed ✓" : "Subscribe"}
+              {submitted ? "You're in ✓" : "Sign me up"}
             </button>
           </form>
-          <p className="mt-4 kicker text-ink/40">No spam · Unsubscribe anytime</p>
+          <p className="mt-4 kicker text-ink/40">No spam · Leave anytime</p>
         </div>
       </section>
 
