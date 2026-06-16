@@ -216,13 +216,13 @@ function Index() {
       {/* ============ NEWSLETTER ============ */}
       <section className="mt-20 sm:mt-28 reveal">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <span className="stamp stamp-dot">The dispatch</span>
+          <span className="stamp stamp-dot">The mailing list</span>
           <h2 className="mega-display text-4xl sm:text-6xl lg:text-7xl mt-6 text-ink">
-            Get the issue<br />
-            <span className="text-gradient italic">before it prints.</span>
+            Catch new pieces<br />
+            <span className="text-gradient italic underline-sketch">in your inbox.</span>
           </h2>
-          <p className="mt-5 text-ink/55 max-w-lg mx-auto">
-            One curated letter, every other Sunday. Stories, photography, and dispatches from the editor's desk.
+          <p className="mt-5 text-ink/60 max-w-lg mx-auto">
+            One short email when we publish — usually a Friday, sometimes a Sunday if a deadline slips. Drop your address, we'll do the rest.
           </p>
 
           <form
@@ -234,14 +234,14 @@ function Index() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
+              placeholder="you@uniben.edu"
               className="flex-1 min-w-0 bg-transparent text-ink text-sm sm:text-base font-sans py-3 px-5 focus:outline-none placeholder:text-ink/30"
             />
             <button type="submit" className="btn-primary !rounded-full shrink-0 !py-3 !px-5">
-              {submitted ? "Subscribed ✓" : "Subscribe"}
+              {submitted ? "You're in ✓" : "Sign me up"}
             </button>
           </form>
-          <p className="mt-4 kicker text-ink/40">No spam · Unsubscribe anytime</p>
+          <p className="mt-4 kicker text-ink/40">No spam · Leave anytime</p>
         </div>
       </section>
 
