@@ -195,8 +195,8 @@ function Index() {
                 <h2 className="mega-display text-3xl sm:text-5xl mt-3 text-ink">
                   Press <span className="text-gradient italic">releases</span>.
                 </h2>
-                <p className="mt-4 text-sm text-ink/55 max-w-sm leading-relaxed">
-                  Official announcements from the editorial board, straight to you.
+                <p className="mt-4 text-sm text-ink/60 max-w-sm leading-relaxed">
+                  Announcements, statements, and notices straight from the UBEPSA editorial board — no spin.
                 </p>
                 <Link to="/press" className="mt-6 inline-block kicker text-ink ink-link">All releases →</Link>
               </div>
