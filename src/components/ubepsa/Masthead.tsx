@@ -45,12 +45,12 @@ export function Masthead() {
             }`}
           >
             <Link to="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 min-w-0">
-              <span className="relative inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md bg-gradient-to-br from-indigo-500 to-violet-500 shadow-[0_8px_24px_-8px_rgba(79,70,229,0.8)]">
-                <span className="font-display text-white text-lg leading-none">P</span>
+              <span className="relative inline-flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-md bg-gradient-to-br from-sky-400 to-sky-200 shadow-[0_8px_24px_-8px_rgba(56,189,248,0.8)]">
+                <span className="font-display text-[#04121E] text-lg leading-none">U</span>
                 <span className="absolute inset-0 rounded-md ring-1 ring-white/20" />
               </span>
               <span className="font-display text-lg sm:text-xl leading-none text-ink truncate">
-                Physio<span className="text-gradient">Vibes</span>
+                UBEPSA <span className="text-gradient">Press</span>
               </span>
             </Link>
 
