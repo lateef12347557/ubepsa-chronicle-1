@@ -154,9 +154,9 @@ function Index() {
         <section className="max-w-7xl mx-auto px-4 mt-20 sm:mt-28 reveal">
           <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
             <div>
-              <span className="kicker">The Feed</span>
+              <span className="kicker">From the feed</span>
               <h2 className="mega-display text-4xl sm:text-6xl mt-3 text-ink">
-                Latest <span className="text-gradient italic">dispatches</span>.
+                What we've been <span className="text-gradient italic underline-sketch">writing</span>.
               </h2>
             </div>
             <Link to="/articles" className="btn-ghost shrink-0">All stories →</Link>
