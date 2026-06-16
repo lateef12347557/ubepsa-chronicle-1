@@ -38,24 +38,24 @@ function Index() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 pt-16 sm:pt-24 pb-12 sm:pb-20">
-          <div className="flex items-center gap-3 mb-8 reveal">
-            <span className="stamp stamp-dot">Issue 001 · Live</span>
-            <span className="hidden sm:inline kicker">A premium publication</span>
+          <div className="flex items-center gap-3 mb-8 reveal flex-wrap">
+            <span className="stamp stamp-dot">Issue 001 · Out now</span>
+            <span className="hidden sm:inline kicker">UBEPSA Editorial & Press · UNIBEN</span>
           </div>
 
           <h1 className="mega-display text-[2.5rem] xs:text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] max-w-5xl text-ink reveal">
-            A new standard <br className="hidden sm:block" />
-            in <span className="italic text-gradient">editorial</span>.
+            Stories from the <br className="hidden sm:block" />
+            <span className="italic text-gradient underline-sketch">physio</span> desk.
           </h1>
 
           <div className="mt-10 sm:mt-14 grid md:grid-cols-[1fr_auto] gap-6 sm:gap-10 items-end reveal">
-            <p className="text-base sm:text-lg text-ink/65 max-w-xl leading-relaxed">
-              PhysioVibes is the independent voice of a new generation —
-              long-form stories, photography, and dispatches engineered for taste, depth, and lasting design.
+            <p className="text-base sm:text-lg text-ink/70 max-w-xl leading-relaxed">
+              We're the editorial board of UBEPSA — physiotherapy students at the University of Benin who'd rather write than scroll.
+              Features, interviews, opinion pieces, and the occasional dispatch from clinical postings. All of it made on campus, by hand.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <Link to="/articles" className="btn-primary">Read the issue →</Link>
-              <Link to="/about" className="btn-ghost">Our manifesto</Link>
+              <Link to="/about" className="btn-ghost">Who we are</Link>
             </div>
           </div>
         </div>
