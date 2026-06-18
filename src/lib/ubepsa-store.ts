@@ -35,6 +35,26 @@ export type PressRelease = {
 
 export type BreakingItem = { id: string; text: string; position: number };
 
+export type Scholarship = {
+  id: string;
+  title: string;
+  description: string;
+  eligibility: string;
+  deadline?: string;
+  link?: string;
+  created_at: string;
+};
+
+export type UbepsaEvent = {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  image_url?: string;
+  created_at: string;
+};
+
 export const CATEGORIES = ["News", "Opinion", "Campus Life", "Features", "Press Release", "Photography"];
 
 const estimateReadTime = (body: string) => Math.max(2, Math.ceil(body.split(/\s+/).length / 220));
@@ -53,19 +73,25 @@ export function useUbepsaStore() {
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [releases, setReleases] = useState<PressRelease[]>([]);
   const [breaking, setBreaking] = useState<BreakingItem[]>([]);
+  const [scholarships, setScholarships] = useState<Scholarship[]>([]);
+  const [events, setEvents] = useState<UbepsaEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
-    const [a, g, p, b] = await Promise.all([
+    const [a, g, p, b, s, e] = await Promise.all([
       supabase.from("articles").select("*").order("created_at", { ascending: false }),
       supabase.from("gallery_items").select("*").order("created_at", { ascending: false }),
       supabase.from("press_releases").select("*").order("created_at", { ascending: false }),
       supabase.from("breaking_news").select("*").order("position", { ascending: true }),
+      supabase.from("scholarships").select("*").order("created_at", { ascending: false }),
+      supabase.from("events").select("*").order("created_at", { ascending: false }),
     ]);
     if (a.data) setArticles(a.data.map((r) => mapArticle(r as ArticleRow)));
     if (g.data) setGallery(g.data as GalleryItem[]);
     if (p.data) setReleases(p.data as PressRelease[]);
     if (b.data) setBreaking(b.data as BreakingItem[]);
+    if (s.data) setScholarships(s.data as Scholarship[]);
+    if (e.data) setEvents(e.data as UbepsaEvent[]);
     setLoading(false);
   }, []);
 
@@ -130,6 +156,35 @@ export function useUbepsaStore() {
     setBreaking((p) => p.map((b) => (b.id === id ? (data as BreakingItem) : b)));
   }, []);
 
-  return { articles, gallery, releases, breaking, loading, refresh, addArticle, deleteArticle, addGallery, deleteGallery, addRelease, deleteRelease, addBreaking, deleteBreaking, updateBreaking };
+  const addScholarship = useCallback(async (s: Omit<Scholarship, "id" | "created_at">) => {
+    const { data, error } = await supabase.from("scholarships").insert(s).select().single();
+    if (error) throw error;
+    setScholarships((p) => [data as Scholarship, ...p]);
+  }, []);
+
+  const deleteScholarship = useCallback(async (id: string) => {
+    const { error } = await supabase.from("scholarships").delete().eq("id", id);
+    if (error) throw error;
+    setScholarships((p) => p.filter((s) => s.id !== id));
+  }, []);
+
+  const addEvent = useCallback(async (e: Omit<UbepsaEvent, "id" | "created_at">) => {
+    const { data, error } = await supabase.from("events").insert(e).select().single();
+    if (error) throw error;
+    setEvents((p) => [data as UbepsaEvent, ...p]);
+  }, []);
+
+  const deleteEvent = useCallback(async (id: string) => {
+    const { error } = await supabase.from("events").delete().eq("id", id);
+    if (error) throw error;
+    setEvents((p) => p.filter((e) => e.id !== id));
+  }, []);
+
+  return { 
+    articles, gallery, releases, breaking, scholarships, events, loading, refresh, 
+    addArticle, deleteArticle, addGallery, deleteGallery, addRelease, deleteRelease, 
+    addBreaking, deleteBreaking, updateBreaking, addScholarship, deleteScholarship, 
+    addEvent, deleteEvent 
+  };
 }
 

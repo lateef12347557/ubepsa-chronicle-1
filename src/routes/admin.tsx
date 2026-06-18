@@ -65,7 +65,7 @@ function AdminPage() {
     return (
       <div className="page-fade max-w-md mx-auto px-4 py-20">
         <div className="rule-double py-3 mb-6 text-center">
-          <h1 className="font-display font-black text-3xl">Editorial CMS</h1>
+          <h1 className="font-display font-black text-3xl">UBEPSA CMS</h1>
           <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60 mt-1">Restricted · UBEPSA Staff Only</p>
         </div>
         <form onSubmit={handleSubmit} className="bg-card p-6 border border-ink/20 space-y-4">
@@ -95,7 +95,7 @@ function AdminPage() {
   return <Dashboard onLogout={logout} />;
 }
 
-type Tab = "articles" | "gallery" | "press" | "breaking" | "admins" | "stats";
+type Tab = "articles" | "gallery" | "press" | "breaking" | "admins" | "stats" | "scholarships" | "events";
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("articles");
@@ -104,13 +104,13 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email?.toLowerCase() ?? ""));
   }, []);
   const isSuperAdmin = email === ADMIN_EMAIL;
-  const labels: Record<Tab, string> = { articles: "Articles", gallery: "Gallery", press: "Press Releases", breaking: "Breaking News", admins: "Admins", stats: "Stats" };
-  const tabs: Tab[] = ["articles", "gallery", "press", "breaking", ...(isSuperAdmin ? ["admins" as Tab] : []), "stats"];
+  const labels: Record<Tab, string> = { articles: "Articles", gallery: "Gallery", press: "Press Releases", breaking: "Breaking News", admins: "Admins", stats: "Stats", scholarships: "Scholarships", events: "Events" };
+  const tabs: Tab[] = ["articles", "gallery", "press", "breaking", "scholarships", "events", ...(isSuperAdmin ? ["admins" as Tab] : []), "stats"];
   return (
     <div className="page-fade max-w-7xl mx-auto px-4 py-10">
       <div className="rule-double py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-display font-black text-3xl">Editorial CMS</h1>
+          <h1 className="font-display font-black text-3xl">UBEPSA CMS</h1>
           <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60">Internal · UBEPSA Newsroom Tools</p>
         </div>
         <button onClick={onLogout} className="font-mono text-[0.65rem] tracking-[0.2em] uppercase border border-ink/40 px-3 py-2 hover:border-press-red hover:text-press-red">Sign Out</button>
@@ -132,6 +132,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       {tab === "gallery" && <GalleryManager />}
       {tab === "press" && <PressManager />}
       {tab === "breaking" && <BreakingManager />}
+      {tab === "scholarships" && <ScholarshipManager />}
+      {tab === "events" && <EventManager />}
       {tab === "admins" && isSuperAdmin && <AdminsManager />}
       {tab === "stats" && <Stats />}
     </div>
@@ -533,6 +535,94 @@ function Stat({ label, value }: { label: string; value: number }) {
     <div className="bg-ink text-cream p-6">
       <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-gold">{label}</p>
       <p className="font-display font-black text-5xl mt-2">{value}</p>
+    </div>
+  );
+}
+
+function ScholarshipManager() {
+  const { scholarships, addScholarship, deleteScholarship } = useUbepsa();
+  const [form, setForm] = useState({ title: "", description: "", eligibility: "", deadline: "", link: "" });
+  const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title || !form.description) return;
+    addScholarship({ ...form });
+    setForm({ title: "", description: "", eligibility: "", deadline: "", link: "" });
+  };
+
+  return (
+    <div className="grid lg:grid-cols-2 gap-8">
+      <div>
+        <h2 className="font-display font-bold text-xl mb-4">New Scholarship</h2>
+        <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
+          <div><label className={labelCls}>Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
+          <div><label className={labelCls}>Eligibility</label><input className={inputCls} value={form.eligibility} onChange={e => update("eligibility", e.target.value)} required /></div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div><label className={labelCls}>Deadline</label><input className={inputCls} value={form.deadline} onChange={e => update("deadline", e.target.value)} placeholder="e.g. 30 June 2024" /></div>
+            <div><label className={labelCls}>Apply Link (URL)</label><input className={inputCls} value={form.link} onChange={e => update("link", e.target.value)} placeholder="https://..." /></div>
+          </div>
+          <div><label className={labelCls}>Description</label><textarea rows={4} className={inputCls} value={form.description} onChange={e => update("description", e.target.value)} required /></div>
+          <button className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors">Add Scholarship →</button>
+        </form>
+      </div>
+      <div>
+        <h3 className="font-display font-bold text-lg mb-3">Existing Scholarships ({scholarships.length})</h3>
+        <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
+          {scholarships.map(s => (
+            <li key={s.id} className="p-3 flex items-start gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="font-display font-bold text-sm truncate">{s.title}</p>
+                <p className="font-mono text-[0.6rem] tracking-[0.18em] uppercase text-ink/60 mt-0.5">{s.deadline || "No deadline"}</p>
+              </div>
+              <button onClick={() => deleteScholarship(s.id)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline shrink-0">Delete</button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function EventManager() {
+  const { events, addEvent, deleteEvent } = useUbepsa();
+  const [form, setForm] = useState({ title: "", description: "", date: "", location: "", image_url: "" });
+  const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title || !form.date) return;
+    addEvent({ ...form });
+    setForm({ title: "", description: "", date: "", location: "", image_url: "" });
+  };
+
+  return (
+    <div className="grid lg:grid-cols-2 gap-8">
+      <div>
+        <h2 className="font-display font-bold text-xl mb-4">New Event</h2>
+        <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
+          <div><label className={labelCls}>Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div><label className={labelCls}>Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} placeholder="e.g. 15 July 2024" required /></div>
+            <div><label className={labelCls}>Location</label><input className={inputCls} value={form.location} onChange={e => update("location", e.target.value)} placeholder="e.g. LT 1" required /></div>
+          </div>
+          <div><label className={labelCls}>Banner Image</label><ImageUploader value={form.image_url} onChange={(v) => update("image_url", v)} /></div>
+          <div><label className={labelCls}>Description</label><textarea rows={4} className={inputCls} value={form.description} onChange={e => update("description", e.target.value)} required /></div>
+          <button className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors">Add Event →</button>
+        </form>
+      </div>
+      <div>
+        <h3 className="font-display font-bold text-lg mb-3">Existing Events ({events.length})</h3>
+        <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
+          {events.map(e => (
+            <li key={e.id} className="p-3 flex items-start gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="font-display font-bold text-sm truncate">{e.title}</p>
+                <p className="font-mono text-[0.6rem] tracking-[0.18em] uppercase text-ink/60 mt-0.5">{e.date} · {e.location}</p>
+              </div>
+              <button onClick={() => deleteEvent(e.id)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline shrink-0">Delete</button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
