@@ -3,6 +3,33 @@ import { useEffect, useMemo, useState } from "react";
 import { useUbepsa } from "@/components/ubepsa/UbepsaProvider";
 import { CATEGORIES } from "@/lib/ubepsa-store";
 import { supabase } from "@/integrations/supabase/client";
+import { 
+  Sidebar, 
+  SidebarContent, 
+  SidebarFooter, 
+  SidebarGroup, 
+  SidebarGroupContent, 
+  SidebarGroupLabel, 
+  SidebarHeader, 
+  SidebarInset, 
+  SidebarMenu, 
+  SidebarMenuButton, 
+  SidebarMenuItem, 
+  SidebarProvider,
+  SidebarTrigger
+} from "@/components/ui/sidebar";
+import { 
+  FileText, 
+  Image as ImageIcon, 
+  MessageSquare, 
+  Zap, 
+  Users, 
+  BarChart, 
+  GraduationCap, 
+  Calendar,
+  LogOut,
+  ChevronRight
+} from "lucide-react";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
 
@@ -58,34 +85,37 @@ function AdminPage() {
   const logout = async () => { await supabase.auth.signOut(); setIsAdmin(false); setEmail(""); setPwd(""); };
 
   if (checking) {
-    return <div className="page-fade max-w-md mx-auto px-4 py-20 text-center font-mono text-xs tracking-[0.2em] uppercase text-ink/60">Verifying credentials…</div>;
+    return <div className="max-w-md mx-auto px-4 py-24 text-center font-mono text-xs tracking-[0.2em] uppercase text-slate-400 animate-pulse">Verifying credentials…</div>;
   }
 
   if (!isAdmin) {
     return (
-      <div className="page-fade max-w-md mx-auto px-4 py-20">
-        <div className="rule-double py-3 mb-6 text-center">
-          <h1 className="font-display font-black text-3xl">UBEPSA CMS</h1>
-          <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60 mt-1">Restricted · UBEPSA Staff Only</p>
+      <div className="max-w-md mx-auto px-6 py-20 sm:py-32">
+        <div className="mb-10 text-center">
+          <div className="inline-block p-4 rounded-3xl bg-blue-50 mb-6 shadow-sm">
+             <img src="/logo.jfif" alt="" className="h-12 w-12 object-contain" />
+          </div>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">UBEPSA CMS</h1>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Restricted · Staff Newsroom Tools</p>
         </div>
-        <form onSubmit={handleSubmit} className="bg-card p-6 border border-ink/20 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
           <div>
-            <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1">Email</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Staff Email</label>
             <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setErr(""); }}
-              className="w-full bg-cream border border-ink/30 px-3 py-2 font-mono focus:outline-none focus:border-press-red" autoFocus required />
+              className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 font-medium focus:ring-4 focus:ring-ubepsa/10 focus:border-ubepsa focus:bg-white focus:outline-none transition-all" autoFocus required />
           </div>
           <div>
-            <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1">Password</label>
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Access Key</label>
             <input type="password" value={pwd} onChange={(e) => { setPwd(e.target.value); setErr(""); }}
-              className="w-full bg-cream border border-ink/30 px-3 py-2 font-mono focus:outline-none focus:border-press-red" required minLength={6} />
+              className="w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 font-medium focus:ring-4 focus:ring-ubepsa/10 focus:border-ubepsa focus:bg-white focus:outline-none transition-all" required minLength={6} />
           </div>
-          {err && <p className="text-press-red font-mono text-xs">{err}</p>}
-          <button disabled={busy} className="w-full font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-4 py-3 hover:bg-press-red transition-colors disabled:opacity-50">
-            {busy ? "Working…" : mode === "signin" ? "Sign In →" : "Create Admin Account →"}
+          {err && <p className="text-destructive font-bold text-xs px-1 text-center">{err}</p>}
+          <button disabled={busy} className="w-full bg-ubepsa text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl shadow-blue-500/20 disabled:opacity-50 active:scale-95">
+            {busy ? "Authenticating…" : mode === "signin" ? "Sign In →" : "Create Account →"}
           </button>
           <button type="button" onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setErr(""); }}
-            className="w-full font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60 hover:text-press-red">
-            {mode === "signin" ? "First-time setup? Register admin" : "Have an account? Sign in"}
+            className="w-full text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-ubepsa transition-colors">
+            {mode === "signin" ? "Register admin account" : "Back to sign in"}
           </button>
         </form>
       </div>
@@ -100,43 +130,101 @@ type Tab = "articles" | "gallery" | "press" | "breaking" | "admins" | "stats" | 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("articles");
   const [email, setEmail] = useState<string>("");
+  
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email?.toLowerCase() ?? ""));
   }, []);
+
   const isSuperAdmin = email === ADMIN_EMAIL;
-  const labels: Record<Tab, string> = { articles: "Articles", gallery: "Gallery", press: "Press Releases", breaking: "Breaking News", admins: "Admins", stats: "Stats", scholarships: "Scholarships", events: "Events" };
-  const tabs: Tab[] = ["articles", "gallery", "press", "breaking", "scholarships", "events", ...(isSuperAdmin ? ["admins" as Tab] : []), "stats"];
+  
+  const menuItems: { id: Tab; label: string; icon: any }[] = [
+    { id: "articles", label: "News", icon: FileText },
+    { id: "gallery", label: "Gallery", icon: ImageIcon },
+    { id: "press", label: "Press", icon: MessageSquare },
+    { id: "breaking", label: "Ticker", icon: Zap },
+    { id: "scholarships", label: "Scholarships", icon: GraduationCap },
+    { id: "events", label: "Events", icon: Calendar },
+    ...(isSuperAdmin ? [{ id: "admins" as Tab, label: "Admins", icon: Users }] : []),
+    { id: "stats", label: "Stats", icon: BarChart },
+  ];
+  
   return (
-    <div className="page-fade max-w-7xl mx-auto px-4 py-10">
-      <div className="rule-double py-3 mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display font-black text-3xl">UBEPSA CMS</h1>
-          <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60">Internal · UBEPSA Newsroom Tools</p>
-        </div>
-        <button onClick={onLogout} className="font-mono text-[0.65rem] tracking-[0.2em] uppercase border border-ink/40 px-3 py-2 hover:border-press-red hover:text-press-red">Sign Out</button>
-      </div>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full pt-20 lg:pt-24">
+        <Sidebar className="border-r border-slate-100 top-20 lg:top-24 h-[calc(100vh-80px)]">
+          <SidebarHeader className="p-6 border-b border-slate-50">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-ubepsa/10 flex items-center justify-center p-2 shadow-sm">
+                <img src="/logo.jfif" alt="" className="h-full w-full object-contain" />
+              </div>
+              <div>
+                <h2 className="font-black text-slate-900 leading-tight">UBEPSA CMS</h2>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Control Center</p>
+              </div>
+            </div>
+          </SidebarHeader>
+          <SidebarContent className="p-4">
+            <SidebarGroup>
+              <SidebarGroupLabel className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Management</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {menuItems.map((item) => (
+                    <SidebarMenuItem key={item.id} className="mb-1">
+                      <SidebarMenuButton 
+                        onClick={() => setTab(item.id)} 
+                        isActive={tab === item.id}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                          tab === item.id 
+                            ? "bg-ubepsa text-white shadow-lg shadow-blue-500/20" 
+                            : "text-slate-500 hover:bg-slate-50 hover:text-ubepsa"
+                        }`}
+                      >
+                        <item.icon className={`h-5 w-5 ${tab === item.id ? "text-white" : "text-slate-400"}`} />
+                        <span className="font-bold text-sm">{item.label}</span>
+                        {tab === item.id && <ChevronRight className="ml-auto h-4 w-4 opacity-50" />}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+          <SidebarFooter className="p-6 border-t border-slate-50">
+            <button 
+              onClick={onLogout} 
+              className="w-full flex items-center justify-center gap-3 bg-slate-50 text-slate-600 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-destructive hover:text-white transition-all active:scale-95 shadow-sm"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign Out
+            </button>
+          </SidebarFooter>
+        </Sidebar>
+        <SidebarInset className="flex-1 overflow-auto bg-white p-4 sm:p-10">
+          <div className="flex items-center gap-4 mb-8 lg:hidden">
+            <SidebarTrigger className="p-2 bg-slate-100 rounded-lg text-slate-600 hover:bg-ubepsa hover:text-white transition-all" />
+            <h1 className="text-xl font-black text-slate-900 tracking-tight">Dashboard</h1>
+          </div>
+          
+          <div className="hidden lg:flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10 pb-8 border-b border-slate-100">
+            <div>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight">Management Dashboard</h1>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">UBEPSA Internal · Systems Control</p>
+            </div>
+          </div>
 
-      <div className="flex flex-wrap gap-1.5 mb-6 border-b border-ink/20">
-        {tabs.map(t => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`font-mono text-[0.7rem] tracking-[0.18em] uppercase px-4 py-2.5 border-b-2 -mb-px ${tab === t ? "border-press-red text-press-red bg-card" : "border-transparent text-ink/60 hover:text-ink"}`}
-          >
-            {labels[t]}
-          </button>
-        ))}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {tab === "articles" && <ArticlesManager />}
+            {tab === "gallery" && <GalleryManager />}
+            {tab === "press" && <PressManager />}
+            {tab === "breaking" && <BreakingManager />}
+            {tab === "scholarships" && <ScholarshipManager />}
+            {tab === "events" && <EventManager />}
+            {tab === "admins" && isSuperAdmin && <AdminsManager />}
+            {tab === "stats" && <Stats />}
+          </div>
+        </SidebarInset>
       </div>
-
-      {tab === "articles" && <ArticlesManager />}
-      {tab === "gallery" && <GalleryManager />}
-      {tab === "press" && <PressManager />}
-      {tab === "breaking" && <BreakingManager />}
-      {tab === "scholarships" && <ScholarshipManager />}
-      {tab === "events" && <EventManager />}
-      {tab === "admins" && isSuperAdmin && <AdminsManager />}
-      {tab === "stats" && <Stats />}
-    </div>
+    </SidebarProvider>
   );
 }
 
@@ -186,40 +274,48 @@ function AdminsManager() {
 
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-3xl space-y-10">
       <div>
-        <h2 className="font-display font-bold text-xl mb-1">Admin Access</h2>
-        <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60">Only the primary admin ({superEmail}) can grant or revoke admin access. Users must already have an account.</p>
+        <h2 className="text-2xl font-black text-slate-900 mb-2">Admin Access Control</h2>
+        <p className="text-sm font-medium text-slate-500">Only the primary association admin ({superEmail}) can modify staff permissions.</p>
       </div>
-      <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
-        <label className={labelCls}>Grant Admin by Email</label>
-        <input className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="person@example.com" required />
-        <button disabled={busy} className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors disabled:opacity-50">
-          {busy ? "Working…" : "Grant Admin →"}
+      
+      <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
+        <div>
+          <label className={labelCls}>Grant Admin Access (Email)</label>
+          <input className={inputCls} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="staff@uniben.edu" required />
+        </div>
+        <button disabled={busy} className="bg-ubepsa text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-lg shadow-blue-500/10 disabled:opacity-50 active:scale-95">
+          {busy ? "Processing…" : "Add Staff Member →"}
         </button>
-        {err && <p className="text-press-red font-mono text-xs">{err}</p>}
-        {msg && <p className="text-ink/80 font-mono text-xs">{msg}</p>}
+        {err && <p className="text-destructive font-bold text-xs mt-2">{err}</p>}
+        {msg && <p className="text-ubepsa font-bold text-xs mt-2">{msg}</p>}
       </form>
+
       <div>
-        <h3 className="font-display font-bold text-lg mb-3">Current Admins ({admins.length})</h3>
-        <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
+        <h3 className="text-lg font-black text-slate-900 mb-6 px-1">Current Staff Directory ({admins.length})</h3>
+        <div className="grid gap-4">
           {admins.map((a) => {
             const isSuper = a.email.toLowerCase() === superEmail.toLowerCase();
             return (
-              <li key={a.userId} className="p-3 flex items-center gap-3">
-                <span className="text-press-red font-mono text-xs">◆</span>
-                <div className="flex-1 min-w-0">
-                  <p className="font-serif text-sm truncate">{a.email}</p>
-                  {isSuper && <p className="font-mono text-[0.6rem] tracking-[0.18em] uppercase text-ink/50">Primary admin</p>}
+              <div key={a.userId} className="p-5 bg-white border border-slate-100 rounded-2xl flex items-center justify-between gap-4 shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-black ${isSuper ? "bg-ubepsa text-white shadow-lg shadow-blue-500/20" : "bg-slate-100 text-slate-400"}`}>
+                    {a.email[0].toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-slate-900 truncate">{a.email}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{isSuper ? "Primary Admin" : "Staff Member"}</p>
+                  </div>
                 </div>
                 {!isSuper && (
                   <button onClick={() => onRevoke(a.userId, a.email)} disabled={busy}
-                    className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline shrink-0 disabled:opacity-50">Revoke</button>
+                    className="text-[10px] font-black text-destructive uppercase tracking-widest hover:bg-destructive/5 px-4 py-2 rounded-lg transition-all disabled:opacity-50">Revoke</button>
                 )}
-              </li>
+              </div>
             );
           })}
-        </ul>
+        </div>
       </div>
     </div>
   );
@@ -248,47 +344,52 @@ function BreakingManager() {
   };
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-3xl space-y-10">
       <div>
-        <h2 className="font-display font-bold text-xl mb-1">Breaking News Ticker</h2>
-        <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/60">Headlines scroll across every page. The ticker is hidden when empty.</p>
+        <h2 className="text-2xl font-black text-slate-900 mb-2">News Ticker Control</h2>
+        <p className="text-sm font-medium text-slate-500">Important headlines that scroll across every page of the association website.</p>
       </div>
-      <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
-        <label className={labelCls}>New Headline</label>
-        <input className={inputCls} value={text} onChange={(e) => setText(e.target.value)} placeholder="BREAKING — …" required />
-        <button disabled={busy} className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors disabled:opacity-50">
-          {busy ? "Saving…" : "Add to Ticker →"}
+      
+      <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
+        <div>
+          <label className={labelCls}>Headline Content</label>
+          <input className={inputCls} value={text} onChange={(e) => setText(e.target.value)} placeholder="BREAKING — Orientation starts tomorrow at LT1…" required />
+        </div>
+        <button disabled={busy} className="bg-ubepsa text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-lg shadow-blue-500/10 disabled:opacity-50 active:scale-95">
+          {busy ? "Saving…" : "Post to Ticker →"}
         </button>
       </form>
+
       <div>
-        <h3 className="font-display font-bold text-lg mb-3">Active Headlines ({breaking.length})</h3>
+        <h3 className="text-lg font-black text-slate-900 mb-6 px-1">Live Headlines ({breaking.length})</h3>
         {breaking.length === 0 ? (
-          <p className="font-serif italic text-ink/60 text-sm">No headlines yet. Add one above — the ticker stays hidden until you do.</p>
+          <div className="p-12 text-center border-2 border-dashed border-slate-100 rounded-[2rem] bg-slate-50 shadow-inner">
+             <p className="text-slate-400 font-bold italic">No active headlines. The news ticker is currently hidden.</p>
+          </div>
         ) : (
-          <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
+          <div className="grid gap-4">
             {breaking.map((b) => (
-              <li key={b.id} className="p-3 flex items-start gap-3">
-                <span className="text-press-red font-mono text-xs mt-2">◆</span>
+              <div key={b.id} className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm group">
                 {editingId === b.id ? (
-                  <div className="flex-1 space-y-2">
+                  <div className="space-y-4">
                     <input className={inputCls} value={editText} onChange={(e) => setEditText(e.target.value)} autoFocus />
                     <div className="flex gap-2">
-                      <button onClick={() => saveEdit(b.id)} disabled={busy} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase bg-ink text-cream px-3 py-1.5 hover:bg-press-red transition-colors disabled:opacity-50">Save</button>
-                      <button onClick={cancelEdit} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase border border-ink/30 px-3 py-1.5 hover:bg-ink/5">Cancel</button>
+                      <button onClick={() => saveEdit(b.id)} disabled={busy} className="bg-ubepsa text-white px-5 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-ubepsa-dark transition-all disabled:opacity-50">Save</button>
+                      <button onClick={cancelEdit} className="bg-slate-100 text-slate-500 px-5 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all">Cancel</button>
                     </div>
                   </div>
                 ) : (
-                  <>
-                    <p className="flex-1 font-serif text-sm">{b.text}</p>
-                    <div className="flex gap-3 shrink-0">
-                      <button onClick={() => startEdit(b.id, b.text)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-ink hover:underline">Edit</button>
-                      <button onClick={() => deleteBreaking(b.id)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline">Delete</button>
+                  <div className="flex items-start justify-between gap-6">
+                    <p className="font-medium text-slate-700 leading-relaxed flex-1">{b.text}</p>
+                    <div className="flex gap-2 shrink-0">
+                      <button onClick={() => startEdit(b.id, b.text)} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-ubepsa transition-colors p-2">Edit</button>
+                      <button onClick={() => deleteBreaking(b.id)} className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-destructive transition-colors p-2">Delete</button>
                     </div>
-                  </>
+                  </div>
                 )}
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
     </div>
@@ -296,8 +397,8 @@ function BreakingManager() {
 }
 
 
-const inputCls = "w-full bg-cream border border-ink/30 px-3 py-2 font-serif text-sm focus:outline-none focus:border-press-red";
-const labelCls = "font-mono text-[0.65rem] tracking-[0.2em] uppercase text-ink/70 block mb-1";
+const inputCls = "w-full bg-slate-50 border-2 border-slate-50 rounded-2xl px-5 py-4 font-medium focus:ring-4 focus:ring-ubepsa/10 focus:border-ubepsa focus:bg-white focus:outline-none transition-all text-slate-700";
+const labelCls = "text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-2 px-1";
 
 function ImageUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
   const [busy, setBusy] = useState(false);
@@ -319,18 +420,25 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-3">
-        <label className="font-mono text-[0.65rem] tracking-[0.2em] uppercase bg-ink text-cream px-3 py-2 cursor-pointer hover:bg-press-red transition-colors">
-          {busy ? "Uploading…" : "Choose file"}
+    <div className="space-y-4">
+      <div className="flex flex-col xs:flex-row items-center gap-4">
+        <label className="w-full xs:w-auto bg-slate-900 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest cursor-pointer hover:bg-ubepsa transition-all active:scale-95 shadow-lg shadow-blue-900/10 text-center">
+          {busy ? "Uploading…" : "Upload System"}
           <input type="file" accept="image/*" className="hidden" disabled={busy}
             onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
         </label>
-        <span className="font-mono text-[0.65rem] text-ink/50">or paste URL below</span>
+        <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">— OR —</span>
+        <input className={inputCls} value={value} onChange={(e) => onChange(e.target.value)} placeholder="Remote Image URL (https://…)" />
       </div>
-      <input className={inputCls} value={value} onChange={(e) => onChange(e.target.value)} placeholder="https://…" />
-      {err && <p className="text-press-red font-mono text-xs">{err}</p>}
-      {value && <img src={value} alt="" className="w-32 h-20 object-cover border border-ink/15" />}
+      {err && <p className="text-destructive font-bold text-[10px] uppercase tracking-widest">{err}</p>}
+      {value && (
+        <div className="relative inline-block group">
+           <img src={value} alt="" className="w-48 h-32 object-cover rounded-2xl shadow-xl border-4 border-white" />
+           <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center">
+              <span className="text-white text-[10px] font-black uppercase tracking-widest">Selected Image</span>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -340,7 +448,7 @@ function ArticlesManager() {
   const { articles, addArticle, deleteArticle } = useUbepsa();
   const [form, setForm] = useState({
     title: "", category: "News", author: "", date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
-    cover: "https://picsum.photos/seed/new-article/1600/1000", body: "", tags: "",
+    cover: "https://picsum.photos/seed/ubepsa/1600/1000", body: "", tags: "",
   });
   const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
 
@@ -356,54 +464,55 @@ function ArticlesManager() {
   };
 
   return (
-    <div className="grid lg:grid-cols-[1fr_1fr] gap-8">
-      <div>
-        <h2 className="font-display font-bold text-xl mb-4">New Article</h2>
-        <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
-          <div><label className={labelCls}>Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
-          <div className="grid sm:grid-cols-2 gap-3">
+    <div className="grid lg:grid-cols-2 gap-10 sm:gap-16">
+      <div className="space-y-10">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">Publish New Story</h2>
+          <p className="text-sm font-medium text-slate-500">Draft and publish articles directly to the association newsfeed.</p>
+        </div>
+        
+        <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
+          <div><label className={labelCls}>Story Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div><label className={labelCls}>Category</label>
               <select className={inputCls} value={form.category} onChange={e => update("category", e.target.value)}>
                 {CATEGORIES.map(c => <option key={c}>{c}</option>)}
               </select>
             </div>
-            <div><label className={labelCls}>Author</label><input className={inputCls} value={form.author} onChange={e => update("author", e.target.value)} /></div>
-            <div><label className={labelCls}>Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} /></div>
-            <div><label className={labelCls}>Tags (comma-separated)</label><input className={inputCls} value={form.tags} onChange={e => update("tags", e.target.value)} /></div>
+            <div><label className={labelCls}>Author Name</label><input className={inputCls} value={form.author} onChange={e => update("author", e.target.value)} /></div>
+            <div><label className={labelCls}>Publish Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} /></div>
+            <div><label className={labelCls}>Tags (commas)</label><input className={inputCls} value={form.tags} onChange={e => update("tags", e.target.value)} placeholder="Health, Campus, etc." /></div>
           </div>
-          <div><label className={labelCls}>Cover Image</label><ImageUploader value={form.cover} onChange={(v) => update("cover", v)} /></div>
+          <div><label className={labelCls}>Feature Image</label><ImageUploader value={form.cover} onChange={(v) => update("cover", v)} /></div>
           <div>
-            <label className={labelCls}>Body (use blank lines between paragraphs)</label>
-            <textarea rows={8} className={inputCls} value={form.body} onChange={e => update("body", e.target.value)} required />
+            <label className={labelCls}>Article Body</label>
+            <textarea rows={10} className={`${inputCls} resize-none`} value={form.body} onChange={e => update("body", e.target.value)} required placeholder="Write your content here..." />
           </div>
-          <button className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors">Publish Article →</button>
+          <button className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl shadow-blue-500/20 active:scale-95">Publish Story →</button>
         </form>
-
-        <h3 className="font-display font-bold text-lg mt-8 mb-3">Existing Articles ({articles.length})</h3>
-        <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
-          {articles.map(a => (
-            <li key={a.id} className="p-3 flex items-start gap-3">
-              <img src={a.cover} alt="" className="w-16 h-16 object-cover shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="font-display font-bold text-sm truncate">{a.title}</p>
-                <p className="font-mono text-[0.6rem] tracking-[0.18em] uppercase text-ink/60 mt-0.5">{a.category} · {a.date}</p>
-              </div>
-              <button onClick={() => deleteArticle(a.id)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline shrink-0">Delete</button>
-            </li>
-          ))}
-        </ul>
       </div>
 
-      <div>
-        <h2 className="font-display font-bold text-xl mb-4">Live Preview</h2>
-        <div className="bg-card border border-ink/15">
-          {form.cover && <img src={form.cover} alt="" className="w-full h-56 object-cover" />}
-          <div className="p-5">
-            <span className="stamp text-press-red">{form.category}</span>
-            <h3 className="font-display font-black text-2xl mt-3 text-ink leading-tight">{form.title || "Untitled article"}</h3>
-            <p className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-ink/60 mt-2">By {form.author || "—"} · {form.date}</p>
-            <div className="font-serif text-ink/85 mt-4 space-y-3 text-sm leading-relaxed">
-              {(form.body || "Write your article body in the editor on the left to see it rendered here.").split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+      <div className="space-y-10">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">Story Preview</h2>
+          <p className="text-sm font-medium text-slate-500">This is how your article will appear on the live site.</p>
+        </div>
+        
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 overflow-hidden sticky top-24">
+          <div className="aspect-video bg-slate-50 overflow-hidden">
+             {form.cover && <img src={form.cover} alt="" className="w-full h-full object-cover" />}
+          </div>
+          <div className="p-8 sm:p-12">
+            <span className="bg-blue-50 text-ubepsa px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">{form.category}</span>
+            <h3 className="text-3xl font-black text-slate-900 mt-6 leading-tight tracking-tight">{form.title || "Untitled story"}</h3>
+            <div className="flex items-center gap-3 mt-6 text-slate-400 font-bold text-[10px] uppercase tracking-widest pb-8 border-b border-slate-50">
+               <span className="text-slate-900">{form.author || "UBEPSA Staff"}</span>
+               <span>•</span>
+               <span>{form.date}</span>
+            </div>
+            <div className="mt-8 text-slate-600 leading-relaxed font-medium space-y-4">
+              {(form.body || "Your article content will render here in real-time as you type in the editor...").split("\n").filter(Boolean).slice(0, 3).map((p, i) => <p key={i}>{p}</p>)}
+              {form.body && form.body.split("\n").length > 3 && <p className="text-ubepsa font-black italic">Read more...</p>}
             </div>
           </div>
         </div>
@@ -414,7 +523,7 @@ function ArticlesManager() {
 
 function GalleryManager() {
   const { gallery, addGallery, deleteGallery } = useUbepsa();
-  const [form, setForm] = useState({ url: "https://picsum.photos/seed/upload/900/700", title: "", caption: "", photographer: "", date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }), album: "Campus" });
+  const [form, setForm] = useState({ url: "https://picsum.photos/seed/ubepsa/900/700", title: "", caption: "", photographer: "", date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }), album: "Department" });
   const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -423,28 +532,39 @@ function GalleryManager() {
     setForm({ ...form, title: "", caption: "" });
   };
   return (
-    <div className="space-y-8">
-      <form onSubmit={submit} className="bg-card p-5 border border-ink/15 grid sm:grid-cols-2 gap-3">
-        <div className="sm:col-span-2"><label className={labelCls}>Image</label><ImageUploader value={form.url} onChange={(v) => update("url", v)} /></div>
-        <div><label className={labelCls}>Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
-        <div><label className={labelCls}>Photographer</label><input className={inputCls} value={form.photographer} onChange={e => update("photographer", e.target.value)} /></div>
-        <div><label className={labelCls}>Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} /></div>
-        <div><label className={labelCls}>Album / Event Tag</label><input className={inputCls} value={form.album} onChange={e => update("album", e.target.value)} /></div>
-        <div className="sm:col-span-2"><label className={labelCls}>Caption</label><textarea rows={2} className={inputCls} value={form.caption} onChange={e => update("caption", e.target.value)} /></div>
-        <button className="sm:col-span-2 justify-self-start font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors">Add to Gallery →</button>
-      </form>
+    <div className="space-y-16">
+      <div className="max-w-4xl">
+        <h2 className="text-2xl font-black text-slate-900 mb-2">Gallery Upload</h2>
+        <p className="text-sm font-medium text-slate-500 mb-8">Add visual memories to the departmental gallery.</p>
+        
+        <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
+          <div><label className={labelCls}>Image Source</label><ImageUploader value={form.url} onChange={(v) => update("url", v)} /></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div><label className={labelCls}>Photo Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
+            <div><label className={labelCls}>Photographer</label><input className={inputCls} value={form.photographer} onChange={e => update("photographer", e.target.value)} /></div>
+            <div><label className={labelCls}>Capture Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} /></div>
+            <div><label className={labelCls}>Album Name</label><input className={inputCls} value={form.album} onChange={e => update("album", e.target.value)} /></div>
+          </div>
+          <div><label className={labelCls}>Full Caption</label><textarea rows={3} className={`${inputCls} resize-none`} value={form.caption} onChange={e => update("caption", e.target.value)} /></div>
+          <button className="bg-ubepsa text-white px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl shadow-blue-500/10 active:scale-95">Add to Collection →</button>
+        </form>
+      </div>
 
       <div>
-        <h3 className="font-display font-bold text-lg mb-3">Gallery ({gallery.length})</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <h3 className="text-xl font-black text-slate-900 mb-8 px-1 tracking-tight">Active Collection ({gallery.length})</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {gallery.map(g => (
-            <div key={g.id} className="bg-card border border-ink/15 relative group">
-              <img src={g.url} alt={g.title} className="w-full aspect-square object-cover" />
-              <div className="p-2">
-                <p className="font-display font-bold text-xs truncate">{g.title}</p>
-                <p className="font-mono text-[0.55rem] tracking-[0.18em] uppercase text-ink/55 truncate">{g.photographer}</p>
+            <div key={g.id} className="bg-white border border-slate-100 rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-lg transition-all">
+              <div className="aspect-square bg-slate-50">
+                 <img src={g.url} alt={g.title} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
               </div>
-              <button onClick={() => deleteGallery(g.id)} className="absolute top-2 right-2 bg-press-red text-cream font-mono text-[0.6rem] tracking-[0.18em] uppercase px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">Del</button>
+              <div className="p-3">
+                <p className="font-bold text-slate-900 text-xs truncate leading-tight">{g.title}</p>
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 truncate">{g.photographer || "Staff"}</p>
+              </div>
+              <button onClick={() => deleteGallery(g.id)} className="absolute top-2 right-2 bg-destructive text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-lg active:scale-90">
+                 🗑️
+              </button>
             </div>
           ))}
         </div>
@@ -455,7 +575,7 @@ function GalleryManager() {
 
 function PressManager() {
   const { releases, addRelease, deleteRelease } = useUbepsa();
-  const [form, setForm] = useState({ title: "", date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }), issuer: "UBEPSA Editorial Board", body: "", summary: "" });
+  const [form, setForm] = useState({ title: "", date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }), issuer: "UBEPSA Executive Council", body: "", summary: "" });
   const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -464,37 +584,48 @@ function PressManager() {
     setForm({ ...form, title: "", body: "", summary: "" });
   };
   return (
-    <div className="grid lg:grid-cols-[1fr_1fr] gap-8">
-      <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
-        <div><label className={labelCls}>Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
-        <div className="grid sm:grid-cols-2 gap-3">
-          <div><label className={labelCls}>Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} /></div>
-          <div><label className={labelCls}>Issuing Body</label><input className={inputCls} value={form.issuer} onChange={e => update("issuer", e.target.value)} /></div>
+    <div className="grid lg:grid-cols-2 gap-16">
+      <div className="space-y-10">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">Issue Press Release</h2>
+          <p className="text-sm font-medium text-slate-500">Official statements and association announcements.</p>
         </div>
-        <div><label className={labelCls}>Summary (optional)</label><input className={inputCls} value={form.summary} onChange={e => update("summary", e.target.value)} /></div>
-        <div><label className={labelCls}>Full Text</label><textarea rows={10} className={inputCls} value={form.body} onChange={e => update("body", e.target.value)} required /></div>
-        <button className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors">Issue Release →</button>
-      </form>
+        
+        <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
+          <div><label className={labelCls}>Release Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div><label className={labelCls}>Release Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} /></div>
+            <div><label className={labelCls}>Issuing Authority</label><input className={inputCls} value={form.issuer} onChange={e => update("issuer", e.target.value)} /></div>
+          </div>
+          <div><label className={labelCls}>Brief Summary</label><input className={inputCls} value={form.summary} onChange={e => update("summary", e.target.value)} placeholder="One sentence highlight..." /></div>
+          <div><label className={labelCls}>Full Statement Content</label><textarea rows={10} className={`${inputCls} resize-none`} value={form.body} onChange={e => update("body", e.target.value)} required /></div>
+          <button className="bg-slate-900 text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa transition-all shadow-xl active:scale-95">Issue Official Release →</button>
+        </form>
+      </div>
+
       <div>
-        <h3 className="font-display font-bold text-lg mb-3">Issued Releases ({releases.length})</h3>
-        <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
+        <h3 className="text-xl font-black text-slate-900 mb-8 px-1 tracking-tight">Active Releases ({releases.length})</h3>
+        <div className="space-y-4">
           {releases.map(r => (
-            <li key={r.id} className="p-3 flex items-start gap-3 press-watermark">
-              <div className="flex-1 min-w-0">
-                <p className="font-display font-bold text-sm">{r.title}</p>
-                <p className="font-mono text-[0.6rem] tracking-[0.18em] uppercase text-ink/60 mt-0.5">{r.date} · {r.issuer}</p>
+            <div key={r.id} className="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm group relative overflow-hidden">
+              <div className="flex items-start justify-between gap-6 relative z-10">
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 text-lg leading-tight mb-2">{r.title}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{r.date} · {r.issuer}</p>
+                </div>
+                <button onClick={() => deleteRelease(r.id)} className="text-[10px] font-black text-destructive uppercase tracking-widest hover:underline p-2 shrink-0">Delete</button>
               </div>
-              <button onClick={() => deleteRelease(r.id)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline shrink-0">Delete</button>
-            </li>
+              <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-slate-50 rounded-full opacity-50 group-hover:scale-150 transition-transform" />
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );
 }
 
 function Stats() {
-  const { articles, gallery, releases } = useUbepsa();
+  const { articles, gallery, releases, events, scholarships } = useUbepsa();
   const counts = useMemo(() => {
     const m = new Map<string, number>();
     CATEGORIES.forEach(c => m.set(c, 0));
@@ -504,23 +635,26 @@ function Stats() {
   const max = Math.max(1, ...counts.map(([, n]) => n));
 
   return (
-    <div className="space-y-8">
-      <div className="grid sm:grid-cols-3 gap-4">
-        <Stat label="Total Articles" value={articles.length} />
-        <Stat label="Total Images" value={gallery.length} />
-        <Stat label="Press Releases" value={releases.length} />
+    <div className="space-y-12">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <Stat label="Stories" value={articles.length} />
+        <Stat label="Images" value={gallery.length} />
+        <Stat label="Press" value={releases.length} />
+        <Stat label="Events" value={events.length} />
+        <Stat label="Grants" value={scholarships.length} />
       </div>
 
-      <div className="bg-card p-6 border border-ink/15">
-        <h3 className="font-mono text-xs tracking-[0.2em] uppercase text-ink/70 font-bold mb-5">Articles per Category</h3>
-        <div className="space-y-3">
+      <div className="bg-white p-8 sm:p-12 rounded-[3rem] border border-slate-100 shadow-2xl shadow-blue-900/5">
+        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-10 text-center">Content Distribution Matrix</h3>
+        <div className="space-y-6 max-w-4xl mx-auto">
           {counts.map(([c, n]) => (
-            <div key={c}>
-              <div className="flex justify-between font-mono text-[0.7rem] tracking-[0.18em] uppercase text-ink/70">
-                <span>{c}</span><span>{n}</span>
+            <div key={c} className="group">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-sm font-black text-slate-700 uppercase tracking-widest group-hover:text-ubepsa transition-colors">{c}</span>
+                <span className="text-xl font-black text-slate-900">{n}</span>
               </div>
-              <div className="h-3 bg-ink/10 mt-1">
-                <div className="h-full bg-press-red transition-all" style={{ width: `${(n / max) * 100}%` }} />
+              <div className="h-4 bg-slate-50 rounded-full overflow-hidden border border-slate-100 p-0.5">
+                <div className="h-full bg-ubepsa rounded-full transition-all duration-1000 shadow-lg shadow-blue-500/40" style={{ width: `${(n / max) * 100}%` }} />
               </div>
             </div>
           ))}
@@ -532,9 +666,9 @@ function Stats() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="bg-ink text-cream p-6">
-      <p className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-gold">{label}</p>
-      <p className="font-display font-black text-5xl mt-2">{value}</p>
+    <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-blue-900/5 text-center group hover:-translate-y-1 transition-transform">
+      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 group-hover:text-ubepsa transition-colors">{label}</p>
+      <p className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tighter">{value}</p>
     </div>
   );
 }
@@ -551,33 +685,38 @@ function ScholarshipManager() {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
-      <div>
-        <h2 className="font-display font-bold text-xl mb-4">New Scholarship</h2>
-        <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
-          <div><label className={labelCls}>Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
-          <div><label className={labelCls}>Eligibility</label><input className={inputCls} value={form.eligibility} onChange={e => update("eligibility", e.target.value)} required /></div>
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div><label className={labelCls}>Deadline</label><input className={inputCls} value={form.deadline} onChange={e => update("deadline", e.target.value)} placeholder="e.g. 30 June 2024" /></div>
-            <div><label className={labelCls}>Apply Link (URL)</label><input className={inputCls} value={form.link} onChange={e => update("link", e.target.value)} placeholder="https://..." /></div>
+    <div className="grid lg:grid-cols-2 gap-16">
+      <div className="space-y-10">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">New Grant Opportunity</h2>
+          <p className="text-sm font-medium text-slate-500">Provide scholarship and financial aid information for students.</p>
+        </div>
+        <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
+          <div><label className={labelCls}>Grant Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
+          <div><label className={labelCls}>Eligibility Criteria</label><input className={inputCls} value={form.eligibility} onChange={e => update("eligibility", e.target.value)} required /></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div><label className={labelCls}>Application Deadline</label><input className={inputCls} value={form.deadline} onChange={e => update("deadline", e.target.value)} placeholder="30 June 2024" /></div>
+            <div><label className={labelCls}>Application Portal (Link)</label><input className={inputCls} value={form.link} onChange={e => update("link", e.target.value)} placeholder="https://..." /></div>
           </div>
-          <div><label className={labelCls}>Description</label><textarea rows={4} className={inputCls} value={form.description} onChange={e => update("description", e.target.value)} required /></div>
-          <button className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors">Add Scholarship →</button>
+          <div><label className={labelCls}>Program Description</label><textarea rows={6} className={`${inputCls} resize-none`} value={form.description} onChange={e => update("description", e.target.value)} required /></div>
+          <button className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl active:scale-95">Post Opportunity →</button>
         </form>
       </div>
       <div>
-        <h3 className="font-display font-bold text-lg mb-3">Existing Scholarships ({scholarships.length})</h3>
-        <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
+        <h3 className="text-xl font-black text-slate-900 mb-8 px-1 tracking-tight">Active Programs ({scholarships.length})</h3>
+        <div className="space-y-4">
           {scholarships.map(s => (
-            <li key={s.id} className="p-3 flex items-start gap-3">
-              <div className="flex-1 min-w-0">
-                <p className="font-display font-bold text-sm truncate">{s.title}</p>
-                <p className="font-mono text-[0.6rem] tracking-[0.18em] uppercase text-ink/60 mt-0.5">{s.deadline || "No deadline"}</p>
+            <div key={s.id} className="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm group">
+              <div className="flex items-start justify-between gap-6">
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 text-lg leading-tight mb-2 truncate">{s.title}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{s.deadline || "Open Enrollment"}</p>
+                </div>
+                <button onClick={() => deleteScholarship(s.id)} className="text-[10px] font-black text-destructive uppercase tracking-widest hover:underline p-2 shrink-0">Delete</button>
               </div>
-              <button onClick={() => deleteScholarship(s.id)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline shrink-0">Delete</button>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );
@@ -595,33 +734,38 @@ function EventManager() {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
-      <div>
-        <h2 className="font-display font-bold text-xl mb-4">New Event</h2>
-        <form onSubmit={submit} className="bg-card p-5 border border-ink/15 space-y-3">
-          <div><label className={labelCls}>Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div><label className={labelCls}>Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} placeholder="e.g. 15 July 2024" required /></div>
-            <div><label className={labelCls}>Location</label><input className={inputCls} value={form.location} onChange={e => update("location", e.target.value)} placeholder="e.g. LT 1" required /></div>
+    <div className="grid lg:grid-cols-2 gap-16">
+      <div className="space-y-10">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">Schedule Activity</h2>
+          <p className="text-sm font-medium text-slate-500">Add departmental events, workshops, or association meetings.</p>
+        </div>
+        <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
+          <div><label className={labelCls}>Event Name</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div><label className={labelCls}>Event Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} placeholder="15 July 2024" required /></div>
+            <div><label className={labelCls}>Campus Location</label><input className={inputCls} value={form.location} onChange={e => update("location", e.target.value)} placeholder="LT 1, UNIBEN" required /></div>
           </div>
-          <div><label className={labelCls}>Banner Image</label><ImageUploader value={form.image_url} onChange={(v) => update("image_url", v)} /></div>
-          <div><label className={labelCls}>Description</label><textarea rows={4} className={inputCls} value={form.description} onChange={e => update("description", e.target.value)} required /></div>
-          <button className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-5 py-2.5 hover:bg-press-red transition-colors">Add Event →</button>
+          <div><label className={labelCls}>Promotional Banner</label><ImageUploader value={form.image_url} onChange={(v) => update("image_url", v)} /></div>
+          <div><label className={labelCls}>Activity Overview</label><textarea rows={6} className={`${inputCls} resize-none`} value={form.description} onChange={e => update("description", e.target.value)} required /></div>
+          <button className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl active:scale-95">Schedule Event →</button>
         </form>
       </div>
       <div>
-        <h3 className="font-display font-bold text-lg mb-3">Existing Events ({events.length})</h3>
-        <ul className="divide-y divide-ink/10 bg-card border border-ink/15">
+        <h3 className="text-xl font-black text-slate-900 mb-8 px-1 tracking-tight">Upcoming Schedule ({events.length})</h3>
+        <div className="space-y-4">
           {events.map(e => (
-            <li key={e.id} className="p-3 flex items-start gap-3">
-              <div className="flex-1 min-w-0">
-                <p className="font-display font-bold text-sm truncate">{e.title}</p>
-                <p className="font-mono text-[0.6rem] tracking-[0.18em] uppercase text-ink/60 mt-0.5">{e.date} · {e.location}</p>
+            <div key={e.id} className="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm group">
+              <div className="flex items-start justify-between gap-6">
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 text-lg leading-tight mb-2 truncate">{e.title}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{e.date} · {e.location}</p>
+                </div>
+                <button onClick={() => deleteEvent(e.id)} className="text-[10px] font-black text-destructive uppercase tracking-widest hover:underline p-2 shrink-0">Delete</button>
               </div>
-              <button onClick={() => deleteEvent(e.id)} className="font-mono text-[0.65rem] tracking-[0.18em] uppercase text-press-red hover:underline shrink-0">Delete</button>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );

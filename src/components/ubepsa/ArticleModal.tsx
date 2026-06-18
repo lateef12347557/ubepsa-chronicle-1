@@ -17,47 +17,59 @@ export function ArticleModal({ article, onClose }: { article: Article | null; on
   const paragraphs = article.body.split("\n").filter(Boolean);
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm overflow-y-auto" onClick={onClose}>
-      <div className="min-h-full py-12 px-4 flex items-start justify-center">
+    <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-md overflow-y-auto" onClick={onClose}>
+      <div className="min-h-full py-4 sm:py-12 px-4 flex items-start justify-center">
         <article
-          className="bg-white max-w-4xl w-full rounded-3xl shadow-2xl overflow-hidden"
+          className="bg-white max-w-4xl w-full rounded-2xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="relative aspect-video">
+          <div className="relative aspect-video sm:aspect-[21/9]">
             <img src={article.cover} alt={article.title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent" />
             <button
               onClick={onClose}
-              className="absolute top-6 right-6 z-20 bg-white/90 text-blue-900 px-4 py-2 rounded-lg font-bold shadow-lg hover:bg-blue-600 hover:text-white transition-colors"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 bg-white/95 text-ubepsa px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl font-black shadow-xl hover:bg-ubepsa hover:text-white transition-all active:scale-95 text-xs sm:text-base"
             >
               ✕ Close
             </button>
           </div>
-          <div className="p-8 sm:p-16">
-            <div className="mb-10">
-              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider">{article.category}</span>
-              <h1 className="text-3xl sm:text-5xl font-bold text-blue-900 mt-6 leading-tight">{article.title}</h1>
-              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-sm font-medium text-slate-500 border-b border-slate-100 pb-8">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600 uppercase">
+          
+          <div className="p-6 sm:p-16 lg:p-20">
+            <div className="mb-8 sm:mb-12">
+              <span className="bg-blue-50 text-ubepsa px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-blue-100">{article.category}</span>
+              <h1 className="text-2xl sm:text-5xl font-black text-slate-900 mt-4 sm:mt-6 leading-tight tracking-tighter">{article.title}</h1>
+              
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-4 mt-6 sm:mt-10 text-sm font-bold text-slate-400 border-b border-slate-100 pb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-ubepsa font-black">
                     {article.author[0]}
                   </div>
-                  <span className="text-blue-900 font-bold">{article.author}</span>
+                  <div>
+                     <p className="text-slate-900 font-black leading-none">{article.author}</p>
+                     <p className="text-[10px] uppercase tracking-widest mt-1">Author</p>
+                  </div>
                 </div>
-                <span>{article.date}</span>
-                <span>{article.readTime} min read</span>
+                <div className="flex items-center gap-2 pl-2 sm:pl-0 border-l sm:border-none border-slate-100">
+                  <span className="text-slate-900">{article.date}</span>
+                  <span className="h-1 w-1 rounded-full bg-slate-200" />
+                  <span className="text-ubepsa font-black">{article.readTime} min read</span>
+                </div>
               </div>
             </div>
             
-            <div className="font-sans text-lg leading-relaxed text-slate-700 space-y-8 max-w-2xl">
+            <div className="font-sans text-base sm:text-xl leading-relaxed text-slate-600 space-y-6 sm:space-y-10 max-w-3xl">
               {paragraphs.map((p, i) => (
-                <p key={i}>{p}</p>
+                <p key={i} className="first-letter:text-3xl first-letter:font-black first-letter:text-ubepsa first-letter:mr-1">{p}</p>
               ))}
             </div>
             
-            <div className="mt-16 pt-8 border-t border-slate-100 flex flex-wrap gap-3">
-              {article.tags.map(t => (
-                <span key={t} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold tracking-wide">#{t}</span>
-              ))}
+            <div className="mt-12 sm:mt-20 pt-8 border-t border-slate-100">
+               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 text-center">Story Tags</p>
+               <div className="flex flex-wrap justify-center gap-2">
+                 {article.tags.map(t => (
+                   <span key={t} className="px-4 py-1.5 bg-slate-50 text-slate-500 rounded-xl text-xs font-bold border border-slate-100 hover:border-ubepsa hover:text-ubepsa transition-colors cursor-default">#{t}</span>
+                 ))}
+               </div>
             </div>
           </div>
         </article>
@@ -65,4 +77,3 @@ export function ArticleModal({ article, onClose }: { article: Article | null; on
     </div>
   );
 }
-

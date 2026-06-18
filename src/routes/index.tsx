@@ -8,43 +8,48 @@ import type { Article } from "@/lib/ubepsa-store";
 export const Route = createFileRoute("/")({ component: Index });
 
 function Index() {
-  const { articles } = useUbepsa();
+  const { articles, events, scholarships, gallery } = useUbepsa();
   const [open, setOpen] = useState<Article | null>(null);
 
   const hero = articles[0];
-  const secondary = articles.slice(1, 4);
+  const secondary = articles.slice(1, 6);
+  const featuredEvents = events.slice(0, 6);
+  const featuredScholarships = scholarships.slice(0, 6);
+  const recentGallery = gallery.slice(0, 12);
 
   return (
     <div className="bg-white selection:bg-ubepsa selection:text-white">
       {/* ============ HERO SECTION ============ */}
-      <section className="relative pt-32 pb-48 overflow-hidden bg-white">
+      <section className="relative pt-20 pb-16 xs:pb-24 sm:pt-32 sm:pb-40 overflow-hidden bg-white">
         {/* Background Accents */}
-        <div className="absolute top-0 right-0 -translate-y-1/3 translate-x-1/3 w-[1000px] h-[1000px] bg-blue-50 rounded-full blur-[120px] opacity-60 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[600px] h-[600px] bg-blue-100 rounded-full blur-[100px] opacity-40 pointer-events-none" />
+        <div className="absolute top-0 right-0 -translate-y-1/3 translate-x-1/3 w-[400px] sm:w-[800px] h-[400px] sm:h-[800px] bg-blue-50 rounded-full blur-[60px] sm:blur-[100px] opacity-60 pointer-events-none" />
         
-        <div className="max-w-7xl mx-auto px-6 relative">
-          <div className="max-w-4xl">
-            <div className="flex items-center gap-4 mb-10 reveal in">
-               <div className="h-[2px] w-12 bg-ubepsa" />
-               <span className="text-sm font-black text-ubepsa uppercase tracking-[0.3em]">Official Student Portal</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-8 reveal in">
+               <div className="h-[2px] w-6 sm:w-10 bg-ubepsa" />
+               <span className="text-[9px] sm:text-xs font-black text-ubepsa uppercase tracking-[0.2em] sm:tracking-[0.3em]">Official Student Portal</span>
             </div>
             
-            <h1 className="mega-display text-slate-900 mb-10 reveal in">
-              The Voice of <br />
+            <h1 className="mega-display text-slate-900 mb-4 sm:mb-8 reveal in">
+              The Voice of <br className="hidden xs:block" />
               <span className="text-ubepsa">Physiotherapy</span> <br className="hidden sm:block" /> 
               at UNIBEN.
             </h1>
             
-            <p className="text-lg sm:text-xl text-slate-500 leading-relaxed mb-12 max-w-2xl font-medium reveal in" style={{ transitionDelay: '100ms' }}>
+            <p className="text-sm sm:text-lg lg:text-xl text-slate-500 leading-relaxed mb-6 sm:mb-12 max-w-xl font-medium reveal in" style={{ transitionDelay: '100ms' }}>
               Building a vibrant community, fostering academic excellence, and advancing the profession together.
             </p>
             
-            <div className="flex flex-wrap gap-6 reveal in" style={{ transitionDelay: '200ms' }}>
-              <Link to="/about" className="btn-modern bg-ubepsa text-white px-12 py-5 rounded-2xl font-black text-lg hover:bg-ubepsa-dark shadow-2xl shadow-blue-500/30 hover:-translate-y-1 transition-all">
+            <div className="flex flex-wrap gap-3 sm:gap-4 reveal in" style={{ transitionDelay: '200ms' }}>
+              <Link to="/about" className="btn-modern bg-ubepsa text-white px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-black shadow-lg shadow-blue-500/30 hover:-translate-y-1 transition-all">
                 The Association
               </Link>
-              <Link to="/excos" className="btn-modern bg-white text-slate-900 border-2 border-slate-100 px-12 py-5 rounded-2xl font-black text-lg hover:border-ubepsa hover:text-ubepsa transition-all shadow-sm">
+              <Link to="/excos" className="btn-modern bg-white text-slate-900 border-2 border-slate-100 px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-black hover:border-ubepsa hover:text-ubepsa transition-all shadow-sm">
                 Meet Excos
+              </Link>
+              <Link to="/articles" className="btn-modern bg-slate-900 text-white px-6 sm:px-10 py-3 sm:py-4 rounded-xl font-black hover:bg-slate-800 transition-all shadow-sm">
+                Latest News
               </Link>
             </div>
           </div>
@@ -52,79 +57,246 @@ function Index() {
       </section>
 
       {/* ============ ASSOCIATION UPDATES ============ */}
-      <section className="relative z-10 -mt-20 max-w-7xl mx-auto px-6 pb-32">
-        <div className="grid lg:grid-cols-3 gap-8">
+      <section className="relative z-10 -mt-8 sm:-mt-16 max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
+        <div className="grid lg:grid-cols-3 gap-6 sm:gap-10">
            {/* Primary Featured Card */}
            <div className="lg:col-span-2">
-              <div className="flex items-center justify-between mb-8">
-                 <h2 className="text-3xl font-black text-slate-900 tracking-tight">Association News</h2>
-                 <Link to="/articles" className="text-sm font-black text-ubepsa uppercase tracking-widest hover:underline">View All →</Link>
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Association News</h2>
+                 <Link to="/articles" className="text-[10px] sm:text-xs font-black text-ubepsa uppercase tracking-widest hover:underline">View All →</Link>
               </div>
               
-              {hero ? (
-                <div onClick={() => setOpen(hero)} className="group cursor-pointer bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-2xl shadow-blue-900/5 transition-all hover:shadow-blue-900/10 hover:-translate-y-1">
-                   <div className="aspect-[21/9] overflow-hidden bg-slate-50 relative">
-                      <img src={hero.cover} alt={hero.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                      <div className="absolute top-6 left-6">
-                         <span className="bg-ubepsa text-white px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest">{hero.category}</span>
-                      </div>
-                   </div>
-                   <div className="p-10">
-                      <h3 className="text-4xl font-black text-slate-900 mb-6 group-hover:text-ubepsa transition-colors leading-tight">{hero.title}</h3>
-                      <p className="text-slate-500 text-lg leading-relaxed mb-8 line-clamp-2 font-medium">{hero.excerpt}</p>
-                      <div className="flex items-center gap-4">
-                         <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-ubepsa font-black text-lg">
-                            {hero.author[0]}
-                         </div>
-                         <div>
-                            <p className="text-sm font-black text-slate-900">{hero.author}</p>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{hero.date}</p>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-              ) : (
-                <div className="h-96 rounded-[2.5rem] bg-slate-50 flex items-center justify-center text-slate-300 font-bold border-2 border-dashed border-slate-100 italic">
-                   No recent updates found
-                </div>
-              )}
+              <div onClick={() => hero && setOpen(hero)} className="group cursor-pointer bg-white rounded-2xl sm:rounded-[2rem] overflow-hidden border border-slate-100 shadow-lg sm:shadow-xl shadow-blue-900/5 transition-all hover:shadow-blue-900/10 hover:-translate-y-1">
+                 <div className="aspect-video xs:aspect-[21/9] overflow-hidden bg-slate-50 relative">
+                    <img src={hero?.cover || "/ed1.jpg"} alt={hero?.title || "Welcome to UBEPSA"} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
+                       <span className="bg-ubepsa text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg text-[7px] sm:text-[9px] font-black uppercase tracking-widest shadow-lg">{hero?.category || "Welcome"}</span>
+                    </div>
+                 </div>
+                 <div className="p-5 sm:p-8">
+                    <h3 className="text-xl sm:text-3xl font-black text-slate-900 mb-3 sm:mb-4 group-hover:text-ubepsa transition-colors leading-tight">{hero?.title || "Advancing the Future of Physiotherapy Excellence"}</h3>
+                    <p className="text-slate-500 text-xs sm:text-base leading-relaxed mb-4 sm:mb-6 line-clamp-2 font-medium">{hero?.excerpt || "Join us as we explore new frontiers in physiotherapy education and student welfare at the University of Benin."}</p>
+                    <div className="flex items-center gap-2 sm:gap-3">
+                       <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-50 flex items-center justify-center text-ubepsa font-black text-sm sm:text-base shadow-sm">
+                          {hero?.author[0] || "U"}
+                       </div>
+                       <div>
+                          <p className="text-[10px] sm:text-xs font-black text-slate-900 leading-tight">{hero?.author || "UBEPSA Staff"}</p>
+                          <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{hero?.date || "Latest Update"}</p>
+                       </div>
+                    </div>
+                 </div>
+              </div>
            </div>
 
            {/* Secondary List */}
-           <div className="lg:col-span-1 pt-16 lg:pt-0">
-              <h2 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">Recent Stories</h2>
-              <div className="space-y-6">
+           <div className="lg:col-span-1 pt-8 lg:pt-0">
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 mb-4 sm:mb-6 tracking-tight border-l-4 border-ubepsa pl-3">Recent Stories</h2>
+              <div className="space-y-3 sm:space-y-4">
                  {secondary.length > 0 ? secondary.map((a) => (
-                    <div key={a.id} onClick={() => setOpen(a)} className="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm transition-all hover:border-ubepsa hover:shadow-md cursor-pointer group">
-                       <span className="text-[10px] font-black text-ubepsa uppercase tracking-[0.2em] mb-3 block">{a.category}</span>
-                       <h4 className="text-xl font-bold text-slate-900 group-hover:text-ubepsa transition-colors leading-tight mb-4">{a.title}</h4>
-                       <p className="text-sm text-slate-400 font-bold">{a.date}</p>
+                    <div key={a.id} onClick={() => setOpen(a)} className="p-4 sm:p-5 bg-white border border-slate-100 rounded-xl sm:rounded-2xl shadow-sm transition-all hover:border-ubepsa hover:shadow-md cursor-pointer group">
+                       <span className="text-[7px] sm:text-[9px] font-black text-ubepsa uppercase tracking-[0.2em] mb-1.5 block">{a.category}</span>
+                       <h4 className="text-sm sm:text-lg font-bold text-slate-900 group-hover:text-ubepsa transition-colors leading-tight mb-2">{a.title}</h4>
+                       <p className="text-[8px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider">{a.date}</p>
                     </div>
                  )) : (
-                    [1,2,3].map(i => (
-                       <div key={i} className="h-32 bg-slate-50 rounded-3xl border border-dashed border-slate-100" />
+                    [1,2,3,4,5].map(i => (
+                       <div key={i} className="p-4 sm:p-5 bg-white border border-slate-100 rounded-xl sm:rounded-2xl shadow-sm flex gap-4 items-center group cursor-pointer">
+                          <div className="w-12 h-12 rounded-lg bg-slate-50 flex-shrink-0 overflow-hidden">
+                             <img src={`/ed${(i % 3) + 1}.jpg`} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
+                          </div>
+                          <div>
+                             <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-ubepsa transition-colors leading-tight">Featured student development program update</h4>
+                             <p className="text-[8px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">18 June 2026</p>
+                          </div>
+                       </div>
                     ))
                  )}
               </div>
+              <Link to="/articles" className="btn-modern w-full mt-6 bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 hover:text-ubepsa transition-all">
+                Browse Newsroom
+              </Link>
            </div>
         </div>
       </section>
 
+      {/* ============ UPCOMING EVENTS ============ */}
+      <section className="py-16 sm:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 sm:mb-12">
+            <div>
+              <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tighter mb-2">Upcoming <span className="text-ubepsa">Events.</span></h2>
+              <p className="text-slate-500 font-medium max-w-lg text-xs sm:text-sm">Don't miss out on our seminars, workshops, and social gatherings designed to enhance your campus experience.</p>
+            </div>
+            <div className="flex gap-2">
+              <Link to="/event" className="btn-modern text-[9px] sm:text-[10px] font-black bg-ubepsa text-white uppercase tracking-widest shadow-md">Full Calendar</Link>
+              <Link to="/event" className="btn-modern text-[9px] sm:text-[10px] font-black bg-slate-50 text-slate-600 border border-slate-200 uppercase tracking-widest">Schedule</Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            {(featuredEvents.length > 0 ? featuredEvents : [1,2,3,4,5,6]).map((e, i) => {
+              const isReal = typeof e !== "number";
+              const event = isReal ? e : {
+                id: i.toString(),
+                title: i === 0 ? "Orientation 2026" : "Clinical Workshop",
+                date: "25 June 2026",
+                location: "LT 1, UNIBEN",
+                description: "A comprehensive session for all physiotherapy students to discuss academic pathways.",
+                image_url: `/exco${(i % 4) + 1}.jfif`
+              };
+              return (
+                <div key={event.id} className="group bg-slate-50 border border-slate-100 rounded-2xl overflow-hidden hover:bg-white hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500 hover:-translate-y-1">
+                  <div className="aspect-[16/9] overflow-hidden bg-slate-100">
+                    <img src={event.image_url || `/exco${(i % 4) + 1}.jfif`} alt={event.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  </div>
+                  <div className="p-5 sm:p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-ubepsa/10 text-ubepsa px-2 py-0.5 rounded-lg text-[8px] sm:text-[9px] font-black uppercase tracking-widest">{event.date}</span>
+                      <span className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest">{event.location}</span>
+                    </div>
+                    <h3 className="text-lg sm:text-xl font-black text-slate-900 group-hover:text-ubepsa transition-colors leading-tight mb-3">{event.title}</h3>
+                    <p className="text-slate-500 text-xs leading-relaxed line-clamp-2 mb-4 font-medium">{event.description}</p>
+                    <Link to="/event" className="text-[9px] font-black text-slate-900 uppercase tracking-widest border-b-2 border-slate-200 group-hover:border-ubepsa transition-colors">Details</Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ SCHOLARSHIP OPPORTUNITIES ============ */}
+      <section className="py-16 sm:py-24 bg-slate-900 text-white overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-ubepsa rounded-full blur-[100px] opacity-20 translate-x-1/2 -translate-y-1/2" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+          <header className="mb-10 sm:mb-12 text-center max-w-2xl mx-auto">
+            <span className="text-ubepsa text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] mb-2 block">Empowering Excellence</span>
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tighter mb-4 leading-tight">Financial Grants & <span className="text-ubepsa">Scholarships.</span></h2>
+            <p className="text-slate-400 font-medium text-xs sm:text-sm">We curate the best opportunities to support your academic journey and professional development.</p>
+          </header>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {(featuredScholarships.length > 0 ? featuredScholarships : [1,2,3]).map((s, i) => {
+              const isReal = typeof s !== "number";
+              const sch = isReal ? s : {
+                id: i.toString(),
+                title: i === 0 ? "Dean's Excellence Grant" : "Clinical Placement Fund",
+                description: "Financial support for high-achieving students in the physiotherapy department.",
+                deadline: "30 July 2026",
+                eligibility: "3.5 CGPA & Above"
+              };
+              return (
+                <div key={sch.id} className="p-6 sm:p-8 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-md hover:bg-white/10 hover:border-ubepsa/50 transition-all group">
+                  <div className="h-10 w-10 bg-ubepsa/20 rounded-xl flex items-center justify-center text-ubepsa font-black text-sm mb-6 group-hover:bg-ubepsa group-hover:text-white transition-all">
+                    SC
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-black mb-3 leading-tight group-hover:text-ubepsa transition-colors">{sch.title}</h3>
+                  <p className="text-slate-400 text-[10px] sm:text-xs leading-relaxed mb-5 font-medium line-clamp-3">{sch.description}</p>
+                  <div className="space-y-2 mb-6">
+                    <div className="flex items-center gap-2 text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-slate-500">
+                      <span className="text-ubepsa">Deadline:</span> {sch.deadline || "Open"}
+                    </div>
+                    <div className="flex items-center gap-2 text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-slate-500">
+                      <span className="text-ubepsa">Eligibility:</span> {sch.eligibility}
+                    </div>
+                  </div>
+                  <Link to="/scholarship" className="btn-modern bg-white text-slate-900 px-6 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-ubepsa hover:text-white transition-all w-full text-center">View Details</Link>
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-10 text-center">
+            <Link to="/scholarship" className="btn-modern bg-ubepsa text-white px-8 py-3 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-blue-500/20">
+              Explore All Grants
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ GALLERY PREVIEW ============ */}
+      <section className="py-16 sm:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tighter">Association <span className="text-ubepsa">Moments.</span></h2>
+            <div className="flex gap-2">
+              <Link to="/gallery" className="btn-modern bg-slate-900 text-white text-[9px] uppercase tracking-widest px-4 py-2">Open Gallery</Link>
+              <Link to="/about" className="btn-modern bg-white text-slate-900 border border-slate-200 text-[9px] uppercase tracking-widest px-4 py-2">Our History</Link>
+            </div>
+          </div>
+
+          <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 sm:gap-4 space-y-3 sm:space-y-4">
+            {(recentGallery.length > 0 ? recentGallery : [1,2,3,4,5,6,7,8,9,10,11,12]).map((g, i) => {
+              const isReal = typeof g !== "number";
+              const img = isReal ? g : {
+                id: i.toString(),
+                url: `/ed${(i % 3) + 1}.jpg`,
+                title: "Student Life",
+                date: "June 2026"
+              };
+              return (
+                <div key={img.id} className="relative group overflow-hidden rounded-xl sm:rounded-2xl cursor-pointer">
+                  <img src={img.url} alt={img.title} className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                    <p className="text-white font-black text-sm leading-tight mb-1">{img.title}</p>
+                    <p className="text-slate-300 text-[8px] font-bold uppercase tracking-widest">{img.date}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* ============ QUICK ACTIONS GRID ============ */}
-      <section className="bg-slate-50 py-32 border-y border-slate-100">
-         <div className="max-w-7xl mx-auto px-6">
-            <header className="mb-16 text-center">
-               <h2 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tighter mb-6">Explore <span className="text-ubepsa">Association.</span></h2>
-               <p className="text-lg text-slate-500 font-medium">Everything you need to know about UBEPSA UNIBEN.</p>
+      <section className="bg-slate-50 py-16 sm:py-24 border-y border-slate-100">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <header className="mb-8 sm:mb-12 text-center">
+               <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter mb-3 sm:mb-4 leading-tight">Explore <span className="text-ubepsa">Association.</span></h2>
+               <p className="text-sm sm:text-base text-slate-500 font-medium">Everything you need to know about UBEPSA UNIBEN.</p>
             </header>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-               <ActionCard to="/event" title="Events" desc="Seminars, workshops, and social gatherings." icon="EV" />
+            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+               <ActionCard to="/event" title="Events" desc="Seminars and social gatherings." icon="EV" />
                <ActionCard to="/scholarship" title="Scholarship" desc="Financial aid and academic grants." icon="SC" />
                <ActionCard to="/gallery" title="Gallery" desc="Moments from our campus life." icon="GA" />
                <ActionCard to="/about" title="About Us" desc="Our mission, vision, and team." icon="AB" />
             </div>
+
+            <div className="mt-12 flex flex-wrap justify-center gap-4">
+              <Link to="/articles" className="btn-modern bg-white text-slate-900 border border-slate-200 px-8 py-3 rounded-xl font-black uppercase tracking-widest hover:border-ubepsa hover:text-ubepsa transition-all">
+                Staff Press
+              </Link>
+              <Link to="/admin" className="btn-modern bg-slate-900 text-white px-8 py-3 rounded-xl font-black uppercase tracking-widest hover:bg-ubepsa transition-all">
+                Admin Portal
+              </Link>
+              <Link to="/excos" className="btn-modern bg-blue-50 text-ubepsa border border-blue-100 px-8 py-3 rounded-xl font-black uppercase tracking-widest hover:bg-ubepsa hover:text-white transition-all">
+                The Executive Council
+              </Link>
+            </div>
          </div>
+      </section>
+
+      {/* ============ QUICK CONNECT SECTION ============ */}
+      <section className="py-16 sm:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="bg-ubepsa rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-16 text-white relative overflow-hidden shadow-2xl shadow-blue-900/20">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+             <div className="relative z-10 max-w-2xl">
+                <h2 className="text-3xl sm:text-5xl font-black tracking-tighter mb-6 leading-tight">Join the community. <br /> Stay <span className="text-blue-200">informed.</span></h2>
+                <p className="text-blue-50 text-sm sm:text-lg font-medium mb-10 opacity-90">Get the latest updates, scholarship alerts, and departmental news delivered straight to your student portal.</p>
+                <div className="flex flex-wrap gap-4">
+                   <Link to="/articles" className="btn-modern bg-white text-ubepsa px-8 py-4 rounded-xl font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-transform">
+                      Subscribe to Updates
+                   </Link>
+                   <Link to="/about" className="btn-modern bg-transparent border-2 border-white/30 text-white px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white/10 transition-colors">
+                      Contact Us
+                   </Link>
+                </div>
+             </div>
+          </div>
+        </div>
       </section>
 
       <ArticleModal article={open} onClose={() => setOpen(null)} />
@@ -134,14 +306,14 @@ function Index() {
 
 function ActionCard({ to, title, desc, icon }: { to: string, title: string, desc: string, icon: string }) {
    return (
-      <Link to={to} className="group p-10 bg-white border border-slate-100 rounded-[2.5rem] shadow-xl shadow-blue-900/5 transition-all hover:shadow-blue-900/10 hover:-translate-y-2 hover:border-ubepsa">
-         <div className="h-16 w-16 bg-blue-50 rounded-2xl flex items-center justify-center text-ubepsa font-black text-xl mb-8 group-hover:bg-ubepsa group-hover:text-white transition-all duration-300">
+      <Link to={to} className="group p-6 sm:p-8 lg:p-10 bg-white border border-slate-100 rounded-2xl sm:rounded-[2.5rem] shadow-xl shadow-blue-900/5 transition-all hover:shadow-blue-900/10 hover:-translate-y-2 hover:border-ubepsa flex flex-col h-full">
+         <div className="h-10 w-10 sm:h-16 sm:w-16 bg-blue-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-ubepsa font-black text-base sm:text-xl mb-6 sm:mb-8 group-hover:bg-ubepsa group-hover:text-white transition-all duration-300 shadow-sm">
             {icon}
          </div>
-         <h3 className="text-2xl font-black text-slate-900 mb-4 group-hover:text-ubepsa transition-colors">{title}</h3>
-         <p className="text-slate-500 font-medium leading-relaxed text-sm">{desc}</p>
-         <div className="mt-8 flex items-center gap-2 text-ubepsa opacity-0 group-hover:opacity-100 transition-all">
-            <span className="text-xs font-black uppercase tracking-widest">Learn More</span>
+         <h3 className="text-lg sm:text-2xl font-black text-slate-900 mb-2 sm:mb-4 group-hover:text-ubepsa transition-colors leading-tight">{title}</h3>
+         <p className="text-slate-500 font-medium leading-relaxed text-sm mb-6 flex-1">{desc}</p>
+         <div className="flex items-center gap-2 text-ubepsa font-black text-[10px] sm:text-xs uppercase tracking-widest group-hover:translate-x-1 transition-transform">
+            <span>Learn More</span>
             <span>→</span>
          </div>
       </Link>
