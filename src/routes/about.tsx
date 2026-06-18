@@ -25,13 +25,19 @@ function AboutPage() {
         <div className="space-y-6 sm:space-y-8">
           <h2 className="text-3xl sm:text-4xl font-black text-ubepsa leading-tight">Our Mission</h2>
           <div className="space-y-6 text-slate-600 leading-relaxed text-base sm:text-lg font-medium">
-            <p>
-              UBEPSA (University of Benin Physiotherapy Students' Association) is the official body representing all students in the Department of Physiotherapy. Our mission is to promote academic excellence, professional development, and student welfare.
+            <p>UBEPSA Editorial and Press is the official media and communications arm of the University of Benin Physiotherapy Students’ Association [UBEPSA]. As a non-profit organization, we are dedicated to informing, inspiring, and amplifying the voice of physiotherapy students
             </p>
             <p>
               Through our various platforms, we aim to provide valuable resources, foster a sense of community, and amplify the voices of our students both within the university and in the broader healthcare landscape.
             </p>
           </div>
+          <h2 className="text-3xl sm:text-4xl font-black text-ubepsa leading-tight">What We Do</h2>
+          <div className="space-y-6 text-slate-600 leading-relaxed text-base sm:text-lg font-medium">
+            <p>PhysioVibes Magazine is one of our flagship achievements, alongside other initiatives that spotlight student growth, achievements, and experiences. 
+            </p>
+            <p>
+          We’re powered by a dedicated, passionate, and resilient team of physiotherapy students, supported by experienced physiotherapists and mentors. Together, we grow, explore, and thrive.
+            </p>
         </div>
         <div className="bg-slate-900 text-white p-8 sm:p-12 rounded-3xl sm:rounded-[3rem] shadow-2xl relative overflow-hidden group">
           <h3 className="text-ubepsa-light font-black uppercase tracking-widest text-[10px] sm:text-xs mb-8">Official Channels</h3>
@@ -46,7 +52,7 @@ function AboutPage() {
             <div>
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Email Support</p>
                <p className="text-lg font-bold truncate">ubepsaeditorial@gmail.com</p>
-            </div>
+  
             <div>
                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Social Media</p>
                <p className="text-lg font-bold">@official_editorialpress</p>
