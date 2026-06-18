@@ -32,7 +32,7 @@ function Index() {
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-8 reveal in">
                <div className="h-[2px] w-6 sm:w-10 bg-ubepsa" />
-               <span className="text-[9px] sm:text-xs font-black text-ubepsa uppercase tracking-[0.2em] sm:tracking-[0.3em]">Official Student Portal</span>
+               <span className="text-[9px] sm:text-xs font-black text-ubepsa uppercase tracking-[0.2em] sm:tracking-[0.3em]">Official Student Website</span>
             </div>
             
             <h1 className="mega-display text-slate-900 mb-4 sm:mb-8 reveal in">
@@ -262,7 +262,7 @@ function Index() {
 
             <div className="mt-12 flex flex-wrap justify-center gap-4">
               <Link to="/about" hash="editorial" className="btn-modern bg-white text-slate-900 border border-slate-200 px-8 py-3 rounded-xl font-black uppercase tracking-widest hover:border-ubepsa hover:text-ubepsa transition-all">
-                Staff Press
+                Press  Staff
               </Link>
               <Link to="/admin" className="btn-modern bg-slate-900 text-white px-8 py-3 rounded-xl font-black uppercase tracking-widest hover:bg-ubepsa transition-all">
                 Admin Portal

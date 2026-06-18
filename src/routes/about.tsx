@@ -61,7 +61,7 @@ function AboutPage() {
         <header className="mb-12 sm:mb-16">
            <div className="h-1 w-12 bg-ubepsa mb-6 rounded-full" />
            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tighter leading-tight">Editorial Board.</h2>
-           <p className="text-base sm:text-xl text-slate-500 font-medium mt-2">The creative team behind our association's media and publications.</p>
+           <p className="text-base sm:text-xl text-slate-500 font-medium mt-2">The creative team behind our association's media,publications and website creation .</p>
         </header>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10">
