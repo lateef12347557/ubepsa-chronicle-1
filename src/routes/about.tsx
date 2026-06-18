@@ -26,12 +26,27 @@ function AboutPage() {
           <h2 className="text-3xl sm:text-4xl font-black text-ubepsa leading-tight">Our Mission</h2>
           <div className="space-y-6 text-slate-600 leading-relaxed text-base sm:text-lg font-medium">
             <p>
-              UBEPSA (University of Benin Physiotherapy Students' Association) is the official body representing all students in the Department of Physiotherapy. Our mission is to promote academic excellence, professional development, and student welfare.
+              
+UBEPSA Editorial and Press is the official media and communications arm of the University of Benin Physiotherapy Students’ Association [UBEPSA]. As a non-profit organization, we are dedicated to informing, inspiring, and amplifying the voice of physiotherapy students.
+              Keep the voice of physiotherapy students alive. We do this through storytelling, media coverage, and creative expression that inform, educate, and unite our community.
             </p>
             <p>
               Through our various platforms, we aim to provide valuable resources, foster a sense of community, and amplify the voices of our students both within the university and in the broader healthcare landscape.
             </p>
           </div>
+
+           <h2 className="text-3xl sm:text-4xl font-black text-ubepsa leading-tight">What we do</h2>
+          <div className="space-y-6 text-slate-600 leading-relaxed text-base sm:text-lg font-medium">
+            <p>
+              
+PhysioVibes Magazine is one of our flagship achievements, alongside other initiatives that spotlight student growth, achievements, and experiences. 
+
+            </p>
+            <p>
+   We’re powered by a dedicated, passionate, and resilient team of physiotherapy students, supported by experienced physiotherapists and mentors. Together, we grow, explore, and thrive.
+            </p>
+          </div>
+
         </div>
         <div className="bg-slate-900 text-white p-8 sm:p-12 rounded-3xl sm:rounded-[3rem] shadow-2xl relative overflow-hidden group">
           <h3 className="text-ubepsa-light font-black uppercase tracking-widest text-[10px] sm:text-xs mb-8">Official Channels</h3>
