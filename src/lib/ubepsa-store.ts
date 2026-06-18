@@ -132,6 +132,24 @@ export function useUbepsaStore() {
     setArticles((p) => p.filter((a) => a.id !== id));
   }, []);
 
+  const updateArticle = useCallback(async (id: string, a: Partial<Article>) => {
+    const updateData: any = {};
+    if (a.title !== undefined) updateData.title = a.title;
+    if (a.category !== undefined) updateData.category = a.category;
+    if (a.author !== undefined) updateData.author = a.author;
+    if (a.date !== undefined) updateData.date = a.date;
+    if (a.cover !== undefined) updateData.cover = a.cover;
+    if (a.excerpt !== undefined) updateData.excerpt = a.excerpt;
+    if (a.body !== undefined) updateData.body = a.body;
+    if (a.tags !== undefined) updateData.tags = a.tags;
+    if (a.body !== undefined && a.readTime === undefined) updateData.read_time = estimateReadTime(a.body);
+    else if (a.readTime !== undefined) updateData.read_time = a.readTime;
+
+    const { data, error } = await supabase.from("articles").update(updateData).eq("id", id).select().single();
+    if (error) throw error;
+    setArticles((prev) => prev.map((art) => (art.id === id ? mapArticle(data as ArticleRow) : art)));
+  }, []);
+
   const addGallery = useCallback(async (g: Omit<GalleryItem, "id">) => {
     const { data, error } = await supabase.from("gallery_items").insert(g).select().single();
     if (error) throw error;
@@ -189,7 +207,10 @@ export function useUbepsaStore() {
 
   const addEvent = useCallback(async (e: Omit<UbepsaEvent, "id" | "created_at">) => {
     const { data, error } = await supabase.from("events").insert(e).select().single();
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase insert error (events):", error);
+      throw error;
+    }
     setEvents((p) => [data as UbepsaEvent, ...p]);
   }, []);
 
@@ -197,6 +218,15 @@ export function useUbepsaStore() {
     const { error } = await supabase.from("events").delete().eq("id", id);
     if (error) throw error;
     setEvents((p) => p.filter((e) => e.id !== id));
+  }, []);
+
+  const updateEvent = useCallback(async (id: string, e: Partial<UbepsaEvent>) => {
+    const { data, error } = await supabase.from("events").update(e).eq("id", id).select().single();
+    if (error) {
+      console.error("Supabase update error (events):", error);
+      throw error;
+    }
+    setEvents((p) => p.map((event) => (event.id === id ? (data as UbepsaEvent) : event)));
   }, []);
 
   return { 

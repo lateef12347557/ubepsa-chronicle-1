@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { useUbepsa } from '@/components/ubepsa/UbepsaProvider';
 
 export const Route = createFileRoute('/event')({
@@ -40,7 +40,7 @@ function UbepsaEventPage() {
                      <div className="h-2 w-2 rounded-full bg-ubepsa animate-pulse" />
                      <span className="text-[10px] sm:text-xs font-black text-slate-400 uppercase tracking-widest truncate max-w-[120px] sm:max-w-none">{e.location}</span>
                   </div>
-                  <button className="text-ubepsa font-black text-[10px] sm:text-xs uppercase tracking-widest hover:translate-x-1 transition-transform">Details →</button>
+                  <Link to="/event/$eventId" params={{ eventId: e.id }} className="text-ubepsa font-black text-[10px] sm:text-xs uppercase tracking-widest hover:translate-x-1 transition-transform">Details →</Link>
                 </div>
               </div>
             </div>

@@ -456,29 +456,60 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
 
 
 function ArticlesManager() {
-  const { articles, addArticle, deleteArticle } = useUbepsa();
-  const [form, setForm] = useState({
+  const { articles, addArticle, deleteArticle, updateArticle } = useUbepsa();
+  const emptyForm = {
     title: "", category: "News", author: "", date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
     cover: "https://picsum.photos/seed/ubepsa/1600/1000", body: "", tags: "",
-  });
+  };
+  const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
 
   const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
 
+  const startEdit = (a: Article) => {
+    setEditingId(a.id);
+    setForm({
+      title: a.title,
+      category: a.category,
+      author: a.author,
+      date: a.date,
+      cover: a.cover,
+      body: a.body,
+      tags: a.tags.join(", "),
+    });
+    setMsg("");
+    setErr("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title || !form.body) return;
     setBusy(true); setErr(""); setMsg("");
     try {
-      await addArticle({
+      const articleData = {
         title: form.title, category: form.category, author: form.author || "Staff Writer", date: form.date,
         cover: form.cover, body: form.body, excerpt: form.body.slice(0, 180) + (form.body.length > 180 ? "…" : ""),
         tags: form.tags.split(",").map(t => t.trim()).filter(Boolean),
-      });
-      setForm({ ...form, title: "", body: "", tags: "" });
-      setMsg("Article published successfully!");
+      };
+
+      if (editingId) {
+        await updateArticle(editingId, articleData);
+        setMsg("Article updated successfully!");
+        cancelEdit();
+      } else {
+        await addArticle(articleData);
+        setForm(emptyForm);
+        setMsg("Article published successfully!");
+      }
     } catch (e) {
       setErr((e as Error).message);
     } finally {
@@ -487,61 +518,98 @@ function ArticlesManager() {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-10 sm:gap-16">
-      <div className="space-y-10">
-        <div>
-          <h2 className="text-2xl font-black text-slate-900 mb-2">Publish New Story</h2>
-          <p className="text-sm font-medium text-slate-500">Draft and publish articles directly to the association newsfeed.</p>
-        </div>
-        
-        <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
-          <div><label className={labelCls}>Story Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div><label className={labelCls}>Category</label>
-              <select className={inputCls} value={form.category} onChange={e => update("category", e.target.value)}>
-                {CATEGORIES.map(c => <option key={c}>{c}</option>)}
-              </select>
-            </div>
-            <div><label className={labelCls}>Author Name</label><input className={inputCls} value={form.author} onChange={e => update("author", e.target.value)} /></div>
-            <div><label className={labelCls}>Publish Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} /></div>
-            <div><label className={labelCls}>Tags (commas)</label><input className={inputCls} value={form.tags} onChange={e => update("tags", e.target.value)} placeholder="Health, Campus, etc." /></div>
-          </div>
-          <div><label className={labelCls}>Feature Image</label><ImageUploader value={form.cover} onChange={(v) => update("cover", v)} /></div>
+    <div className="space-y-16">
+      <div className="grid lg:grid-cols-2 gap-10 sm:gap-16">
+        <div className="space-y-10">
           <div>
-            <label className={labelCls}>Article Body</label>
-            <textarea rows={10} className={`${inputCls} resize-none`} value={form.body} onChange={e => update("body", e.target.value)} required placeholder="Write your content here..." />
+            <h2 className="text-2xl font-black text-slate-900 mb-2">{editingId ? "Edit Story" : "Publish New Story"}</h2>
+            <p className="text-sm font-medium text-slate-500">{editingId ? "Modify your existing story content." : "Draft and publish articles directly to the association newsfeed."}</p>
           </div>
-          {err && <p className="text-destructive font-bold text-xs">{err}</p>}
-          {msg && <p className="text-emerald-500 font-bold text-xs">{msg}</p>}
-          <button disabled={busy} className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl shadow-blue-500/20 active:scale-95 disabled:opacity-50">
-            {busy ? "Publishing..." : "Publish Story →"}
-          </button>
-        </form>
+          
+          <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
+            <div><label className={labelCls}>Story Title</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div><label className={labelCls}>Category</label>
+                <select className={inputCls} value={form.category} onChange={e => update("category", e.target.value)}>
+                  {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+              <div><label className={labelCls}>Author Name</label><input className={inputCls} value={form.author} onChange={e => update("author", e.target.value)} /></div>
+              <div><label className={labelCls}>Publish Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} /></div>
+              <div><label className={labelCls}>Tags (commas)</label><input className={inputCls} value={form.tags} onChange={e => update("tags", e.target.value)} placeholder="Health, Campus, etc." /></div>
+            </div>
+            <div><label className={labelCls}>Feature Image</label><ImageUploader value={form.cover} onChange={(v) => update("cover", v)} /></div>
+            <div>
+              <label className={labelCls}>Article Body</label>
+              <textarea rows={10} className={`${inputCls} resize-none`} value={form.body} onChange={e => update("body", e.target.value)} required placeholder="Write your content here..." />
+            </div>
+            {err && <p className="text-destructive font-bold text-xs">{err}</p>}
+            {msg && <p className="text-emerald-500 font-bold text-xs">{msg}</p>}
+            <div className="flex gap-4">
+              <button disabled={busy} className="bg-ubepsa text-white flex-1 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl shadow-blue-500/20 active:scale-95 disabled:opacity-50">
+                {busy ? (editingId ? "Updating..." : "Publishing...") : (editingId ? "Update Story →" : "Publish Story →")}
+              </button>
+              {editingId && (
+                <button type="button" onClick={cancelEdit} className="bg-slate-100 text-slate-500 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-200 transition-all active:scale-95">
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+
+        <div className="space-y-10">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 mb-2">Story Preview</h2>
+            <p className="text-sm font-medium text-slate-500">This is how your article will appear on the live site.</p>
+          </div>
+          
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 overflow-hidden sticky top-24">
+            <div className="aspect-video bg-slate-50 overflow-hidden">
+               {form.cover && <img src={form.cover} alt="" className="w-full h-full object-cover" />}
+            </div>
+            <div className="p-8 sm:p-12">
+              <span className="bg-blue-50 text-ubepsa px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">{form.category}</span>
+              <h3 className="text-3xl font-black text-slate-900 mt-6 leading-tight tracking-tight">{form.title || "Untitled story"}</h3>
+              <div className="flex items-center gap-3 mt-6 text-slate-400 font-bold text-[10px] uppercase tracking-widest pb-8 border-b border-slate-50">
+                 <span className="text-slate-900">{form.author || "UBEPSA Staff"}</span>
+                 <span>•</span>
+                 <span>{form.date}</span>
+              </div>
+              <div className="mt-8 text-slate-600 leading-relaxed font-medium space-y-4">
+                {(form.body || "Your article content will render here in real-time as you type in the editor...").split("\n").filter(Boolean).slice(0, 3).map((p, i) => <p key={i}>{p}</p>)}
+                {form.body && form.body.split("\n").length > 3 && <p className="text-ubepsa font-black italic">Read more...</p>}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-10">
-        <div>
-          <h2 className="text-2xl font-black text-slate-900 mb-2">Story Preview</h2>
-          <p className="text-sm font-medium text-slate-500">This is how your article will appear on the live site.</p>
-        </div>
-        
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 overflow-hidden sticky top-24">
-          <div className="aspect-video bg-slate-50 overflow-hidden">
-             {form.cover && <img src={form.cover} alt="" className="w-full h-full object-cover" />}
-          </div>
-          <div className="p-8 sm:p-12">
-            <span className="bg-blue-50 text-ubepsa px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">{form.category}</span>
-            <h3 className="text-3xl font-black text-slate-900 mt-6 leading-tight tracking-tight">{form.title || "Untitled story"}</h3>
-            <div className="flex items-center gap-3 mt-6 text-slate-400 font-bold text-[10px] uppercase tracking-widest pb-8 border-b border-slate-50">
-               <span className="text-slate-900">{form.author || "UBEPSA Staff"}</span>
-               <span>•</span>
-               <span>{form.date}</span>
+      <div>
+        <h3 className="text-2xl font-black text-slate-900 mb-8 px-1 tracking-tight">Published Stories ({articles.length})</h3>
+        <div className="grid gap-4">
+          {articles.map((a) => (
+            <div key={a.id} className="p-6 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 group">
+              <div className="flex items-center gap-6 min-w-0">
+                <div className="h-16 w-16 rounded-2xl bg-slate-50 overflow-hidden flex-shrink-0">
+                  <img src={a.cover} alt="" className="w-full h-full object-cover" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] font-black text-ubepsa uppercase tracking-widest">{a.category}</span>
+                  <p className="font-bold text-slate-900 text-lg leading-tight truncate">{a.title}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{a.date} • {a.author}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 self-end sm:self-center">
+                <button onClick={() => startEdit(a)} className="bg-slate-50 text-slate-600 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-ubepsa hover:text-white transition-all shadow-sm">
+                  Edit
+                </button>
+                <button onClick={() => { if(confirm("Delete this article?")) deleteArticle(a.id); }} className="bg-slate-50 text-slate-400 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-destructive hover:text-white transition-all shadow-sm">
+                  Delete
+                </button>
+              </div>
             </div>
-            <div className="mt-8 text-slate-600 leading-relaxed font-medium space-y-4">
-              {(form.body || "Your article content will render here in real-time as you type in the editor...").split("\n").filter(Boolean).slice(0, 3).map((p, i) => <p key={i}>{p}</p>)}
-              {form.body && form.body.split("\n").length > 3 && <p className="text-ubepsa font-black italic">Read more...</p>}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
@@ -809,64 +877,136 @@ function ScholarshipManager() {
 }
 
 function EventManager() {
-  const { events, addEvent, deleteEvent } = useUbepsa();
-  const [form, setForm] = useState({ title: "", description: "", date: "", location: "", image_url: "" });
+  const { events, addEvent, deleteEvent, updateEvent } = useUbepsa();
+  const emptyForm = { title: "", description: "", date: "", location: "", image_url: "" };
+  const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
 
   const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
+
+  const startEdit = (e: UbepsaEvent) => {
+    setEditingId(e.id);
+    setForm({
+      title: e.title,
+      description: e.description,
+      date: e.date,
+      location: e.location,
+      image_url: e.image_url || "",
+    });
+    setMsg("");
+    setErr("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+  };
   
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title || !form.date) return;
     setBusy(true); setErr(""); setMsg("");
     try {
-      await addEvent({ ...form });
-      setForm({ title: "", description: "", date: "", location: "", image_url: "" });
-      setMsg("Event scheduled successfully!");
-    } catch (e) {
-      setErr((e as Error).message);
+      if (editingId) {
+        await updateEvent(editingId, form);
+        setMsg("Event updated successfully!");
+        cancelEdit();
+      } else {
+        await addEvent({ ...form });
+        setForm(emptyForm);
+        setMsg("Event scheduled successfully!");
+      }
+    } catch (e: any) {
+      console.error("Event save error:", e);
+      setErr(e.message || "Failed to save event. Please check your connection or admin permissions.");
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-16">
-      <div className="space-y-10">
-        <div>
-          <h2 className="text-2xl font-black text-slate-900 mb-2">Schedule Activity</h2>
-          <p className="text-sm font-medium text-slate-500">Add departmental events, workshops, or association meetings.</p>
-        </div>
-        <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
-          <div><label className={labelCls}>Event Name</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div><label className={labelCls}>Event Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} placeholder="15 July 2024" required /></div>
-            <div><label className={labelCls}>Campus Location</label><input className={inputCls} value={form.location} onChange={e => update("location", e.target.value)} placeholder="LT 1, UNIBEN" required /></div>
+    <div className="space-y-16">
+      <div className="grid lg:grid-cols-2 gap-16">
+        <div className="space-y-10">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 mb-2">{editingId ? "Edit Activity" : "Schedule Activity"}</h2>
+            <p className="text-sm font-medium text-slate-500">{editingId ? "Modify the details of your scheduled event." : "Add departmental events, workshops, or association meetings."}</p>
           </div>
-          <div><label className={labelCls}>Promotional Banner</label><ImageUploader value={form.image_url} onChange={(v) => update("image_url", v)} /></div>
-          <div><label className={labelCls}>Activity Overview</label><textarea rows={6} className={`${inputCls} resize-none`} value={form.description} onChange={e => update("description", e.target.value)} required /></div>
-          
-          {err && <p className="text-destructive font-bold text-xs">{err}</p>}
-          {msg && <p className="text-emerald-500 font-bold text-xs">{msg}</p>}
+          <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
+            <div><label className={labelCls}>Event Name</label><input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required /></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div><label className={labelCls}>Event Date</label><input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} placeholder="15 July 2024" required /></div>
+              <div><label className={labelCls}>Campus Location</label><input className={inputCls} value={form.location} onChange={e => update("location", e.target.value)} placeholder="LT 1, UNIBEN" required /></div>
+            </div>
+            <div><label className={labelCls}>Promotional Banner</label><ImageUploader value={form.image_url} onChange={(v) => update("image_url", v)} /></div>
+            <div><label className={labelCls}>Activity Overview</label><textarea rows={6} className={`${inputCls} resize-none`} value={form.description} onChange={e => update("description", e.target.value)} required /></div>
+            
+            {err && <p className="text-destructive font-bold text-xs">{err}</p>}
+            {msg && <p className="text-emerald-500 font-bold text-xs">{msg}</p>}
 
-          <button disabled={busy} className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl active:scale-95 disabled:opacity-50">
-            {busy ? "Scheduling..." : "Schedule Event →"}
-          </button>
-        </form>
+            <div className="flex gap-4">
+              <button disabled={busy} className="bg-ubepsa text-white flex-1 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl active:scale-95 disabled:opacity-50">
+                {busy ? (editingId ? "Updating..." : "Scheduling...") : (editingId ? "Update Event →" : "Schedule Event →")}
+              </button>
+              {editingId && (
+                <button type="button" onClick={cancelEdit} className="bg-slate-100 text-slate-500 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-200 transition-all active:scale-95">
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+        
+        <div className="space-y-10">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 mb-2">Event Preview</h2>
+            <p className="text-sm font-medium text-slate-500">How this event will appear to students.</p>
+          </div>
+          <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-2xl shadow-blue-900/5 overflow-hidden sticky top-24">
+            <div className="h-48 sm:h-64 bg-slate-50 relative overflow-hidden">
+               {form.image_url ? (
+                 <img src={form.image_url} alt="" className="w-full h-full object-cover" />
+               ) : (
+                 <div className="w-full h-full flex items-center justify-center text-slate-200 font-black text-2xl uppercase tracking-[0.2em]">UBEPSA Event</div>
+               )}
+            </div>
+            <div className="p-8 sm:p-10">
+               <div className="flex items-center gap-2 mb-4">
+                  <span className="bg-ubepsa/10 text-ubepsa px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest">{form.date || "Date TBA"}</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{form.location || "Location TBA"}</span>
+               </div>
+               <h3 className="text-2xl font-black text-slate-900 mb-4 leading-tight">{form.title || "Event Title"}</h3>
+               <p className="text-slate-500 font-medium text-sm leading-relaxed line-clamp-4">{form.description || "Description will appear here..."}</p>
+            </div>
+          </div>
+        </div>
       </div>
+
       <div>
-        <h3 className="text-xl font-black text-slate-900 mb-8 px-1 tracking-tight">Upcoming Schedule ({events.length})</h3>
-        <div className="space-y-4">
+        <h3 className="text-2xl font-black text-slate-900 mb-8 px-1 tracking-tight">Scheduled Activities ({events.length})</h3>
+        <div className="grid gap-4">
           {events.map(e => (
-            <div key={e.id} className="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm group">
-              <div className="flex items-start justify-between gap-6">
-                <div className="min-w-0">
-                  <p className="font-bold text-slate-900 text-lg leading-tight mb-2 truncate">{e.title}</p>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{e.date} · {e.location}</p>
+            <div key={e.id} className="p-6 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 group">
+              <div className="flex items-center gap-6 min-w-0">
+                <div className="h-16 w-16 rounded-2xl bg-slate-50 overflow-hidden flex-shrink-0">
+                  <img src={e.image_url || "/exco1.jfif"} alt="" className="w-full h-full object-cover" />
                 </div>
-                <button onClick={() => deleteEvent(e.id)} className="text-[10px] font-black text-destructive uppercase tracking-widest hover:underline p-2 shrink-0">Delete</button>
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 text-lg leading-tight truncate">{e.title}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{e.date} • {e.location}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 self-end sm:self-center">
+                <button onClick={() => startEdit(e)} className="bg-slate-50 text-slate-600 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-ubepsa hover:text-white transition-all shadow-sm">
+                  Edit
+                </button>
+                <button onClick={() => { if(confirm("Delete this event?")) deleteEvent(e.id); }} className="bg-slate-50 text-slate-400 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-destructive hover:text-white transition-all shadow-sm">
+                  Delete
+                </button>
               </div>
             </div>
           ))}

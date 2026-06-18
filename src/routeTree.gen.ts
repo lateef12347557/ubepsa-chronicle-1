@@ -19,6 +19,7 @@ import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EventEventIdRouteImport } from './routes/event.$eventId'
 
 const ScholarshipRoute = ScholarshipRouteImport.update({
   id: '/scholarship',
@@ -70,30 +71,37 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventEventIdRoute = EventEventIdRouteImport.update({
+  id: '/$eventId',
+  path: '/$eventId',
+  getParentRoute: () => EventRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/articles': typeof ArticlesRoute
-  '/event': typeof EventRoute
+  '/event': typeof EventRouteWithChildren
   '/excos': typeof ExcosRoute
   '/gallery': typeof GalleryRoute
   '/newspaper': typeof NewspaperRoute
   '/press': typeof PressRoute
   '/scholarship': typeof ScholarshipRoute
+  '/event/$eventId': typeof EventEventIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/articles': typeof ArticlesRoute
-  '/event': typeof EventRoute
+  '/event': typeof EventRouteWithChildren
   '/excos': typeof ExcosRoute
   '/gallery': typeof GalleryRoute
   '/newspaper': typeof NewspaperRoute
   '/press': typeof PressRoute
   '/scholarship': typeof ScholarshipRoute
+  '/event/$eventId': typeof EventEventIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -101,12 +109,13 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/articles': typeof ArticlesRoute
-  '/event': typeof EventRoute
+  '/event': typeof EventRouteWithChildren
   '/excos': typeof ExcosRoute
   '/gallery': typeof GalleryRoute
   '/newspaper': typeof NewspaperRoute
   '/press': typeof PressRoute
   '/scholarship': typeof ScholarshipRoute
+  '/event/$eventId': typeof EventEventIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/newspaper'
     | '/press'
     | '/scholarship'
+    | '/event/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/newspaper'
     | '/press'
     | '/scholarship'
+    | '/event/$eventId'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/newspaper'
     | '/press'
     | '/scholarship'
+    | '/event/$eventId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -152,7 +164,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   ArticlesRoute: typeof ArticlesRoute
-  EventRoute: typeof EventRoute
+  EventRoute: typeof EventRouteWithChildren
   ExcosRoute: typeof ExcosRoute
   GalleryRoute: typeof GalleryRoute
   NewspaperRoute: typeof NewspaperRoute
@@ -232,15 +244,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/event/$eventId': {
+      id: '/event/$eventId'
+      path: '/$eventId'
+      fullPath: '/event/$eventId'
+      preLoaderRoute: typeof EventEventIdRouteImport
+      parentRoute: typeof EventRoute
+    }
   }
 }
+
+interface EventRouteChildren {
+  EventEventIdRoute: typeof EventEventIdRoute
+}
+
+const EventRouteChildren: EventRouteChildren = {
+  EventEventIdRoute: EventEventIdRoute,
+}
+
+const EventRouteWithChildren = EventRoute._addFileChildren(EventRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   ArticlesRoute: ArticlesRoute,
-  EventRoute: EventRoute,
+  EventRoute: EventRouteWithChildren,
   ExcosRoute: ExcosRoute,
   GalleryRoute: GalleryRoute,
   NewspaperRoute: NewspaperRoute,
