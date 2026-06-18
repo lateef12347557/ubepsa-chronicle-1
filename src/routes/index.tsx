@@ -32,7 +32,7 @@ function Index() {
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-8 reveal in">
                <div className="h-[2px] w-6 sm:w-10 bg-ubepsa" />
-               <span className="text-[9px] sm:text-xs font-black text-ubepsa uppercase tracking-[0.2em] sm:tracking-[0.3em]">Official Student Portal</span>
+               <span className="text-[9px] sm:text-xs font-black text-ubepsa uppercase tracking-[0.2em] sm:tracking-[0.3em]">Official Student website</span>
             </div>
             
             <h1 className="mega-display text-slate-900 mb-4 sm:mb-8 reveal in">
