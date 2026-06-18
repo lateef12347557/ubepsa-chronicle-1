@@ -95,7 +95,26 @@ export function useUbepsaStore() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => { 
+    refresh(); 
+    
+    // Subscribe to ALL relevant tables for real-time updates
+    const channels = [
+      "articles", "gallery_items", "press_releases", 
+      "breaking_news", "scholarships", "events"
+    ].map(table => 
+      supabase
+        .channel(`public:${table}`)
+        .on("postgres_changes", { event: "*", schema: "public", table }, () => {
+          refresh(); // Re-fetch all data on any change
+        })
+        .subscribe()
+    );
+
+    return () => {
+      channels.forEach(channel => supabase.removeChannel(channel));
+    };
+  }, [refresh]);
 
   const addArticle = useCallback(async (a: Omit<Article, "id" | "readTime"> & { readTime?: number }) => {
     const { data, error } = await supabase.from("articles").insert({

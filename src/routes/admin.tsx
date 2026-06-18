@@ -128,6 +128,7 @@ function AdminPage() {
 type Tab = "articles" | "gallery" | "press" | "breaking" | "admins" | "stats" | "scholarships" | "events";
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
+  const { loading } = useUbepsa();
   const [tab, setTab] = useState<Tab>("articles");
   const [email, setEmail] = useState<string>("");
   
@@ -159,7 +160,10 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               </div>
               <div>
                 <h2 className="font-black text-slate-900 leading-tight">UBEPSA CMS</h2>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Control Center</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                   <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                   <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Live Sync Active</p>
+                </div>
               </div>
             </div>
           </SidebarHeader>
@@ -199,7 +203,13 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             </button>
           </SidebarFooter>
         </Sidebar>
-        <SidebarInset className="flex-1 overflow-auto bg-white p-4 sm:p-10">
+        <SidebarInset className="flex-1 overflow-auto bg-white p-4 sm:p-10 relative">
+          {loading && (
+            <div className="absolute top-0 left-0 right-0 h-1 bg-slate-100 overflow-hidden z-50">
+              <div className="h-full bg-ubepsa w-1/3 animate-[progress_1s_infinite_linear]" />
+            </div>
+          )}
+          
           <div className="flex items-center gap-4 mb-8 lg:hidden">
             <SidebarTrigger className="p-2 bg-slate-100 rounded-lg text-slate-600 hover:bg-ubepsa hover:text-white transition-all" />
             <h1 className="text-xl font-black text-slate-900 tracking-tight">Dashboard</h1>
@@ -210,6 +220,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               <h1 className="text-3xl font-black text-slate-900 tracking-tight">Management Dashboard</h1>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">UBEPSA Internal · Systems Control</p>
             </div>
+            {loading && <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Syncing changes…</span>}
           </div>
 
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -450,17 +461,29 @@ function ArticlesManager() {
     title: "", category: "News", author: "", date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
     cover: "https://picsum.photos/seed/ubepsa/1600/1000", body: "", tags: "",
   });
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [msg, setMsg] = useState("");
+
   const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title || !form.body) return;
-    addArticle({
-      title: form.title, category: form.category, author: form.author || "Staff Writer", date: form.date,
-      cover: form.cover, body: form.body, excerpt: form.body.slice(0, 180) + (form.body.length > 180 ? "…" : ""),
-      tags: form.tags.split(",").map(t => t.trim()).filter(Boolean),
-    });
-    setForm({ ...form, title: "", body: "", tags: "" });
+    setBusy(true); setErr(""); setMsg("");
+    try {
+      await addArticle({
+        title: form.title, category: form.category, author: form.author || "Staff Writer", date: form.date,
+        cover: form.cover, body: form.body, excerpt: form.body.slice(0, 180) + (form.body.length > 180 ? "…" : ""),
+        tags: form.tags.split(",").map(t => t.trim()).filter(Boolean),
+      });
+      setForm({ ...form, title: "", body: "", tags: "" });
+      setMsg("Article published successfully!");
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -488,7 +511,11 @@ function ArticlesManager() {
             <label className={labelCls}>Article Body</label>
             <textarea rows={10} className={`${inputCls} resize-none`} value={form.body} onChange={e => update("body", e.target.value)} required placeholder="Write your content here..." />
           </div>
-          <button className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl shadow-blue-500/20 active:scale-95">Publish Story →</button>
+          {err && <p className="text-destructive font-bold text-xs">{err}</p>}
+          {msg && <p className="text-emerald-500 font-bold text-xs">{msg}</p>}
+          <button disabled={busy} className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl shadow-blue-500/20 active:scale-95 disabled:opacity-50">
+            {busy ? "Publishing..." : "Publish Story →"}
+          </button>
         </form>
       </div>
 
@@ -524,13 +551,27 @@ function ArticlesManager() {
 function GalleryManager() {
   const { gallery, addGallery, deleteGallery } = useUbepsa();
   const [form, setForm] = useState({ url: "https://picsum.photos/seed/ubepsa/900/700", title: "", caption: "", photographer: "", date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }), album: "Department" });
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [msg, setMsg] = useState("");
+
   const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
-  const submit = (e: React.FormEvent) => {
+  
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.url || !form.title) return;
-    addGallery({ ...form });
-    setForm({ ...form, title: "", caption: "" });
+    setBusy(true); setErr(""); setMsg("");
+    try {
+      await addGallery({ ...form });
+      setForm({ ...form, title: "", caption: "" });
+      setMsg("Photo added to gallery successfully!");
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
   };
+
   return (
     <div className="space-y-16">
       <div className="max-w-4xl">
@@ -546,7 +587,13 @@ function GalleryManager() {
             <div><label className={labelCls}>Album Name</label><input className={inputCls} value={form.album} onChange={e => update("album", e.target.value)} /></div>
           </div>
           <div><label className={labelCls}>Full Caption</label><textarea rows={3} className={`${inputCls} resize-none`} value={form.caption} onChange={e => update("caption", e.target.value)} /></div>
-          <button className="bg-ubepsa text-white px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl shadow-blue-500/10 active:scale-95">Add to Collection →</button>
+          
+          {err && <p className="text-destructive font-bold text-xs">{err}</p>}
+          {msg && <p className="text-emerald-500 font-bold text-xs">{msg}</p>}
+
+          <button disabled={busy} className="bg-ubepsa text-white px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl shadow-blue-500/10 active:scale-95 disabled:opacity-50">
+            {busy ? "Adding..." : "Add to Collection →"}
+          </button>
         </form>
       </div>
 
@@ -576,13 +623,27 @@ function GalleryManager() {
 function PressManager() {
   const { releases, addRelease, deleteRelease } = useUbepsa();
   const [form, setForm] = useState({ title: "", date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }), issuer: "UBEPSA Executive Council", body: "", summary: "" });
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [msg, setMsg] = useState("");
+
   const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
-  const submit = (e: React.FormEvent) => {
+  
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title || !form.body) return;
-    addRelease({ ...form, summary: form.summary || form.body.slice(0, 150) + (form.body.length > 150 ? "…" : "") });
-    setForm({ ...form, title: "", body: "", summary: "" });
+    setBusy(true); setErr(""); setMsg("");
+    try {
+      await addRelease({ ...form, summary: form.summary || form.body.slice(0, 150) + (form.body.length > 150 ? "…" : "") });
+      setForm({ ...form, title: "", body: "", summary: "" });
+      setMsg("Press release issued successfully!");
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
   };
+
   return (
     <div className="grid lg:grid-cols-2 gap-16">
       <div className="space-y-10">
@@ -599,7 +660,13 @@ function PressManager() {
           </div>
           <div><label className={labelCls}>Brief Summary</label><input className={inputCls} value={form.summary} onChange={e => update("summary", e.target.value)} placeholder="One sentence highlight..." /></div>
           <div><label className={labelCls}>Full Statement Content</label><textarea rows={10} className={`${inputCls} resize-none`} value={form.body} onChange={e => update("body", e.target.value)} required /></div>
-          <button className="bg-slate-900 text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa transition-all shadow-xl active:scale-95">Issue Official Release →</button>
+          
+          {err && <p className="text-destructive font-bold text-xs">{err}</p>}
+          {msg && <p className="text-emerald-500 font-bold text-xs">{msg}</p>}
+
+          <button disabled={busy} className="bg-slate-900 text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa transition-all shadow-xl active:scale-95 disabled:opacity-50">
+            {busy ? "Issuing..." : "Issue Official Release →"}
+          </button>
         </form>
       </div>
 
@@ -676,12 +743,25 @@ function Stat({ label, value }: { label: string; value: number }) {
 function ScholarshipManager() {
   const { scholarships, addScholarship, deleteScholarship } = useUbepsa();
   const [form, setForm] = useState({ title: "", description: "", eligibility: "", deadline: "", link: "" });
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [msg, setMsg] = useState("");
+
   const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
-  const submit = (e: React.FormEvent) => {
+  
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title || !form.description) return;
-    addScholarship({ ...form });
-    setForm({ title: "", description: "", eligibility: "", deadline: "", link: "" });
+    setBusy(true); setErr(""); setMsg("");
+    try {
+      await addScholarship({ ...form });
+      setForm({ title: "", description: "", eligibility: "", deadline: "", link: "" });
+      setMsg("Scholarship opportunity posted successfully!");
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -699,7 +779,13 @@ function ScholarshipManager() {
             <div><label className={labelCls}>Application Portal (Link)</label><input className={inputCls} value={form.link} onChange={e => update("link", e.target.value)} placeholder="https://..." /></div>
           </div>
           <div><label className={labelCls}>Program Description</label><textarea rows={6} className={`${inputCls} resize-none`} value={form.description} onChange={e => update("description", e.target.value)} required /></div>
-          <button className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl active:scale-95">Post Opportunity →</button>
+          
+          {err && <p className="text-destructive font-bold text-xs">{err}</p>}
+          {msg && <p className="text-emerald-500 font-bold text-xs">{msg}</p>}
+          
+          <button disabled={busy} className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl active:scale-95 disabled:opacity-50">
+            {busy ? "Posting..." : "Post Opportunity →"}
+          </button>
         </form>
       </div>
       <div>
@@ -725,12 +811,25 @@ function ScholarshipManager() {
 function EventManager() {
   const { events, addEvent, deleteEvent } = useUbepsa();
   const [form, setForm] = useState({ title: "", description: "", date: "", location: "", image_url: "" });
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [msg, setMsg] = useState("");
+
   const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
-  const submit = (e: React.FormEvent) => {
+  
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title || !form.date) return;
-    addEvent({ ...form });
-    setForm({ title: "", description: "", date: "", location: "", image_url: "" });
+    setBusy(true); setErr(""); setMsg("");
+    try {
+      await addEvent({ ...form });
+      setForm({ title: "", description: "", date: "", location: "", image_url: "" });
+      setMsg("Event scheduled successfully!");
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -748,7 +847,13 @@ function EventManager() {
           </div>
           <div><label className={labelCls}>Promotional Banner</label><ImageUploader value={form.image_url} onChange={(v) => update("image_url", v)} /></div>
           <div><label className={labelCls}>Activity Overview</label><textarea rows={6} className={`${inputCls} resize-none`} value={form.description} onChange={e => update("description", e.target.value)} required /></div>
-          <button className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl active:scale-95">Schedule Event →</button>
+          
+          {err && <p className="text-destructive font-bold text-xs">{err}</p>}
+          {msg && <p className="text-emerald-500 font-bold text-xs">{msg}</p>}
+
+          <button disabled={busy} className="bg-ubepsa text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl active:scale-95 disabled:opacity-50">
+            {busy ? "Scheduling..." : "Schedule Event →"}
+          </button>
         </form>
       </div>
       <div>

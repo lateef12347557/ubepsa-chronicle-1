@@ -50,7 +50,8 @@ function ScholarshipPage() {
           <div className="max-w-3xl relative z-10">
             <h2 className="text-3xl sm:text-5xl font-black mb-6 sm:mb-8 leading-tight">Scholarship Program</h2>
             <p className="text-blue-50 text-base sm:text-xl font-medium mb-12 leading-relaxed">
-              UBEPSA is committed to supporting students who demonstrate academic excellence and leadership potential. Check back regularly for new scholarship opportunities and grants.
+            For Scholarship information or patnership to support our students,kindly react out to : +234 816 306 1650
+        
             </p>
             <div className="h-1.5 w-12 bg-white/20 rounded-full" />
           </div>

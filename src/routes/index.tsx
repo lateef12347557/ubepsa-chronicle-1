@@ -13,9 +13,8 @@ function Index() {
 
   const hero = articles[0];
   const secondary = articles.slice(1, 6);
-  const featuredEvents = events.slice(0, 6);
-  const featuredScholarships = scholarships.slice(0, 6);
-  const recentGallery = gallery.slice(0, 12);
+  const featuredEvents = events.slice(0, 4);
+  const recentGallery = gallery.slice(0, 4);
 
   return (
     <div className="bg-white selection:bg-ubepsa selection:text-white">
@@ -33,8 +32,8 @@ function Index() {
             
             <h1 className="mega-display text-slate-900 mb-4 sm:mb-8 reveal in">
               The Voice of <br className="hidden xs:block" />
-              <span className="text-ubepsa">Physiotherapy</span> <br className="hidden sm:block" /> 
-              at UNIBEN.
+              <span className="text-ubepsa">UNIBEN </span> <br className="hidden sm:block" /> 
+              Physiotherapy.
             </h1>
             
             <p className="text-sm sm:text-lg lg:text-xl text-slate-500 leading-relaxed mb-6 sm:mb-12 max-w-xl font-medium reveal in" style={{ transitionDelay: '100ms' }}>
@@ -68,7 +67,12 @@ function Index() {
               
               <div onClick={() => hero && setOpen(hero)} className="group cursor-pointer bg-white rounded-2xl sm:rounded-[2rem] overflow-hidden border border-slate-100 shadow-lg sm:shadow-xl shadow-blue-900/5 transition-all hover:shadow-blue-900/10 hover:-translate-y-1">
                  <div className="aspect-video xs:aspect-[21/9] overflow-hidden bg-slate-50 relative">
-                    <img src={hero?.cover || "/ed1.jpg"} alt={hero?.title || "Welcome to UBEPSA"} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img 
+                      src={hero?.cover || "/ed1.jpg"} 
+                      alt={hero?.title || "Welcome to UBEPSA"} 
+                      onError={(e) => { (e.target as HTMLImageElement).src = "/ed1.jpg"; }}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                    />
                     <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
                        <span className="bg-ubepsa text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg text-[7px] sm:text-[9px] font-black uppercase tracking-widest shadow-lg">{hero?.category || "Welcome"}</span>
                     </div>
@@ -134,8 +138,8 @@ function Index() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {(featuredEvents.length > 0 ? featuredEvents : [1,2,3,4,5,6]).map((e, i) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+            {(featuredEvents.length > 0 ? featuredEvents : [1,2,3,4]).map((e, i) => {
               const isReal = typeof e !== "number";
               const event = isReal ? e : {
                 id: i.toString(),
@@ -163,53 +167,10 @@ function Index() {
               );
             })}
           </div>
-        </div>
-      </section>
 
-      {/* ============ SCHOLARSHIP OPPORTUNITIES ============ */}
-      <section className="py-16 sm:py-24 bg-slate-900 text-white overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-ubepsa rounded-full blur-[100px] opacity-20 translate-x-1/2 -translate-y-1/2" />
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-          <header className="mb-10 sm:mb-12 text-center max-w-2xl mx-auto">
-            <span className="text-ubepsa text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] mb-2 block">Empowering Excellence</span>
-            <h2 className="text-2xl sm:text-4xl font-black tracking-tighter mb-4 leading-tight">Financial Grants & <span className="text-ubepsa">Scholarships.</span></h2>
-            <p className="text-slate-400 font-medium text-xs sm:text-sm">We curate the best opportunities to support your academic journey and professional development.</p>
-          </header>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {(featuredScholarships.length > 0 ? featuredScholarships : [1,2,3]).map((s, i) => {
-              const isReal = typeof s !== "number";
-              const sch = isReal ? s : {
-                id: i.toString(),
-                title: i === 0 ? "Dean's Excellence Grant" : "Clinical Placement Fund",
-                description: "Financial support for high-achieving students in the physiotherapy department.",
-                deadline: "30 July 2026",
-                eligibility: "3.5 CGPA & Above"
-              };
-              return (
-                <div key={sch.id} className="p-6 sm:p-8 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-md hover:bg-white/10 hover:border-ubepsa/50 transition-all group">
-                  <div className="h-10 w-10 bg-ubepsa/20 rounded-xl flex items-center justify-center text-ubepsa font-black text-sm mb-6 group-hover:bg-ubepsa group-hover:text-white transition-all">
-                    SC
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-black mb-3 leading-tight group-hover:text-ubepsa transition-colors">{sch.title}</h3>
-                  <p className="text-slate-400 text-[10px] sm:text-xs leading-relaxed mb-5 font-medium line-clamp-3">{sch.description}</p>
-                  <div className="space-y-2 mb-6">
-                    <div className="flex items-center gap-2 text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-slate-500">
-                      <span className="text-ubepsa">Deadline:</span> {sch.deadline || "Open"}
-                    </div>
-                    <div className="flex items-center gap-2 text-[8px] sm:text-[9px] font-black uppercase tracking-widest text-slate-500">
-                      <span className="text-ubepsa">Eligibility:</span> {sch.eligibility}
-                    </div>
-                  </div>
-                  <Link to="/scholarship" className="btn-modern bg-white text-slate-900 px-6 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-ubepsa hover:text-white transition-all w-full text-center">View Details</Link>
-                </div>
-              );
-            })}
-          </div>
-          <div className="mt-10 text-center">
-            <Link to="/scholarship" className="btn-modern bg-ubepsa text-white px-8 py-3 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-blue-500/20">
-              Explore All Grants
+          <div className="mt-12 text-center">
+            <Link to="/event" className="btn-modern bg-ubepsa text-white px-10 py-4 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] shadow-lg shadow-blue-500/20 hover:-translate-y-1 transition-all inline-block">
+               View All Events
             </Link>
           </div>
         </div>
@@ -226,8 +187,8 @@ function Index() {
             </div>
           </div>
 
-          <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 sm:gap-4 space-y-3 sm:space-y-4">
-            {(recentGallery.length > 0 ? recentGallery : [1,2,3,4,5,6,7,8,9,10,11,12]).map((g, i) => {
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {(recentGallery.length > 0 ? recentGallery : [1,2,3,4]).map((g, i) => {
               const isReal = typeof g !== "number";
               const img = isReal ? g : {
                 id: i.toString(),
@@ -236,8 +197,8 @@ function Index() {
                 date: "June 2026"
               };
               return (
-                <div key={img.id} className="relative group overflow-hidden rounded-xl sm:rounded-2xl cursor-pointer">
-                  <img src={img.url} alt={img.title} className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div key={img.id} className="relative group overflow-hidden rounded-xl sm:rounded-2xl cursor-pointer aspect-square">
+                  <img src={img.url} alt={img.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                     <p className="text-white font-black text-sm leading-tight mb-1">{img.title}</p>
                     <p className="text-slate-300 text-[8px] font-bold uppercase tracking-widest">{img.date}</p>
@@ -245,6 +206,12 @@ function Index() {
                 </div>
               );
             })}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link to="/gallery" className="btn-modern bg-slate-900 text-white px-10 py-4 rounded-xl font-black uppercase tracking-[0.2em] text-[10px] shadow-lg hover:-translate-y-1 transition-all inline-block">
+               Explore Full Gallery
+            </Link>
           </div>
         </div>
       </section>
@@ -257,9 +224,8 @@ function Index() {
                <p className="text-sm sm:text-base text-slate-500 font-medium">Everything you need to know about UBEPSA UNIBEN.</p>
             </header>
             
-            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                <ActionCard to="/event" title="Events" desc="Seminars and social gatherings." icon="EV" />
-               <ActionCard to="/scholarship" title="Scholarship" desc="Financial aid and academic grants." icon="SC" />
                <ActionCard to="/gallery" title="Gallery" desc="Moments from our campus life." icon="GA" />
                <ActionCard to="/about" title="About Us" desc="Our mission, vision, and team." icon="AB" />
             </div>

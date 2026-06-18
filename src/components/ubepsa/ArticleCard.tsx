@@ -11,9 +11,10 @@ export function ArticleCard({ article, onOpen, size = "md" }: { article: Article
     >
       <div className={`relative overflow-hidden ${ratio} bg-slate-50`}>
         <img
-          src={article.cover}
+          src={article.cover || "/ed1.jpg"}
           alt={article.title}
           loading="lazy"
+          onError={(e) => { (e.target as HTMLImageElement).src = "/ed1.jpg"; }}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
         />
         <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
