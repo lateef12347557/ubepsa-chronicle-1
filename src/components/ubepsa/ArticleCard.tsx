@@ -7,30 +7,37 @@ export function ArticleCard({ article, onOpen, size = "md" }: { article: Article
   return (
     <article
       onClick={() => onOpen(article)}
-      className="bento group cursor-pointer h-full flex flex-col"
+      className="bento group cursor-pointer h-full flex flex-col bg-white"
     >
-      <div className={`relative overflow-hidden ${ratio}`}>
+      <div className={`relative overflow-hidden ${ratio} bg-slate-50`}>
         <img
           src={article.cover}
           alt={article.title}
           loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06] opacity-90 group-hover:opacity-100"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050510] via-[#050510]/30 to-transparent" />
-        <span className="absolute top-3 left-3 stamp stamp-dot">{article.category}</span>
+        <div className="absolute top-3 left-3">
+          <span className="stamp stamp-solid !bg-blue-600 !text-white !border-none !rounded-md shadow-sm">{article.category}</span>
+        </div>
       </div>
       <div className="p-5 sm:p-6 flex-1 flex flex-col">
-        <h3 className={`font-display ${titleSize} leading-[1.15] text-ink group-hover:text-gradient transition-all duration-500`}>
+        <h3 className={`font-bold ${titleSize} leading-tight text-blue-900 group-hover:text-blue-600 transition-colors`}>
           {article.title}
         </h3>
-        <p className="mt-3 text-sm text-ink/55 line-clamp-2 leading-relaxed">
+        <p className="mt-3 text-sm text-slate-500 line-clamp-2 leading-relaxed">
           {article.excerpt}
         </p>
-        <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between font-mono text-[0.62rem] tracking-[0.2em] uppercase text-ink/45">
-          <span className="truncate">{article.author}</span>
-          <span className="shrink-0 ml-2">{article.readTime} min</span>
+        <div className="mt-auto pt-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600 uppercase">
+              {article.author[0]}
+            </div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{article.author}</span>
+          </div>
+          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">{article.readTime} min read</span>
         </div>
       </div>
     </article>
   );
 }
+

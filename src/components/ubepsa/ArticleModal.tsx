@@ -17,46 +17,46 @@ export function ArticleModal({ article, onClose }: { article: Article | null; on
   const paragraphs = article.body.split("\n").filter(Boolean);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md overflow-y-auto" onClick={onClose}>
-      <div className="min-h-full py-8 px-4 flex items-start justify-center">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm overflow-y-auto" onClick={onClose}>
+      <div className="min-h-full py-12 px-4 flex items-start justify-center">
         <article
-          className="bg-paper max-w-4xl w-full shadow-[0_60px_120px_-40px_rgba(0,0,0,0.9)] page-fade border border-white/10"
+          className="bg-white max-w-4xl w-full rounded-3xl shadow-2xl overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="relative">
-            <div className="img-frame">
-              <img src={article.cover} alt={article.title} className="w-full h-72 sm:h-[28rem] object-cover" />
-            </div>
+          <div className="relative aspect-video">
+            <img src={article.cover} alt={article.title} className="w-full h-full object-cover" />
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-20 kicker bg-paper/90 text-ink px-4 py-2 backdrop-blur border border-white/20 hover:bg-press-red hover:border-press-red transition-colors"
+              className="absolute top-6 right-6 z-20 bg-white/90 text-blue-900 px-4 py-2 rounded-lg font-bold shadow-lg hover:bg-blue-600 hover:text-white transition-colors"
             >
-              Close ✕
+              ✕ Close
             </button>
-            <div className="absolute bottom-0 left-0 right-0 z-10 p-6 sm:p-12">
-              <span className="stamp stamp-solid">{article.category}</span>
-              <h1 className="mega-display text-3xl sm:text-6xl leading-[0.95] mt-5 text-ink max-w-4xl">{article.title}</h1>
-            </div>
           </div>
-          <div className="p-6 sm:p-12">
-            <div className="flex flex-wrap gap-x-6 gap-y-1 kicker text-ink/50 border-b border-white/10 pb-5">
-              <span>By <span className="text-ink">{article.author}</span></span>
-              <span>{article.date}</span>
-              <span>{article.readTime} min read</span>
+          <div className="p-8 sm:p-16">
+            <div className="mb-10">
+              <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider">{article.category}</span>
+              <h1 className="text-3xl sm:text-5xl font-bold text-blue-900 mt-6 leading-tight">{article.title}</h1>
+              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-sm font-medium text-slate-500 border-b border-slate-100 pb-8">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600 uppercase">
+                    {article.author[0]}
+                  </div>
+                  <span className="text-blue-900 font-bold">{article.author}</span>
+                </div>
+                <span>{article.date}</span>
+                <span>{article.readTime} min read</span>
+              </div>
             </div>
-            <div className="mt-10 font-sans text-[1.05rem] leading-[1.85] text-ink/80 space-y-6 max-w-2xl mx-auto">
+            
+            <div className="font-sans text-lg leading-relaxed text-slate-700 space-y-8 max-w-2xl">
               {paragraphs.map((p, i) => (
-                <p key={i} className={i === 0 ? "dropcap font-serif text-[1.15rem]" : ""}>{p}</p>
+                <p key={i}>{p}</p>
               ))}
-              {paragraphs.length > 1 && (
-                <blockquote className="pull-quote">
-                  "{paragraphs[1].split(".")[0]}."
-                </blockquote>
-              )}
             </div>
-            <div className="mt-12 pt-6 border-t border-white/10 flex flex-wrap gap-2">
+            
+            <div className="mt-16 pt-8 border-t border-slate-100 flex flex-wrap gap-3">
               {article.tags.map(t => (
-                <span key={t} className="kicker px-3 py-1.5 bg-white/5 text-ink/70 border border-white/10">#{t}</span>
+                <span key={t} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold tracking-wide">#{t}</span>
               ))}
             </div>
           </div>
@@ -65,3 +65,4 @@ export function ArticleModal({ article, onClose }: { article: Article | null; on
     </div>
   );
 }
+

@@ -9,21 +9,45 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ScholarshipRouteImport } from './routes/scholarship'
 import { Route as PressRouteImport } from './routes/press'
+import { Route as NewspaperRouteImport } from './routes/newspaper'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as ExcosRouteImport } from './routes/excos'
+import { Route as EventRouteImport } from './routes/event'
 import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ScholarshipRoute = ScholarshipRouteImport.update({
+  id: '/scholarship',
+  path: '/scholarship',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PressRoute = PressRouteImport.update({
   id: '/press',
   path: '/press',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewspaperRoute = NewspaperRouteImport.update({
+  id: '/newspaper',
+  path: '/newspaper',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExcosRoute = ExcosRouteImport.update({
+  id: '/excos',
+  path: '/excos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventRoute = EventRouteImport.update({
+  id: '/event',
+  path: '/event',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArticlesRoute = ArticlesRouteImport.update({
@@ -52,16 +76,24 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/articles': typeof ArticlesRoute
+  '/event': typeof EventRoute
+  '/excos': typeof ExcosRoute
   '/gallery': typeof GalleryRoute
+  '/newspaper': typeof NewspaperRoute
   '/press': typeof PressRoute
+  '/scholarship': typeof ScholarshipRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/articles': typeof ArticlesRoute
+  '/event': typeof EventRoute
+  '/excos': typeof ExcosRoute
   '/gallery': typeof GalleryRoute
+  '/newspaper': typeof NewspaperRoute
   '/press': typeof PressRoute
+  '/scholarship': typeof ScholarshipRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,22 +101,50 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/articles': typeof ArticlesRoute
+  '/event': typeof EventRoute
+  '/excos': typeof ExcosRoute
   '/gallery': typeof GalleryRoute
+  '/newspaper': typeof NewspaperRoute
   '/press': typeof PressRoute
+  '/scholarship': typeof ScholarshipRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/admin' | '/articles' | '/gallery' | '/press'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/articles'
+    | '/event'
+    | '/excos'
+    | '/gallery'
+    | '/newspaper'
+    | '/press'
+    | '/scholarship'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/admin' | '/articles' | '/gallery' | '/press'
+  to:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/articles'
+    | '/event'
+    | '/excos'
+    | '/gallery'
+    | '/newspaper'
+    | '/press'
+    | '/scholarship'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/admin'
     | '/articles'
+    | '/event'
+    | '/excos'
     | '/gallery'
+    | '/newspaper'
     | '/press'
+    | '/scholarship'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -92,12 +152,23 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   ArticlesRoute: typeof ArticlesRoute
+  EventRoute: typeof EventRoute
+  ExcosRoute: typeof ExcosRoute
   GalleryRoute: typeof GalleryRoute
+  NewspaperRoute: typeof NewspaperRoute
   PressRoute: typeof PressRoute
+  ScholarshipRoute: typeof ScholarshipRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/scholarship': {
+      id: '/scholarship'
+      path: '/scholarship'
+      fullPath: '/scholarship'
+      preLoaderRoute: typeof ScholarshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/press': {
       id: '/press'
       path: '/press'
@@ -105,11 +176,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PressRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/newspaper': {
+      id: '/newspaper'
+      path: '/newspaper'
+      fullPath: '/newspaper'
+      preLoaderRoute: typeof NewspaperRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gallery': {
       id: '/gallery'
       path: '/gallery'
       fullPath: '/gallery'
       preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/excos': {
+      id: '/excos'
+      path: '/excos'
+      fullPath: '/excos'
+      preLoaderRoute: typeof ExcosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/event': {
+      id: '/event'
+      path: '/event'
+      fullPath: '/event'
+      preLoaderRoute: typeof EventRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/articles': {
@@ -148,8 +240,12 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   ArticlesRoute: ArticlesRoute,
+  EventRoute: EventRoute,
+  ExcosRoute: ExcosRoute,
   GalleryRoute: GalleryRoute,
+  NewspaperRoute: NewspaperRoute,
   PressRoute: PressRoute,
+  ScholarshipRoute: ScholarshipRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

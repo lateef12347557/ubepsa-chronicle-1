@@ -17,31 +17,33 @@ function ArticlesPage() {
   const filtered = useMemo(() => {
     return articles.filter(a => {
       const okCat = cat === "All" || a.category === cat;
-      const okQ = !q || (a.title + " " + a.excerpt + " " + a.tags.join(" ")).toLowerCase().includes(q.toLowerCase());
+      const okQ = !q || (a.title + " " + (a.excerpt || "") + " " + a.tags.join(" ")).toLowerCase().includes(q.toLowerCase());
       return okCat && okQ;
     });
   }, [articles, cat, q]);
 
   return (
-    <div className="page-fade max-w-7xl mx-auto px-4 py-12">
-      <div className="rule-double py-3 mb-8">
-        <h1 className="font-display font-black text-4xl sm:text-5xl">Articles</h1>
-        <p className="font-serif italic text-ink/70 mt-1">Reportage, opinion, features & photo essays from the UBEPSA Editorial & Press desk.</p>
+    <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="mb-12 border-b border-slate-100 pb-8">
+        <h1 className="text-4xl font-bold text-blue-900">Articles & News</h1>
+        <p className="text-slate-600 mt-2">The latest stories, reports, and updates from UBEPSA.</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-3 md:items-center justify-between mb-6">
-        <input
-          value={q}
-          onChange={e => setQ(e.target.value)}
-          placeholder="Search articles by title, keyword, or tag…"
-          className="bg-card border border-ink/30 px-4 py-2.5 font-serif text-sm w-full md:max-w-md focus:outline-none focus:border-press-red"
-        />
-        <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-col md:flex-row gap-6 md:items-center justify-between mb-12">
+        <div className="relative w-full md:max-w-md">
+          <input
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            placeholder="Search stories..."
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 focus:ring-2 focus:ring-blue-600 focus:outline-none transition-all"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
           {["All", ...CATEGORIES].map(c => (
             <button
               key={c}
               onClick={() => setCat(c)}
-              className={`font-mono text-[0.65rem] tracking-[0.18em] uppercase px-3 py-1.5 border transition-colors ${cat === c ? "bg-ink text-cream border-ink" : "border-ink/30 text-ink/70 hover:border-press-red hover:text-press-red"}`}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${cat === c ? "bg-blue-600 text-white shadow-md shadow-blue-200" : "bg-white text-slate-600 border border-slate-200 hover:border-blue-600 hover:text-blue-600"}`}
             >
               {c}
             </button>
@@ -50,16 +52,21 @@ function ArticlesPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="font-serif italic text-ink/60 py-20 text-center">No articles match your search.</p>
+        <div className="py-24 text-center">
+          <p className="text-slate-400 text-lg">No articles found matching your criteria.</p>
+        </div>
       ) : (
         <>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filtered.slice(0, visible).map(a => <ArticleCard key={a.id} article={a} onOpen={setOpen} />)}
           </div>
           {visible < filtered.length && (
-            <div className="text-center mt-10">
-              <button onClick={() => setVisible(v => v + 6)} className="font-mono text-xs tracking-[0.2em] uppercase bg-ink text-cream px-6 py-3 hover:bg-press-red transition-colors">
-                Load More
+            <div className="text-center mt-16">
+              <button 
+                onClick={() => setVisible(v => v + 6)} 
+                className="bg-white text-blue-600 border border-blue-200 px-8 py-3 rounded-lg font-bold hover:bg-blue-50 transition-colors shadow-sm"
+              >
+                Load More Articles
               </button>
             </div>
           )}
@@ -70,3 +77,4 @@ function ArticlesPage() {
     </div>
   );
 }
+

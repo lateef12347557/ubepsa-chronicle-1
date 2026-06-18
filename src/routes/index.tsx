@@ -8,244 +8,142 @@ import type { Article } from "@/lib/ubepsa-store";
 export const Route = createFileRoute("/")({ component: Index });
 
 function Index() {
-  const { articles, releases, breaking } = useUbepsa();
+  const { articles } = useUbepsa();
   const [open, setOpen] = useState<Article | null>(null);
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
 
-  const [hero, second, third, ...rest] = articles;
-  const bentoSide = [second, third].filter(Boolean) as Article[];
-  const feed = rest.slice(0, 6);
-
-  if (!hero) {
-    return (
-      <div className="page-fade max-w-7xl mx-auto px-4 py-40 text-center">
-        <span className="kicker">Loading…</span>
-      </div>
-    );
-  }
+  const hero = articles[0];
+  const secondary = articles.slice(1, 4);
 
   return (
-    <div className="page-fade">
-      {/* ============ HERO ============ */}
-      <section className="relative overflow-hidden">
-        {/* ambient orbs */}
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="orb orb-a float-slow" style={{ width: 520, height: 520, top: -120, left: -120 }} />
-          <div className="orb orb-b float-slow" style={{ width: 420, height: 420, top: 80, right: -100, animationDelay: "-6s" }} />
-          <div className="orb orb-c" style={{ width: 600, height: 600, bottom: -260, left: "30%" }} />
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 pt-16 sm:pt-24 pb-12 sm:pb-20">
-          <div className="flex items-center gap-3 mb-8 reveal flex-wrap">
-            <span className="stamp stamp-dot">Issue 001 · Out now</span>
-            <span className="hidden sm:inline kicker">UBEPSA Editorial & Press · UNIBEN</span>
-          </div>
-
-          <h1 className="mega-display text-[2.5rem] xs:text-5xl sm:text-7xl md:text-8xl lg:text-[7.5rem] max-w-5xl text-ink reveal">
-            Stories from the <br className="hidden sm:block" />
-            <span className="italic text-gradient underline-sketch">physio</span> desk.
-          </h1>
-
-          <div className="mt-10 sm:mt-14 grid md:grid-cols-[1fr_auto] gap-6 sm:gap-10 items-end reveal">
-            <p className="text-base sm:text-lg text-ink/70 max-w-xl leading-relaxed">
-              We're the editorial board of UBEPSA — physiotherapy students at the University of Benin who'd rather write than scroll.
-              Features, interviews, opinion pieces, and the occasional dispatch from clinical postings. All of it made on campus, by hand.
+    <div className="bg-white selection:bg-ubepsa selection:text-white">
+      {/* ============ HERO SECTION ============ */}
+      <section className="relative pt-32 pb-48 overflow-hidden bg-white">
+        {/* Background Accents */}
+        <div className="absolute top-0 right-0 -translate-y-1/3 translate-x-1/3 w-[1000px] h-[1000px] bg-blue-50 rounded-full blur-[120px] opacity-60 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-[600px] h-[600px] bg-blue-100 rounded-full blur-[100px] opacity-40 pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto px-6 relative">
+          <div className="max-w-4xl">
+            <div className="flex items-center gap-4 mb-10 reveal in">
+               <div className="h-[2px] w-12 bg-ubepsa" />
+               <span className="text-sm font-black text-ubepsa uppercase tracking-[0.3em]">Official Student Portal</span>
+            </div>
+            
+            <h1 className="mega-display text-slate-900 mb-10 reveal in">
+              The Voice of <br />
+              <span className="text-ubepsa">Physiotherapy</span> <br className="hidden sm:block" /> 
+              at UNIBEN.
+            </h1>
+            
+            <p className="text-lg sm:text-xl text-slate-500 leading-relaxed mb-12 max-w-2xl font-medium reveal in" style={{ transitionDelay: '100ms' }}>
+              Building a vibrant community, fostering academic excellence, and advancing the profession together.
             </p>
-            <div className="flex flex-wrap items-center gap-3">
-              <Link to="/articles" className="btn-primary">Read the issue →</Link>
-              <Link to="/about" className="btn-ghost">Who we are</Link>
+            
+            <div className="flex flex-wrap gap-6 reveal in" style={{ transitionDelay: '200ms' }}>
+              <Link to="/about" className="btn-modern bg-ubepsa text-white px-12 py-5 rounded-2xl font-black text-lg hover:bg-ubepsa-dark shadow-2xl shadow-blue-500/30 hover:-translate-y-1 transition-all">
+                The Association
+              </Link>
+              <Link to="/excos" className="btn-modern bg-white text-slate-900 border-2 border-slate-100 px-12 py-5 rounded-2xl font-black text-lg hover:border-ubepsa hover:text-ubepsa transition-all shadow-sm">
+                Meet Excos
+              </Link>
             </div>
           </div>
-        </div>
-
-        {/* breaking ticker — minimal */}
-        {breaking.length > 0 && (
-          <div className="border-y border-white/5 bg-white/[0.015] overflow-hidden">
-            <div className="flex items-center">
-              <span className="font-mono text-[0.6rem] tracking-[0.25em] font-medium bg-gradient-to-r from-indigo-500 to-violet-500 text-white px-3 py-2 shrink-0">LIVE</span>
-              <div className="overflow-hidden flex-1">
-                <div className="ticker-track py-2 text-[0.72rem] font-mono tracking-wider">
-                  {[...breaking, ...breaking].map((b, i) => (
-                    <span key={i} className="px-6 inline-flex items-center gap-3 text-ink/70">
-                      <span className="text-indigo-400">◆</span>{b.text}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </section>
-
-      {/* ============ FEATURED BENTO ============ */}
-      <section className="max-w-7xl mx-auto px-4 mt-16 sm:mt-24 reveal">
-        <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
-          <div>
-            <span className="kicker">This week's lead</span>
-            <h2 className="font-display text-3xl sm:text-4xl mt-2 text-ink">The one we kept arguing about in the group chat.</h2>
-          </div>
-          <Link to="/articles" className="kicker text-ink/70 ink-link shrink-0">All stories →</Link>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:[grid-template-rows:repeat(2,minmax(0,1fr))] lg:h-[42rem]">
-          {/* Big hero tile */}
-          <article
-            onClick={() => setOpen(hero)}
-            className="bento lg:col-span-2 lg:row-span-2 group cursor-pointer relative overflow-hidden min-h-[24rem]"
-          >
-            <img src={hero.cover} alt={hero.title} className="absolute inset-0 w-full h-full object-cover hero-zoom opacity-80 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#050510] via-[#050510]/60 to-transparent" />
-            <div className="absolute inset-0 p-6 sm:p-10 flex flex-col justify-between">
-              <span className="stamp stamp-dot self-start">{hero.category}</span>
-              <div>
-                <h3 className="mega-display text-3xl sm:text-5xl lg:text-6xl text-ink max-w-2xl">
-                  {hero.title}
-                </h3>
-                <div className="mt-5 flex flex-wrap items-center gap-4 kicker">
-                  <span className="text-ink/80">By {hero.author}</span>
-                  <span className="text-ink/40">·</span>
-                  <span className="text-ink/60">{hero.date}</span>
-                  <span className="text-ink/40">·</span>
-                  <span className="text-ink/60">{hero.readTime} min</span>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          {/* Side tiles */}
-          {bentoSide.map((a) => (
-            <ArticleCard key={a.id} article={a} onOpen={setOpen} size="sm" />
-          ))}
-
-          {/* Fallback if not enough — stat tile */}
-          {bentoSide.length < 2 && (
-            <div className="bento p-6 sm:p-8 flex flex-col justify-between min-h-[14rem]">
-              <span className="kicker">By the numbers</span>
-              <div>
-                <p className="font-display text-5xl sm:text-6xl text-gradient">001</p>
-                <p className="mt-2 text-sm text-ink/55">The Voice Issue · Now live</p>
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
-      {/* ============ STATS STRIP ============ */}
-      <section className="max-w-7xl mx-auto px-4 mt-16 sm:mt-24 reveal">
-        <div className="glass p-6 sm:p-10 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10">
-          {[
-            { k: "Stories published", v: articles.length || "—" },
-            { k: "Contributors", v: new Set(articles.map(a => a.author)).size || "—" },
-            { k: "Press releases", v: releases.length || "—" },
-            { k: "Issue", v: "001" },
-          ].map((s) => (
-            <div key={s.k}>
-              <p className="font-display text-3xl sm:text-5xl text-ink">{s.v}</p>
-              <p className="mt-2 kicker">{s.k}</p>
-            </div>
-          ))}
+      {/* ============ ASSOCIATION UPDATES ============ */}
+      <section className="relative z-10 -mt-20 max-w-7xl mx-auto px-6 pb-32">
+        <div className="grid lg:grid-cols-3 gap-8">
+           {/* Primary Featured Card */}
+           <div className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-8">
+                 <h2 className="text-3xl font-black text-slate-900 tracking-tight">Association News</h2>
+                 <Link to="/articles" className="text-sm font-black text-ubepsa uppercase tracking-widest hover:underline">View All →</Link>
+              </div>
+              
+              {hero ? (
+                <div onClick={() => setOpen(hero)} className="group cursor-pointer bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-2xl shadow-blue-900/5 transition-all hover:shadow-blue-900/10 hover:-translate-y-1">
+                   <div className="aspect-[21/9] overflow-hidden bg-slate-50 relative">
+                      <img src={hero.cover} alt={hero.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                      <div className="absolute top-6 left-6">
+                         <span className="bg-ubepsa text-white px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest">{hero.category}</span>
+                      </div>
+                   </div>
+                   <div className="p-10">
+                      <h3 className="text-4xl font-black text-slate-900 mb-6 group-hover:text-ubepsa transition-colors leading-tight">{hero.title}</h3>
+                      <p className="text-slate-500 text-lg leading-relaxed mb-8 line-clamp-2 font-medium">{hero.excerpt}</p>
+                      <div className="flex items-center gap-4">
+                         <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-ubepsa font-black text-lg">
+                            {hero.author[0]}
+                         </div>
+                         <div>
+                            <p className="text-sm font-black text-slate-900">{hero.author}</p>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{hero.date}</p>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+              ) : (
+                <div className="h-96 rounded-[2.5rem] bg-slate-50 flex items-center justify-center text-slate-300 font-bold border-2 border-dashed border-slate-100 italic">
+                   No recent updates found
+                </div>
+              )}
+           </div>
+
+           {/* Secondary List */}
+           <div className="lg:col-span-1 pt-16 lg:pt-0">
+              <h2 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">Recent Stories</h2>
+              <div className="space-y-6">
+                 {secondary.length > 0 ? secondary.map((a) => (
+                    <div key={a.id} onClick={() => setOpen(a)} className="p-6 bg-white border border-slate-100 rounded-3xl shadow-sm transition-all hover:border-ubepsa hover:shadow-md cursor-pointer group">
+                       <span className="text-[10px] font-black text-ubepsa uppercase tracking-[0.2em] mb-3 block">{a.category}</span>
+                       <h4 className="text-xl font-bold text-slate-900 group-hover:text-ubepsa transition-colors leading-tight mb-4">{a.title}</h4>
+                       <p className="text-sm text-slate-400 font-bold">{a.date}</p>
+                    </div>
+                 )) : (
+                    [1,2,3].map(i => (
+                       <div key={i} className="h-32 bg-slate-50 rounded-3xl border border-dashed border-slate-100" />
+                    ))
+                 )}
+              </div>
+           </div>
         </div>
       </section>
 
-      {/* ============ THE FEED — BENTO GRID ============ */}
-      {feed.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 mt-20 sm:mt-28 reveal">
-          <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
-            <div>
-              <span className="kicker">From the feed</span>
-              <h2 className="mega-display text-4xl sm:text-6xl mt-3 text-ink">
-                What we've been <span className="text-gradient italic underline-sketch">writing</span>.
-              </h2>
+      {/* ============ QUICK ACTIONS GRID ============ */}
+      <section className="bg-slate-50 py-32 border-y border-slate-100">
+         <div className="max-w-7xl mx-auto px-6">
+            <header className="mb-16 text-center">
+               <h2 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tighter mb-6">Explore <span className="text-ubepsa">Association.</span></h2>
+               <p className="text-lg text-slate-500 font-medium">Everything you need to know about UBEPSA UNIBEN.</p>
+            </header>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+               <ActionCard to="/event" title="Events" desc="Seminars, workshops, and social gatherings." icon="EV" />
+               <ActionCard to="/scholarship" title="Scholarship" desc="Financial aid and academic grants." icon="SC" />
+               <ActionCard to="/gallery" title="Gallery" desc="Moments from our campus life." icon="GA" />
+               <ActionCard to="/about" title="About Us" desc="Our mission, vision, and team." icon="AB" />
             </div>
-            <Link to="/articles" className="btn-ghost shrink-0">All stories →</Link>
-          </div>
-
-          {/* Bento grid: 6 cards w/ varying spans */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 auto-rows-auto gap-4 sm:gap-5">
-            {feed.map((a, i) => {
-              const spans = [
-                "lg:col-span-3",
-                "lg:col-span-3",
-                "lg:col-span-2",
-                "lg:col-span-2",
-                "lg:col-span-2",
-                "lg:col-span-6",
-              ];
-              const sizes: ("sm" | "md" | "lg")[] = ["md", "md", "sm", "sm", "sm", "lg"];
-              return (
-                <div key={a.id} className={`${spans[i] ?? "lg:col-span-2"} reveal`} style={{ transitionDelay: `${i * 50}ms` }}>
-                  <ArticleCard article={a} onOpen={setOpen} size={sizes[i] ?? "md"} />
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* ============ PRESS RELEASES ============ */}
-      {releases.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 mt-20 sm:mt-28 reveal">
-          <div className="glass relative overflow-hidden p-6 sm:p-12">
-            <div className="absolute -top-20 -right-20 w-80 h-80 orb orb-a opacity-40" />
-            <div className="relative grid lg:grid-cols-[1fr_2fr] gap-10">
-              <div>
-                <span className="kicker">From the desk</span>
-                <h2 className="mega-display text-3xl sm:text-5xl mt-3 text-ink">
-                  Press <span className="text-gradient italic">releases</span>.
-                </h2>
-                <p className="mt-4 text-sm text-ink/60 max-w-sm leading-relaxed">
-                  Announcements, statements, and notices straight from the UBEPSA editorial board — no spin.
-                </p>
-                <Link to="/press" className="mt-6 inline-block kicker text-ink ink-link">All releases →</Link>
-              </div>
-              <ul className="divide-y divide-white/5">
-                {releases.slice(0, 5).map(r => (
-                  <li key={r.id} className="py-4 sm:py-5 grid sm:grid-cols-[1fr_auto] gap-2 sm:gap-6">
-                    <p className="font-display text-lg sm:text-xl text-ink leading-tight">{r.title}</p>
-                    <p className="kicker sm:text-right shrink-0">{r.date}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ============ NEWSLETTER ============ */}
-      <section className="mt-20 sm:mt-28 reveal">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <span className="stamp stamp-dot">The mailing list</span>
-          <h2 className="mega-display text-4xl sm:text-6xl lg:text-7xl mt-6 text-ink">
-            Catch new pieces<br />
-            <span className="text-gradient italic underline-sketch">in your inbox.</span>
-          </h2>
-          <p className="mt-5 text-ink/60 max-w-lg mx-auto">
-            One short email when we publish — usually a Friday, sometimes a Sunday if a deadline slips. Drop your address, we'll do the rest.
-          </p>
-
-          <form
-            onSubmit={(e) => { e.preventDefault(); if (email) setSubmitted(true); }}
-            className="mt-10 max-w-xl mx-auto glass p-1.5 flex items-stretch gap-1.5 rounded-full"
-          >
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@uniben.edu"
-              className="flex-1 min-w-0 bg-transparent text-ink text-sm sm:text-base font-sans py-3 px-5 focus:outline-none placeholder:text-ink/30"
-            />
-            <button type="submit" className="btn-primary !rounded-full shrink-0 !py-3 !px-5">
-              {submitted ? "You're in ✓" : "Sign me up"}
-            </button>
-          </form>
-          <p className="mt-4 kicker text-ink/40">No spam · Leave anytime</p>
-        </div>
+         </div>
       </section>
 
       <ArticleModal article={open} onClose={() => setOpen(null)} />
     </div>
   );
+}
+
+function ActionCard({ to, title, desc, icon }: { to: string, title: string, desc: string, icon: string }) {
+   return (
+      <Link to={to} className="group p-10 bg-white border border-slate-100 rounded-[2.5rem] shadow-xl shadow-blue-900/5 transition-all hover:shadow-blue-900/10 hover:-translate-y-2 hover:border-ubepsa">
+         <div className="h-16 w-16 bg-blue-50 rounded-2xl flex items-center justify-center text-ubepsa font-black text-xl mb-8 group-hover:bg-ubepsa group-hover:text-white transition-all duration-300">
+            {icon}
+         </div>
+         <h3 className="text-2xl font-black text-slate-900 mb-4 group-hover:text-ubepsa transition-colors">{title}</h3>
+         <p className="text-slate-500 font-medium leading-relaxed text-sm">{desc}</p>
+         <div className="mt-8 flex items-center gap-2 text-ubepsa opacity-0 group-hover:opacity-100 transition-all">
+            <span className="text-xs font-black uppercase tracking-widest">Learn More</span>
+            <span>→</span>
+         </div>
+      </Link>
+   );
 }

@@ -12,47 +12,9 @@ export function Chrome() {
     const t = setTimeout(() => {
       sessionStorage.setItem("pv:seen", "1");
       setLoading(false);
-    }, 2200);
+    }, 1200);
     return () => clearTimeout(t);
   }, [loading]);
-
-  // Cursor — ring + dot
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.matchMedia("(pointer: coarse)").matches) return;
-    const dot = document.createElement("div");
-    const ring = document.createElement("div");
-    dot.className = "cursor-dot";
-    ring.className = "cursor-ring";
-    document.body.append(dot, ring);
-
-    let raf = 0;
-    let dx = 0, dy = 0, rx = 0, ry = 0, tx = 0, ty = 0;
-    const move = (e: MouseEvent) => { tx = e.clientX; ty = e.clientY; };
-    const tick = () => {
-      dx += (tx - dx) * 0.45;
-      dy += (ty - dy) * 0.45;
-      rx += (tx - rx) * 0.18;
-      ry += (ty - ry) * 0.18;
-      dot.style.transform = `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
-      ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
-      raf = requestAnimationFrame(tick);
-    };
-    const over = (e: MouseEvent) => {
-      const t = e.target as HTMLElement | null;
-      if (t?.closest("a, button, [role='button'], input, textarea, .bento, .flip-card")) ring.classList.add("hover");
-      else ring.classList.remove("hover");
-    };
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseover", over);
-    raf = requestAnimationFrame(tick);
-    return () => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseover", over);
-      cancelAnimationFrame(raf);
-      dot.remove(); ring.remove();
-    };
-  }, []);
 
   // Scroll reveal
   useEffect(() => {
@@ -73,10 +35,16 @@ export function Chrome() {
 
   if (!loading) return null;
   return (
-    <div className="loader-shell">
-      <div className="loader-mark">
-        UBEPSA <span>Press</span>
+    <div className="fixed inset-0 z-50 bg-white flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 bg-blue-600 rounded flex items-center justify-center animate-bounce">
+          <span className="text-white font-bold text-2xl">U</span>
+        </div>
+        <div className="font-display text-4xl font-black text-ubepsa tracking-tighter uppercase">
+          UBEPSA
+        </div>
       </div>
     </div>
   );
 }
+
