@@ -12,7 +12,7 @@ function Index() {
   const [open, setOpen] = useState<Article | null>(null);
 
   const hero = articles[0];
-  const secondary = articles.slice(1, 6);
+  const secondary = articles.slice(1, 5);
   const featuredEvents = events.slice(0, 4);
   const recentGallery = gallery.slice(0, 4);
 
@@ -231,7 +231,7 @@ function Index() {
             </div>
 
             <div className="mt-12 flex flex-wrap justify-center gap-4">
-              <Link to="/articles" className="btn-modern bg-white text-slate-900 border border-slate-200 px-8 py-3 rounded-xl font-black uppercase tracking-widest hover:border-ubepsa hover:text-ubepsa transition-all">
+              <Link to="/about" hash="editorial" className="btn-modern bg-white text-slate-900 border border-slate-200 px-8 py-3 rounded-xl font-black uppercase tracking-widest hover:border-ubepsa hover:text-ubepsa transition-all">
                 Staff Press
               </Link>
               <Link to="/admin" className="btn-modern bg-slate-900 text-white px-8 py-3 rounded-xl font-black uppercase tracking-widest hover:bg-ubepsa transition-all">

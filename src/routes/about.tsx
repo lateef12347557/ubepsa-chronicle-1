@@ -57,7 +57,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="mb-24 sm:mb-32">
+      <section id="editorial" className="mb-24 sm:mb-32">
         <header className="mb-12 sm:mb-16">
            <div className="h-1 w-12 bg-ubepsa mb-6 rounded-full" />
            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tighter leading-tight">Editorial Board.</h2>
