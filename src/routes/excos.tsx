@@ -5,10 +5,13 @@ export const Route = createFileRoute('/excos')({
 });
 
 const EXCOS = [
-  { id: 1, name: 'Executive Name', role: 'President', img: '/exco1.jfif' },
-  { id: 2, name: 'Executive Name', role: 'Vice President', img: '/exco2.jfif' },
-  { id: 3, name: 'Executive Name', role: 'General Secretary', img: '/exco3.jfif' },
-  { id: 4, name: 'Executive Name', role: 'Treasurer', img: '/exco4.jfif' },
+  { id: 1, name: 'N/A', role: 'N/A', img: '/IMG-20260618-WA0157.jpg' },
+  { id: 2, name: 'N/A', role: 'N/A', img: '/IMG-20260618-WA0158.jpg' },
+  { id: 3, name: 'N/A', role: 'N/A', img: '/IMG-20260618-WA0159.jpg' },
+  { id: 4, name: 'N/A', role: 'N/A', img: '/IMG-20260618-WA0160.jpg' },
+  { id: 5, name: 'N/A', role: 'N/A', img: '/IMG-20260618-WA0161.jpg' },
+  { id: 6, name: 'N/A', role: 'N/A', img: '/IMG-20260620-WA0139.jpg' },
+  { id: 7, name: 'N/A', role: 'N/A', img: '/IMG-20260620-WA0146.jpg' },
 ];
 
 function MeetYourExcosPage() {
