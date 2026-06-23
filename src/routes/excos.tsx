@@ -5,13 +5,13 @@ export const Route = createFileRoute('/excos')({
 });
 
 const EXCOS = [
-  { id: 1, name: 'N/A', role: 'N/A', img: '/IMG-20260618-WA0157.jpg' },
-  { id: 2, name: 'N/A', role: 'N/A', img: '/IMG-20260618-WA0158.jpg' },
-  { id: 3, name: 'N/A', role: 'N/A', img: '/IMG-20260618-WA0159.jpg' },
-  { id: 4, name: 'N/A', role: 'N/A', img: '/IMG-20260618-WA0160.jpg' },
-  { id: 5, name: 'N/A', role: 'N/A', img: '/IMG-20260618-WA0161.jpg' },
-  { id: 6, name: 'N/A', role: 'N/A', img: '/IMG-20260620-WA0139.jpg' },
-  { id: 7, name: 'N/A', role: 'N/A', img: '/IMG-20260620-WA0146.jpg' },
+  { id: 1, name: 'MOBOLAJI OYEKANMI OLABANJO', role: 'PRESIDENT', img: '/IMG-20260618-WA0161.jpg' },
+  { id: 2, name: ' PRECIOUS IGHERIEMIE OMENLO', role: 'VICE PRESIDENT', img: '/IMG-20260618-WA0159.jpg' },
+  { id: 3, name: ' SYLVESTER OKOYE', role: 'DIRECTORS OF SPORT', img: '/IMG-20260618-WA0158.jpg' },  
+  { id: 4, name: 'BRIDGET ESSIEN', role: 'SECRETARY GENERAL', img: '/IMG-20260618-WA0160.jpg' },
+  { id: 5, name: 'DAVID OHIJIE', role: 'DIRECTOR OF SOCIALS', img: '/IMG-20260618-WA0157.jpg' },
+  { id: 6, name: 'OKOSUN GREATNESS EHIDIAMEN', role: 'PUBLIC RELATIONSHIP OFFICER', img: '/IMG-20260620-WA0139.jpg' },
+  { id: 7, name: 'EDITH ALEX', role: 'FINANCIAL SECRETARY', img: '/IMG-20260620-WA0146.jpg' },
 ];
 
 function MeetYourExcosPage() {
