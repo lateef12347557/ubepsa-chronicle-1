@@ -55,6 +55,30 @@ export type UbepsaEvent = {
   created_at: string;
 };
 
+export interface PageContent {
+  type: "editorial" | "article" | "interview" | "gallery" | "back";
+  title: string;
+  subtitle?: string;
+  author?: string;
+  columns: string[][];
+  quote?: string;
+}
+
+export interface Magazine {
+  id: string;
+  volume: number;
+  issue: number;
+  title: string;
+  subtitle: string;
+  date: string;
+  description: string;
+  bgGradient: string;
+  pdfSize: string;
+  pdfUrl: string | null;
+  features: string[];
+  pages: PageContent[];
+}
+
 export const CATEGORIES = ["News", "Opinion", "Campus Life", "Features", "Press Release", "Photography"];
 
 const estimateReadTime = (body: string) => Math.max(2, Math.ceil(body.split(/\s+/).length / 220));
@@ -68,6 +92,17 @@ const mapArticle = (r: ArticleRow): Article => ({
   cover: r.cover, excerpt: r.excerpt, body: r.body, tags: r.tags ?? [], readTime: r.read_time,
 });
 
+type MagazineRow = {
+  id: string; volume: number; issue: number; title: string; subtitle: string; date: string;
+  description: string; bg_gradient: string; pdf_size: string; pdf_url: string | null;
+  features: string[] | null; pages: any;
+};
+const mapMagazine = (r: MagazineRow): Magazine => ({
+  id: r.id, volume: r.volume, issue: r.issue, title: r.title, subtitle: r.subtitle, date: r.date,
+  description: r.description, bgGradient: r.bg_gradient, pdfSize: r.pdf_size, pdfUrl: r.pdf_url,
+  features: r.features ?? [], pages: (r.pages as PageContent[]) ?? [],
+});
+
 export function useUbepsaStore() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
@@ -75,16 +110,18 @@ export function useUbepsaStore() {
   const [breaking, setBreaking] = useState<BreakingItem[]>([]);
   const [scholarships, setScholarships] = useState<Scholarship[]>([]);
   const [events, setEvents] = useState<UbepsaEvent[]>([]);
+  const [magazines, setMagazines] = useState<Magazine[]>([]);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
-    const [a, g, p, b, s, e] = await Promise.all([
+    const [a, g, p, b, s, e, m] = await Promise.all([
       supabase.from("articles").select("*").order("created_at", { ascending: false }),
       supabase.from("gallery_items").select("*").order("created_at", { ascending: false }),
       supabase.from("press_releases").select("*").order("created_at", { ascending: false }),
       supabase.from("breaking_news").select("*").order("position", { ascending: true }),
       supabase.from("scholarships").select("*").order("created_at", { ascending: false }),
       supabase.from("events").select("*").order("created_at", { ascending: false }),
+      supabase.from("magazines").select("*").order("volume", { ascending: false }).order("issue", { ascending: false }),
     ]);
     if (a.data) setArticles(a.data.map((r) => mapArticle(r as ArticleRow)));
     if (g.data) setGallery(g.data as GalleryItem[]);
@@ -92,6 +129,7 @@ export function useUbepsaStore() {
     if (b.data) setBreaking(b.data as BreakingItem[]);
     if (s.data) setScholarships(s.data as Scholarship[]);
     if (e.data) setEvents(e.data as UbepsaEvent[]);
+    if (m.data) setMagazines(m.data.map((r) => mapMagazine(r as MagazineRow)));
     setLoading(false);
   }, []);
 
@@ -101,7 +139,7 @@ export function useUbepsaStore() {
     // Subscribe to ALL relevant tables for real-time updates
     const channels = [
       "articles", "gallery_items", "press_releases", 
-      "breaking_news", "scholarships", "events"
+      "breaking_news", "scholarships", "events", "magazines"
     ].map(table => 
       supabase
         .channel(`public:${table}`)
@@ -229,11 +267,54 @@ export function useUbepsaStore() {
     setEvents((p) => p.map((event) => (event.id === id ? (data as UbepsaEvent) : event)));
   }, []);
 
+  const addMagazine = useCallback(async (m: Omit<Magazine, "id">) => {
+    const { data, error } = await supabase.from("magazines").insert({
+      volume: m.volume,
+      issue: m.issue,
+      title: m.title,
+      subtitle: m.subtitle,
+      date: m.date,
+      description: m.description,
+      bg_gradient: m.bgGradient,
+      pdf_size: m.pdfSize,
+      pdf_url: m.pdfUrl,
+      features: m.features,
+      pages: m.pages as any,
+    }).select().single();
+    if (error) throw error;
+    setMagazines((p) => [mapMagazine(data as MagazineRow), ...p]);
+  }, []);
+
+  const deleteMagazine = useCallback(async (id: string) => {
+    const { error } = await supabase.from("magazines").delete().eq("id", id);
+    if (error) throw error;
+    setMagazines((p) => p.filter((m) => m.id !== id));
+  }, []);
+
+  const updateMagazine = useCallback(async (id: string, m: Partial<Magazine>) => {
+    const updateData: any = {};
+    if (m.volume !== undefined) updateData.volume = m.volume;
+    if (m.issue !== undefined) updateData.issue = m.issue;
+    if (m.title !== undefined) updateData.title = m.title;
+    if (m.subtitle !== undefined) updateData.subtitle = m.subtitle;
+    if (m.date !== undefined) updateData.date = m.date;
+    if (m.description !== undefined) updateData.description = m.description;
+    if (m.bgGradient !== undefined) updateData.bg_gradient = m.bgGradient;
+    if (m.pdfSize !== undefined) updateData.pdf_size = m.pdfSize;
+    if (m.pdfUrl !== undefined) updateData.pdf_url = m.pdfUrl;
+    if (m.features !== undefined) updateData.features = m.features;
+    if (m.pages !== undefined) updateData.pages = m.pages as any;
+
+    const { data, error } = await supabase.from("magazines").update(updateData).eq("id", id).select().single();
+    if (error) throw error;
+    setMagazines((prev) => prev.map((mag) => (mag.id === id ? mapMagazine(data as MagazineRow) : mag)));
+  }, []);
+
   return { 
-    articles, gallery, releases, breaking, scholarships, events, loading, refresh, 
+    articles, gallery, releases, breaking, scholarships, events, magazines, loading, refresh, 
     addArticle, deleteArticle, addGallery, deleteGallery, addRelease, deleteRelease, 
     addBreaking, deleteBreaking, updateBreaking, addScholarship, deleteScholarship, 
-    addEvent, deleteEvent 
+    addEvent, deleteEvent, addMagazine, deleteMagazine, updateMagazine 
   };
 }
 

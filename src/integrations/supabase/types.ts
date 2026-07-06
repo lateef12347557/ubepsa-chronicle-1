@@ -140,6 +140,54 @@ export type Database = {
         }
         Relationships: []
       }
+      magazines: {
+        Row: {
+          bg_gradient: string
+          created_at: string
+          date: string
+          description: string
+          features: string[]
+          id: string
+          issue: number
+          pages: Json
+          pdf_size: string
+          pdf_url: string | null
+          subtitle: string
+          title: string
+          volume: number
+        }
+        Insert: {
+          bg_gradient?: string
+          created_at?: string
+          date: string
+          description: string
+          features?: string[]
+          id?: string
+          issue: number
+          pages?: Json
+          pdf_size?: string
+          pdf_url?: string | null
+          subtitle: string
+          title: string
+          volume: number
+        }
+        Update: {
+          bg_gradient?: string
+          created_at?: string
+          date?: string
+          description?: string
+          features?: string[]
+          id?: string
+          issue?: number
+          pages?: Json
+          pdf_size?: string
+          pdf_url?: string | null
+          subtitle?: string
+          title?: string
+          volume?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

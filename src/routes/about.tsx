@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 export const Route = createFileRoute("/about")({ component: AboutPage });
@@ -39,7 +39,7 @@ UBEPSA Editorial and Press is the official media and communications arm of the U
           <div className="space-y-6 text-slate-600 leading-relaxed text-base sm:text-lg font-medium">
             <p>
               
-PhysioVibes Magazine is one of our flagship achievements, alongside other initiatives that spotlight student growth, achievements, and experiences. 
+              <Link to="/magazine" className="text-ubepsa hover:underline font-black">PhysioVibes Magazine</Link> is one of our flagship achievements, alongside other initiatives that spotlight student growth, achievements, and experiences.
 
             </p>
             <p>

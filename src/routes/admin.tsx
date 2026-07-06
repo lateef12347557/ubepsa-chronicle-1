@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useUbepsa } from "@/components/ubepsa/UbepsaProvider";
-import { CATEGORIES } from "@/lib/ubepsa-store";
+import { CATEGORIES, type Magazine, type PageContent } from "@/lib/ubepsa-store";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   Sidebar, 
@@ -28,7 +28,10 @@ import {
   GraduationCap, 
   Calendar,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  BookOpen,
+  Plus,
+  Trash
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({ component: AdminPage });
@@ -125,7 +128,7 @@ function AdminPage() {
   return <Dashboard onLogout={logout} />;
 }
 
-type Tab = "articles" | "gallery" | "press" | "breaking" | "admins" | "stats" | "scholarships" | "events";
+type Tab = "articles" | "gallery" | "press" | "breaking" | "admins" | "stats" | "scholarships" | "events" | "magazines";
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const { loading } = useUbepsa();
@@ -145,6 +148,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     { id: "breaking", label: "Ticker", icon: Zap },
     { id: "scholarships", label: "Scholarships", icon: GraduationCap },
     { id: "events", label: "Events", icon: Calendar },
+    { id: "magazines", label: "Magazines", icon: BookOpen },
     ...(isSuperAdmin ? [{ id: "admins" as Tab, label: "Admins", icon: Users }] : []),
     { id: "stats", label: "Stats", icon: BarChart },
   ];
@@ -230,6 +234,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             {tab === "breaking" && <BreakingManager />}
             {tab === "scholarships" && <ScholarshipManager />}
             {tab === "events" && <EventManager />}
+            {tab === "magazines" && <MagazinesManager />}
             {tab === "admins" && isSuperAdmin && <AdminsManager />}
             {tab === "stats" && <Stats />}
           </div>
@@ -454,6 +459,54 @@ function ImageUploader({ value, onChange }: { value: string; onChange: (url: str
   );
 }
 
+function PdfUploader({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  const handleFile = async (file: File) => {
+    setErr(""); setBusy(true);
+    try {
+      const ext = file.name.split(".").pop() || "pdf";
+      if (ext.toLowerCase() !== "pdf") {
+        throw new Error("Only PDF files are allowed.");
+      }
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from("ubepsa-media").upload(path, file, {
+        contentType: file.type, upsert: false,
+      });
+      if (error) throw error;
+      const { data } = supabase.storage.from("ubepsa-media").getPublicUrl(path);
+      onChange(data.publicUrl);
+    } catch (e) { setErr((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col xs:flex-row items-center gap-4">
+        <label className="w-full xs:w-auto bg-slate-900 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest cursor-pointer hover:bg-ubepsa transition-all active:scale-95 shadow-lg shadow-blue-900/10 text-center">
+          {busy ? "Uploading…" : "Upload PDF"}
+          <input type="file" accept="application/pdf" className="hidden" disabled={busy}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }} />
+        </label>
+        <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">— OR —</span>
+        <input className={inputCls} value={value} onChange={(e) => onChange(e.target.value)} placeholder="Remote PDF URL (https://…)" />
+      </div>
+      {err && <p className="text-destructive font-bold text-[10px] uppercase tracking-widest">{err}</p>}
+      {value && (
+        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="h-10 w-10 bg-red-50 text-red-500 rounded-lg flex items-center justify-center font-bold text-xs uppercase shrink-0">PDF</div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-bold text-slate-700 truncate">{value}</p>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Uploaded & Ready</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function ArticlesManager() {
   const { articles, addArticle, deleteArticle, updateArticle } = useUbepsa();
@@ -1011,6 +1064,435 @@ function EventManager() {
             </div>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+const PRESET_GRADIENTS = [
+  { name: "Blue Violet", value: "from-blue-600 via-indigo-600 to-violet-700" },
+  { name: "Emerald Teal", value: "from-emerald-600 via-teal-600 to-cyan-700" },
+  { name: "Amber Red", value: "from-amber-600 via-orange-600 to-red-700" },
+  { name: "Rose Fuchsia", value: "from-rose-600 via-pink-600 to-fuchsia-700" },
+  { name: "Slate Charcoal", value: "from-slate-700 via-zinc-800 to-stone-900" },
+];
+
+function MagazinesManager() {
+  const { magazines, addMagazine, deleteMagazine, updateMagazine } = useUbepsa();
+  const emptyForm = {
+    volume: "11",
+    issue: "1",
+    title: "",
+    subtitle: "",
+    date: "",
+    description: "",
+    bgGradient: "from-blue-600 via-indigo-600 to-violet-700",
+    pdfSize: "8.4 MB",
+    pdfUrl: "",
+    features: "",
+  };
+  const [form, setForm] = useState(emptyForm);
+  const [pages, setPages] = useState<PageContent[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [msg, setMsg] = useState("");
+
+  const update = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }));
+
+  const startEdit = (m: Magazine) => {
+    setEditingId(m.id);
+    setForm({
+      volume: String(m.volume),
+      issue: String(m.issue),
+      title: m.title,
+      subtitle: m.subtitle,
+      date: m.date,
+      description: m.description,
+      bgGradient: m.bgGradient,
+      pdfSize: m.pdfSize,
+      pdfUrl: m.pdfUrl || "",
+      features: m.features.join(", "),
+    });
+    setPages(m.pages || []);
+    setMsg("");
+    setErr("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+    setPages([]);
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title || !form.volume || !form.issue || !form.date) return;
+    setBusy(true); setErr(""); setMsg("");
+    try {
+      const magazineData = {
+        volume: parseInt(form.volume, 10) || 1,
+        issue: parseInt(form.issue, 10) || 1,
+        title: form.title,
+        subtitle: form.subtitle,
+        date: form.date,
+        description: form.description,
+        bgGradient: form.bgGradient,
+        pdfSize: form.pdfSize,
+        pdfUrl: form.pdfUrl || null,
+        features: form.features.split(",").map(f => f.trim()).filter(Boolean),
+        pages: pages,
+      };
+
+      if (editingId) {
+        await updateMagazine(editingId, magazineData);
+        setMsg("Magazine updated successfully!");
+        cancelEdit();
+      } else {
+        await addMagazine(magazineData);
+        setForm(emptyForm);
+        setPages([]);
+        setMsg("Magazine added successfully!");
+      }
+    } catch (e: any) {
+      console.error("Magazine save error:", e);
+      setErr(e.message || "Failed to save magazine. Please check your connection or admin permissions.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const addPage = () => {
+    setPages(p => [
+      ...p,
+      {
+        type: "article",
+        title: `Page ${p.length + 1}`,
+        subtitle: "",
+        author: "",
+        columns: [["Column 1 text..."], ["Column 2 text..."]],
+        quote: "",
+      }
+    ]);
+  };
+
+  const removePage = (index: number) => {
+    setPages(p => p.filter((_, i) => i !== index));
+  };
+
+  const updatePageField = (index: number, field: keyof PageContent, value: any) => {
+    setPages(p => p.map((page, i) => {
+      if (i === index) {
+        return { ...page, [field]: value };
+      }
+      return page;
+    }));
+  };
+
+  const updatePageColumn = (pageIndex: number, colIndex: number, text: string) => {
+    setPages(p => p.map((page, i) => {
+      if (i === pageIndex) {
+        const nextCols = [...page.columns];
+        nextCols[colIndex] = [text];
+        return { ...page, columns: nextCols };
+      }
+      return page;
+    }));
+  };
+
+  return (
+    <div className="space-y-16">
+      <div className="grid lg:grid-cols-12 gap-16">
+        <div className="lg:col-span-7 space-y-10">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 mb-2">{editingId ? "Edit Magazine" : "Add Magazine Issue"}</h2>
+            <p className="text-sm font-medium text-slate-500">{editingId ? "Modify the metadata, cover design, and pages of the selected volume." : "Publish a new volume of the PhysioVibes Magazine on the student website."}</p>
+          </div>
+          
+          <form onSubmit={submit} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-2xl shadow-blue-900/5 space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className={labelCls}>Volume Number</label>
+                <input type="number" className={inputCls} value={form.volume} onChange={e => update("volume", e.target.value)} required min={1} />
+              </div>
+              <div>
+                <label className={labelCls}>Issue Number</label>
+                <input type="number" className={inputCls} value={form.issue} onChange={e => update("issue", e.target.value)} required min={1} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className={labelCls}>Volume Title (e.g. Reimagining Rehab)</label>
+                <input className={inputCls} value={form.title} onChange={e => update("title", e.target.value)} required />
+              </div>
+              <div>
+                <label className={labelCls}>Theme Subtitle</label>
+                <input className={inputCls} value={form.subtitle} onChange={e => update("subtitle", e.target.value)} placeholder="The Tech Era in Physiotherapy" required />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className={labelCls}>Publication Date</label>
+                <input className={inputCls} value={form.date} onChange={e => update("date", e.target.value)} placeholder="June 2026" required />
+              </div>
+              <div>
+                <label className={labelCls}>Cover Theme / Gradient</label>
+                <select className={inputCls} value={form.bgGradient} onChange={e => update("bgGradient", e.target.value)}>
+                  {PRESET_GRADIENTS.map(g => (
+                    <option key={g.value} value={g.value}>{g.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label className={labelCls}>PDF File Size</label>
+                <input className={inputCls} value={form.pdfSize} onChange={e => update("pdfSize", e.target.value)} placeholder="8.4 MB" required />
+              </div>
+              <div>
+                <label className={labelCls}>PDF Download Link (Optional)</label>
+                <PdfUploader value={form.pdfUrl} onChange={(v) => update("pdfUrl", v)} />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Key Features (comma-separated list)</label>
+              <input className={inputCls} value={form.features} onChange={e => update("features", e.target.value)} placeholder="AI Diagnostics, Robotic Exoskeletons, Student Spotlights" />
+            </div>
+
+            <div>
+              <label className={labelCls}>Editorial Summary / Description</label>
+              <textarea rows={4} className={`${inputCls} resize-none`} value={form.description} onChange={e => update("description", e.target.value)} required />
+            </div>
+
+            {/* Interactive Page Builder */}
+            <div className="border-t border-slate-100 pt-6 space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider">Interactive Pages ({pages.length})</h3>
+                  <p className="text-[10px] text-slate-400 font-bold mt-0.5">Build the internal pages of the online reader preview.</p>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={addPage} 
+                  className="flex items-center gap-1 bg-blue-50 text-ubepsa px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider hover:bg-blue-100 transition-all cursor-pointer shadow-sm animate-none"
+                >
+                  <Plus className="h-3.5 w-3.5" /> Add Page
+                </button>
+              </div>
+
+              {pages.length === 0 ? (
+                <div className="py-10 text-center border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50">
+                  <p className="text-slate-400 font-bold text-xs">No preview pages added yet.</p>
+                  <button type="button" onClick={addPage} className="text-xs text-ubepsa font-black uppercase tracking-widest mt-2 hover:underline">Create First Page</button>
+                </div>
+              ) : (
+                <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 border-l-2 border-slate-200 pl-4">
+                  {pages.map((page, idx) => (
+                    <div key={idx} className="bg-slate-50 p-5 rounded-2xl border border-slate-100 relative space-y-4">
+                      <div className="flex justify-between items-center border-b border-slate-200/50 pb-2">
+                        <span className="text-xs font-black text-slate-600 uppercase tracking-widest">Page {idx + 1}</span>
+                        <button 
+                          type="button" 
+                          onClick={() => removePage(idx)} 
+                          className="text-slate-400 hover:text-destructive transition-colors cursor-pointer"
+                        >
+                          <Trash className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Page Type</label>
+                          <select 
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-600 focus:outline-none"
+                            value={page.type} 
+                            onChange={e => updatePageField(idx, "type", e.target.value)}
+                          >
+                            <option value="editorial">Editorial</option>
+                            <option value="article">Article</option>
+                            <option value="interview">Interview</option>
+                            <option value="gallery">Outreach / Gallery</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Page Title</label>
+                          <input 
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none"
+                            value={page.title} 
+                            onChange={e => updatePageField(idx, "title", e.target.value)} 
+                            placeholder="e.g. AI & Biomechanics" 
+                            required 
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Subtitle</label>
+                          <input 
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none"
+                            value={page.subtitle || ""} 
+                            onChange={e => updatePageField(idx, "subtitle", e.target.value)} 
+                            placeholder="Optional subtitle" 
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Author / Speaker</label>
+                          <input 
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none"
+                            value={page.author || ""} 
+                            onChange={e => updatePageField(idx, "author", e.target.value)} 
+                            placeholder="e.g. Dr. Cole / Editor" 
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Left Column Text</label>
+                          <textarea 
+                            rows={3}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-600 focus:outline-none resize-none"
+                            value={page.columns[0]?.[0] || ""} 
+                            onChange={e => updatePageColumn(idx, 0, e.target.value)} 
+                            placeholder="Enter paragraph text..." 
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Right Column Text</label>
+                          <textarea 
+                            rows={3}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-600 focus:outline-none resize-none"
+                            value={page.columns[1]?.[0] || ""} 
+                            onChange={e => updatePageColumn(idx, 1, e.target.value)} 
+                            placeholder="Enter paragraph text..." 
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-wider block mb-1">Callout Quote (Optional)</label>
+                        <input 
+                          className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none"
+                          value={page.quote || ""} 
+                          onChange={e => updatePageField(idx, "quote", e.target.value)} 
+                          placeholder="Highlight quote..." 
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            {err && <p className="text-destructive font-bold text-xs">{err}</p>}
+            {msg && <p className="text-emerald-500 font-bold text-xs">{msg}</p>}
+
+            <div className="flex gap-4">
+              <button disabled={busy} className="bg-ubepsa text-white flex-1 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-ubepsa-dark transition-all shadow-xl active:scale-95 disabled:opacity-50 cursor-pointer">
+                {busy ? (editingId ? "Saving..." : "Adding...") : (editingId ? "Save Changes →" : "Add Magazine →")}
+              </button>
+              {editingId && (
+                <button type="button" onClick={cancelEdit} className="bg-slate-100 text-slate-500 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-200 transition-all active:scale-95 cursor-pointer">
+                  Cancel
+                </button>
+              )}
+            </div>
+          </form>
+        </div>
+
+        {/* Live Preview Pane */}
+        <div className="lg:col-span-5 space-y-10">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 mb-2">Cover Preview</h2>
+            <p className="text-sm font-medium text-slate-500">Live styling preview of the magazine cover design.</p>
+          </div>
+          <div className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-2xl shadow-blue-900/5 flex justify-center sticky top-24 select-none">
+            <div className="w-full max-w-[280px] aspect-[3/4] rounded-2xl shadow-[0_15px_35px_rgba(9,30,66,0.15)] overflow-hidden relative animate-none">
+              <div className={`w-full h-full bg-gradient-to-br ${form.bgGradient} p-6 flex flex-col justify-between text-white relative`}>
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-black/20 mix-blend-overlay pointer-events-none" />
+                
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className="w-10 h-10 bg-white rounded-xl p-1 shadow-md mb-3 border border-white/20">
+                    <img src="/logo.jfif" alt="" className="h-full w-full object-contain" />
+                  </div>
+                  <p className="text-[7px] font-black uppercase tracking-[0.4em] text-white/70 mb-1 leading-none">Official Publication</p>
+                  <h3 className="text-2xl font-black tracking-tighter uppercase leading-none font-display">
+                    PHYSIO<span className="opacity-80">VIBES</span>
+                  </h3>
+                  <div className="w-6 h-[1.5px] bg-white/40 my-2" />
+                  <p className="text-[6px] font-black uppercase tracking-widest text-center text-white/80">University of Benin</p>
+                </div>
+
+                <div className="relative z-10 space-y-3">
+                  <div className="space-y-1">
+                    <span className="text-[6px] font-black uppercase tracking-widest bg-white/20 px-1.5 py-0.5 rounded border border-white/10">
+                      Vol. {form.volume || "1"} · Issue {form.issue || "1"}
+                    </span>
+                    <h4 className="text-xl font-black leading-tight tracking-tight mt-1">
+                      {form.title || "Volume Title"}
+                    </h4>
+                    <p className="text-[8px] font-bold text-white/80 leading-snug">
+                      {form.subtitle || "Volume theme subtitle"}
+                    </p>
+                  </div>
+
+                  <div className="border-t border-white/20 pt-2">
+                    <p className="text-[5px] font-bold uppercase tracking-wider text-white/50 mb-1">Featured:</p>
+                    <p className="text-[6px] font-black text-white/85 line-clamp-2 leading-tight">
+                      {form.features || "List of articles on the cover"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative z-10 flex justify-between items-end border-t border-white/10 pt-2 text-[6px] font-black text-white/60 uppercase tracking-widest">
+                  <span>{form.date || "Date TBA"}</span>
+                  <span>UBEPSA Editorial</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Magazines List */}
+      <div>
+        <h3 className="text-2xl font-black text-slate-900 mb-8 px-1 tracking-tight">Magazines Database ({magazines.length})</h3>
+        {magazines.length === 0 ? (
+          <div className="py-12 text-center border border-slate-100 rounded-[2rem] bg-white">
+            <p className="text-slate-400 font-bold">No magazines found in the database. Static fallbacks are active on the main page.</p>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {magazines.map(m => (
+              <div key={m.id} className="p-6 bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 group">
+                <div className="flex items-center gap-6 min-w-0">
+                  <div className={`h-16 w-12 rounded-lg bg-gradient-to-br ${m.bgGradient} flex-shrink-0 flex items-center justify-center p-2 text-white shadow-md relative overflow-hidden`}>
+                    <span className="text-[8px] font-black uppercase tracking-widest z-10">V{m.volume}</span>
+                    <div className="absolute inset-0 bg-black/10 z-0" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-slate-900 text-lg leading-tight truncate">{m.title}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Vol. {m.volume} · Issue {m.issue} • {m.date} • {m.pages?.length || 0} Pages</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 self-end sm:self-center">
+                  <button onClick={() => startEdit(m)} className="bg-slate-50 text-slate-600 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-ubepsa hover:text-white transition-all shadow-sm cursor-pointer">
+                    Edit
+                  </button>
+                  <button onClick={() => { if(confirm("Are you sure you want to delete this magazine edition?")) deleteMagazine(m.id); }} className="bg-slate-50 text-slate-400 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-destructive hover:text-white transition-all shadow-sm cursor-pointer">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

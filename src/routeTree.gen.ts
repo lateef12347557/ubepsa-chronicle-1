@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ScholarshipRouteImport } from './routes/scholarship'
 import { Route as PressRouteImport } from './routes/press'
 import { Route as NewspaperRouteImport } from './routes/newspaper'
+import { Route as MagazineRouteImport } from './routes/magazine'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ExcosRouteImport } from './routes/excos'
 import { Route as EventRouteImport } from './routes/event'
@@ -34,6 +35,11 @@ const PressRoute = PressRouteImport.update({
 const NewspaperRoute = NewspaperRouteImport.update({
   id: '/newspaper',
   path: '/newspaper',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MagazineRoute = MagazineRouteImport.update({
+  id: '/magazine',
+  path: '/magazine',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/event': typeof EventRouteWithChildren
   '/excos': typeof ExcosRoute
   '/gallery': typeof GalleryRoute
+  '/magazine': typeof MagazineRoute
   '/newspaper': typeof NewspaperRoute
   '/press': typeof PressRoute
   '/scholarship': typeof ScholarshipRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/event': typeof EventRouteWithChildren
   '/excos': typeof ExcosRoute
   '/gallery': typeof GalleryRoute
+  '/magazine': typeof MagazineRoute
   '/newspaper': typeof NewspaperRoute
   '/press': typeof PressRoute
   '/scholarship': typeof ScholarshipRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/event': typeof EventRouteWithChildren
   '/excos': typeof ExcosRoute
   '/gallery': typeof GalleryRoute
+  '/magazine': typeof MagazineRoute
   '/newspaper': typeof NewspaperRoute
   '/press': typeof PressRoute
   '/scholarship': typeof ScholarshipRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/event'
     | '/excos'
     | '/gallery'
+    | '/magazine'
     | '/newspaper'
     | '/press'
     | '/scholarship'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/event'
     | '/excos'
     | '/gallery'
+    | '/magazine'
     | '/newspaper'
     | '/press'
     | '/scholarship'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/event'
     | '/excos'
     | '/gallery'
+    | '/magazine'
     | '/newspaper'
     | '/press'
     | '/scholarship'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   EventRoute: typeof EventRouteWithChildren
   ExcosRoute: typeof ExcosRoute
   GalleryRoute: typeof GalleryRoute
+  MagazineRoute: typeof MagazineRoute
   NewspaperRoute: typeof NewspaperRoute
   PressRoute: typeof PressRoute
   ScholarshipRoute: typeof ScholarshipRoute
@@ -193,6 +206,13 @@ declare module '@tanstack/react-router' {
       path: '/newspaper'
       fullPath: '/newspaper'
       preLoaderRoute: typeof NewspaperRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/magazine': {
+      id: '/magazine'
+      path: '/magazine'
+      fullPath: '/magazine'
+      preLoaderRoute: typeof MagazineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -272,6 +292,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventRoute: EventRouteWithChildren,
   ExcosRoute: ExcosRoute,
   GalleryRoute: GalleryRoute,
+  MagazineRoute: MagazineRoute,
   NewspaperRoute: NewspaperRoute,
   PressRoute: PressRoute,
   ScholarshipRoute: ScholarshipRoute,
