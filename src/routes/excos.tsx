@@ -5,7 +5,7 @@ export const Route = createFileRoute('/excos')({
 });
 
 const EXCOS = [
-  { id: 1, name: 'MOBOLAJI OYEKANMI OLABANJO', role: 'PRESIDENT', img: '/IMG-20260618-WA0161.jpg' },
+  { id: 1, name: 'BOLAJI OYEKANMI OLABANJO', role: 'PRESIDENT', img: '/IMG-20260618-WA0161.jpg' },
   { id: 2, name: ' PRECIOUS IGHERIEMIE OMENLO', role: 'VICE PRESIDENT', img: '/IMG-20260618-WA0159.jpg' },
   { id: 3, name: ' SYLVESTER OKOYE', role: 'DIRECTORS OF SPORT', img: '/IMG-20260618-WA0158.jpg' },  
   { id: 4, name: 'BRIDGET ESSIEN', role: 'SECRETARY GENERAL', img: '/IMG-20260618-WA0160.jpg' },
